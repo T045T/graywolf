@@ -1,29 +1,29 @@
-/* ----------------------------------------------------------------- 
+/* -----------------------------------------------------------------
 "@(#) program.h version 1.5 3/5/92"
-FILE:	    program.h                                       
+FILE:       program.h
 DESCRIPTION:Insert file for program utility routines.
-DATE:	    Mar 16, 1989 
-REVISIONS:  
+DATE:       Mar 16, 1989
+REVISIONS:
 ----------------------------------------------------------------- */
 #ifndef PROGRAM_H
 #define PROGRAM_H
 
 #include <yalecad/base.h>
 
-extern char *YinitProgram( P3(char *name, char *version, 
+extern char *YinitProgram( P3(char *name, char *version,
     VOID  (*introTextFunction)() ) ) ;
 /*
 Function:
     Returns string with program name, version, and compile date.
     This string is built with YmsgG (actually a global note G suffix ).
-    The user may perform various initialization in introTextFunction. 
+    The user may perform various initialization in introTextFunction.
     There are no arguments to introTextFunction but user may
     get at the return string by peeking at YmsgG.  This routine also
     starts the elapsed timer.
 */
 
 extern void YexitPgm( P1(INT status) ) ;
-/* 
+/*
 Function:
     Exit a program gracefully.  It always outputs a message with
     the number of errors and warnings during the execution.  A
@@ -33,7 +33,7 @@ Function:
 */
 
 extern char *YgetProgName() ;
-/* 
+/*
 Function:
     Returns the program name given in YinitProgram.
 */
