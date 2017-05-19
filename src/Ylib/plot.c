@@ -74,14 +74,13 @@ static BOOL graphFilesS = TRUE ;
 
 static INT findType();
 
-Yplot_control( toggle )
-BOOL toggle ;
+VOID Yplot_control( BOOL toggle )
 {
     graphFilesS = toggle ;
 } /* end YgraphControl */
 
 /* graph init uses variable number of arguments */
-Yplot_init( int dval, ... )
+VOID Yplot_init( int dval, ... )
 {
 
     va_list ap ;
@@ -96,7 +95,7 @@ Yplot_init( int dval, ... )
 	return ;
     }
 
-    while( graphName = va_arg( ap, char * ) ){
+    while( (graphName = va_arg( ap, char * )) ){
 	/* save graph file name */
 	gptr = &(gfileS[gfilenoS++]) ;
 	sprintf( gptr->fileName,"%s",graphName ) ;
@@ -108,7 +107,7 @@ Yplot_init( int dval, ... )
 }
 
 /* graph init uses variable number of arguments */
-Yplot_heading( int dval, ... )
+VOID Yplot_heading( int dval, ... )
 {
 
     va_list ap ;
@@ -143,21 +142,21 @@ Yplot_heading( int dval, ... )
 	    }
 	}
 	if( i >= gfilenoS ){
-	    sprintf( YmsgG,
-		"couldn't find file %s name in opened file list\n" ) ;
+            sprintf( YmsgG,
+                     "couldn't find file %s name in opened file list\n", gName ) ;
 	    M(ERRMSG,"GRAPH", YmsgG ) ;
 	    return ;
 	}
     }
     gfileS[i].headPrintedAlready = TRUE ;
-    while( varName = va_arg( ap, char * ) ){
+    while( (varName = va_arg( ap, char * )) ){
 	fprintf( fp, "%s\t", varName ) ;
     }
     fprintf( fp, "\n" ) ;
     va_end(ap) ;
 }
 
-Yplot_close()
+VOID Yplot_close()
 {
     INT i ;
 
@@ -180,7 +179,7 @@ Yplot_close()
 /* This is what argument list looks like - use it to pass any type */
 /* of variable to graph */
 /* GRAPH( graphFileName, xVarformat, xVar, yVarformat, yVars... ) */ 
-Yplot( int dval, ... ) 
+VOID Yplot( int dval, ... ) 
 {
     va_list ap ;
     char *gName ;
@@ -218,7 +217,7 @@ Yplot( int dval, ... )
 	}
 	if( i >= gfilenoS ){
 	    sprintf( YmsgG,
-		"couldn't find file %s name in opened file list\n" ) ;
+                     "couldn't find file %s name in opened file list\n", gName ) ;
 	    M(ERRMSG,"GRAPH", YmsgG ) ;
 	    return ;
 	}
@@ -321,8 +320,7 @@ Yplot( int dval, ... )
 
 }
 
-Yplot_flush( gName ) 
-char *gName ;
+VOID Yplot_flush( char *gName ) 
 {
     INT i ;
 
@@ -361,9 +359,7 @@ char *gName ;
 
 } /* end GRAPHFLUSH */
 
-static INT findType( control, number )
-char **control ;
-INT number ;
+static INT findType( char **control, INT number )
 {
     char *formatChar ;
     
