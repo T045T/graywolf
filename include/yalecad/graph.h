@@ -1,9 +1,9 @@
-/*----------------------------------------------------------------- 
-FILE:	    Graph.h                                       
+/*-----------------------------------------------------------------
+FILE:       Graph.h
 DESCRIPTION:Graph include file for set of generic graph routines
-CONTENTS:   
-DATE:	    Jun 01, 1991
-REVISIONS:  
+CONTENTS:
+DATE:       Jun 01, 1991
+REVISIONS:
 ----------------------------------------------------------------- */
 #ifndef YGRAPH_H
 #define YGRAPH_H
@@ -47,7 +47,7 @@ INT (*user_edge_weight)() - users edge weight function
 INT flags - the bits in the field allow for things like directed edges
             and redundant edges.
 
-Function:  
+Function:
 This function initializes the data structures used by the various graphics
 routines.  In order to use all of the graph routines, the user must create
 two functions. The compare_node comparison function should be unique as some of
@@ -76,27 +76,27 @@ Example:
 INT Ygraph_flagsSet( P2(YGRAPHPTR graph, INT flag) );
 
 /*-------------------------------------------------
-  Ygraph_nodeInsert: insert a node into the graph  
+  Ygraph_nodeInsert: insert a node into the graph
   -------------------------------------------------*/
 extern YNODEPTR Ygraph_nodeInsert( P2(YGRAPHPTR graph,
-			     VOIDPTR nodeData
-			     ));
-     
+                             VOIDPTR nodeData
+                             ));
+
 /*
 Arguments:
   YGRAPHPTR graph - the graph created with Ygraph_init();
   INT node - identification of node
   VOIDPTR nodeData - users optional node Data
-    
+
 Function:
   This routine inserts a node into the graph data structure.
   A new node is not created if the node already exists.
-    
+
 Example:
   1) Ygraph_nodeInsert( myGraph, 3, myNodeData);
   This creates a node with id 3.
 */
-     
+
 
 
 /*--------------------------------------------------
@@ -105,17 +105,17 @@ Example:
 extern VOID Ygraph_edgeDelete(P3(YGRAPHPTR graph,YEDGEPTR  edge,VOID (*userEdgeFree)()));
 
 /*-------------------------------------------------
-  Ygraph_edgeInsert: insert an edge into the graph  
- 
+  Ygraph_edgeInsert: insert an edge into the graph
+
   The new YEDGEPTR is returned.
   If the edge already existed, NULL is returned.
   -------------------------------------------------*/
 extern YEDGEPTR Ygraph_edgeInsert( P5(YGRAPHPTR graph,
-			     VOIDPTR   edgeData,
-			     INT       edgeWeight,
-			     VOIDPTR   nodeData1,
-			     VOIDPTR   nodeData2
-			     ));
+                             VOIDPTR   edgeData,
+                             INT       edgeWeight,
+                             VOIDPTR   nodeData1,
+                             VOIDPTR   nodeData2
+                             ));
 /*
 Arguments
 YGRAPHPTR graph - the graph created with Ygraph_init();
@@ -202,20 +202,20 @@ extern YNODEPTR Ygraph_nodePred(P1(YGRAPHPTR graph));
 /*-------------------------------------------------
   Ygraph_edgeFind
   -------------------------------------------------*/
-extern YEDGEPTR Ygraph_edgeFind(P4(YGRAPHPTR graph,VOIDPTR edgeData, 
+extern YEDGEPTR Ygraph_edgeFind(P4(YGRAPHPTR graph,VOIDPTR edgeData,
                           VOIDPTR node1Data,VOIDPTR node2Data));
 
 /*-------------------------------------------------
   Ygraph_edgeFindByNodes
   -------------------------------------------------*/
 extern YEDGEPTR Ygraph_edgeFindByNodes( P3(YGRAPHPTR graph,
-			   YNODEPTR node1, YNODEPTR node2 ) ) ;
+                           YNODEPTR node1, YNODEPTR node2 ) ) ;
 
 /*-------------------------------------------------
   Ygraph_edgeFindByNodeData
   -------------------------------------------------*/
 extern YEDGEPTR Ygraph_edgeFindByNodeData( P3(YGRAPHPTR graph,
-		       VOIDPTR node1Data, VOIDPTR node2Data ) ) ;
+                       VOIDPTR node1Data, VOIDPTR node2Data ) ) ;
 
 /*-------------------------------------------------
   Ygraph_edgeData
@@ -281,12 +281,12 @@ extern YEDGEPTR Ygraph_edgeMax(P1(YGRAPHPTR graph));
   Ygraph_listAdjEdges
   -------------------------------------------------*/
 extern YEDGEPTR Ygraph_listAdjEdges(P2(YNODEPTR node, INT listNum));
-     
+
 /*-------------------------------------------------
   Ygraph_listBackEdges
   -------------------------------------------------*/
 extern YEDGEPTR Ygraph_listBackEdges(P2(YNODEPTR node, INT listNum));
-     
+
 /*-------------------------------------------------
   Ygraph_nodeEnumerate
   -------------------------------------------------*/
@@ -369,7 +369,7 @@ extern int Ygraph_nodeVerify(P1(YNODEPTR node));
 extern int Ygraph_edgeVerify(P1(YEDGEPTR edge));
 
 /*-------------------------------------------------
-  Ygraph_copy: returns a copy of a graph  
+  Ygraph_copy: returns a copy of a graph
   -------------------------------------------------*/
 extern YGRAPHPTR Ygraph_copy(P1(YGRAPHPTR graph));
 
@@ -430,7 +430,7 @@ extern YDECKPTR Ygraph_mst_prim(P2(YGRAPHPTR graph,YNODEPTR source));
 extern VOID Ygraph_dijkstra(P2(YGRAPHPTR graph,YNODEPTR source));
 
 /*----------------------------------------------------------
-  Ygraph_bellman_ford: single source shortest path for 
+  Ygraph_bellman_ford: single source shortest path for
   directed edge graph.
   Returns TRUE if shortest path found.
   Returns FALSE if negative weight cycle exists
@@ -447,13 +447,13 @@ extern YDECKPTR Ygraph_cycles(P1(YGRAPHPTR graph));
 
 /*-------------------------------------------------
   Ygraph_clearRequired: clear all nodes which must
-                       part of any steiner tree  
+                       part of any steiner tree
   -------------------------------------------------*/
 extern VOID Ygraph_clearRequired(P1(YGRAPHPTR graph));
 
 /*-------------------------------------------------
   Ygraph_nodeRequired: insert a node which must be
-  part of any steiner tree  
+  part of any steiner tree
   -------------------------------------------------*/
 extern YNODEPTR Ygraph_nodeRequired(P3(YGRAPHPTR graph,YNODEPTR node,YNODEPTR equiv));
 
@@ -537,10 +537,10 @@ extern INT (*Ygraph_getEdgeWeightFunction(P1(YGRAPHPTR graph)))();
   Set the current edge weight function
   ---------------------------------------------------------*/
 extern VOID Ygraph_setEdgeWeightFunction(P2(YGRAPHPTR graph,
-					    INT (*userEdgeWeight)()));
+                                            INT (*userEdgeWeight)()));
 
 /*---------------------------------------------------------
-  Call the users drawing functions for all required nodes 
+  Call the users drawing functions for all required nodes
   To use this function first call Ygraph_drawFunctions().
   The user's node draw function will be passed a node and a color.
   The user's edge draw function will be passed an edge and a color.

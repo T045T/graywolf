@@ -38,12 +38,12 @@
  */
 
 /*-------------------------------------------------------------------
-  FILE:	    graph.c                                       
+  FILE:     graph.c
   DESCRIPTION:generic graph algorithms.  See Cormen, Leiserson, and Rivest
   Intorduction to Algorithms
   Chapters 23,24
-  CONTENTS:   
-  DATE:	    Jun 03,1991
+  CONTENTS:
+  DATE:     Jun 03,1991
   REVISIONS:Sun Dec 15 02:41:01 EST 1991 - rewrote for new dset routines.
   NOTES: In case the need for speed arises:
   1) instead of rebuilding priority heaps all the time,
@@ -84,7 +84,7 @@ typedef struct graph {
   YDECKPTR topSortDeck;       /* results of topological sort */
   YDECKPTR strongConnectDeck; /* strongly connected nodes */
   YDECKPTR mstDeck;           /* minimum spanning tree over enitre graph */
-  YDECKPTR cycleDecks;        /* edges which if add to steiner tree=cycle */ 
+  YDECKPTR cycleDecks;        /* edges which if add to steiner tree=cycle */
   YDECKPTR cyclePrimeDecks;   /* edges used to prime multiple steiner trees */
   YTREEPTR steinerTrees;      /* Tree of graphs which spans some nodes */
   YDSETPTR sourceSet;         /* Nodes which must be part of steiner tree */
@@ -131,7 +131,7 @@ typedef struct graph_edge {
 
 
 /*---------------------------------------------------------
-  static variables 
+  static variables
   ---------------------------------------------------------*/
 static INT dfs_timeS;  /* time variable used by depth first search */
 static YGRAPHPTR graphS;
@@ -193,24 +193,24 @@ static YEDGEPTR *graph_adjedge_insert(YEDGEPTR *a_p, YEDGEPTR edge)
 {
   INT newSize;
   INT max;
-  
+
   newSize = (INT) a_p[SIZE] + 1;
   max = (INT) a_p[MAXSIZE];
-  
+
    /* do we need to allocate another chunk of memory */
    if ( newSize > max ) {
 
       /* rellocate the array to a new size */
       max += STEPSIZE;
       a_p = YVECTOR_REALLOC ( a_p, LO, max, YEDGEPTR );
-   
+
       /* update the maximum size */
       a_p[MAXSIZE] = (YEDGEPTR) (size_t) max;   /* this is really an INT */
    }
 
    /* add the new edge to the array */
    a_p[newSize] = edge;
- 
+
    /* update the size of the array */
    a_p[SIZE] = (YEDGEPTR) (size_t) newSize;  /* This is an INT */
 
@@ -243,9 +243,9 @@ static VOID graph_adjedge_free(YEDGEPTR *a_p, YEDGEPTR edge)
      /* set new size */
      newSize = size -1;
      *s_p = (YEDGEPTR) (size_t) newSize;  /* this is really an int */
- 
+
      /* copy last edge in list to current position */
-     *c_p = *l_p;     
+     *c_p = *l_p;
    }
 
 }
@@ -263,7 +263,7 @@ static VOID graph_edge_free(YEDGEPTR edgePtr)
       M( ERRMSG, "edge_free","no user edge data to free\n" ) ;
     }
   }
-  
+
   /* finally free the edge */
   YFREE(edgePtr);
 }
@@ -276,7 +276,7 @@ static VOID graph_node_free(YNODEPTR nodePtr)
   /* free node adjacency edge tree */
   YVECTOR_FREE(nodePtr->adjEdge,LO);
   YVECTOR_FREE(nodePtr->backEdge,LO);
-  
+
   /* now delete users node data */
   if (userNodeFreeS) {
     if (nodePtr->data) {
@@ -285,7 +285,7 @@ static VOID graph_node_free(YNODEPTR nodePtr)
       M( ERRMSG, "free_node","no user node data to free\n" ) ;
     }
   }
-  
+
   /* and free the node */
   YFREE(nodePtr);
 }
@@ -306,7 +306,7 @@ YGRAPHPTR Ygraph_init( INT (*user_compare_node)(),
                        INT flags) /* Directed edges, redundant edges, etc. */
 {
   YGRAPHPTR graph ;      /* the current tree being built */
-  
+
   graph = YMALLOC( 1, YGRAPH ) ;
   graph->nodeTree = Yrbtree_init( user_compare_node );
 
@@ -326,8 +326,8 @@ YGRAPHPTR Ygraph_init( INT (*user_compare_node)(),
   graph->mstDeck = NULL;
   graph->cycleDecks = NULL;
   graph->steinerTrees = NULL;
-  graph->userDrawEdge = NULL;  
-  graph->userDrawNode = NULL;  
+  graph->userDrawEdge = NULL;
+  graph->userDrawNode = NULL;
 
   D( "Ygraph_init",
     ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_init","bogus");
@@ -358,7 +358,7 @@ VOID Ygraph_free(YGRAPHPTR graph,
                   VOID (*userNodeDelete)(), /* user function to free node data */
                   VOID (*userEdgeDelete)()) /* user function to free edge data */
 {
-  
+
   Ydset_free(graph->sourceSet,NULL);
   Ydeck_free(graph->primeDeck,NULL);
   Ydeck_free(graph->cyclePrimeDecks,NULL);
@@ -375,7 +375,7 @@ VOID Ygraph_free(YGRAPHPTR graph,
   if( graph->cycleDecks ){
     Ydeck_free( graph->cycleDecks, NULL ) ;
   }
-  
+
   Ygraph_empty(graph,userNodeDelete,userEdgeDelete);
   Yrbtree_free( graph->nodeTree, NULL ) ;
   Yrbtree_free( graph->edgeTree, NULL ) ;
@@ -387,7 +387,7 @@ VOID Ygraph_free(YGRAPHPTR graph,
   -------------------------------------------------*/
 INT Ygraph_nodeDegree( YNODEPTR node )
 {
-  return ( (INT) node->adjEdge[SIZE] + 
+  return ( (INT) node->adjEdge[SIZE] +
            (INT) node->backEdge[SIZE] );
 }
 
@@ -421,7 +421,7 @@ VOIDPTR Ygraph_nodeData( YNODEPTR node )
 YNODEPTR Ygraph_nodeFind( YGRAPHPTR graph, VOIDPTR nodeData )
 {
   YNODE nodeDummy;
-  
+
   nodeDummy.data = nodeData;
   return ((YNODEPTR) Yrbtree_search(graph->nodeTree,&nodeDummy) );
 }
@@ -432,7 +432,7 @@ YNODEPTR Ygraph_nodeFind( YGRAPHPTR graph, VOIDPTR nodeData )
 YNODEPTR Ygraph_nodeFindClosest( YGRAPHPTR graph, VOIDPTR nodeData, INT func )
 {
   YNODE nodeDummy;
-  
+
   nodeDummy.data = nodeData;
   return ((YNODEPTR) Yrbtree_search_closest(graph->nodeTree,&nodeDummy,func) );
 }
@@ -506,7 +506,7 @@ YNODEPTR Ygraph_listAdjNodes( YNODEPTR node, INT listNum )
   if ( listNum < 1 ) {
     M( ERRMSG, "Ygraph_listAdjNode","adj list numbered 1-n\n" ) ;
   }
-  
+
   if ( listNum <= (INT) node->adjEdge[SIZE] ) {
     edge = node->adjEdge[listNum];
     if (edge->node1 == node) {
@@ -532,7 +532,7 @@ YNODEPTR Ygraph_listBackNodes( YNODEPTR node, INT listNum )
   if ( listNum < 1 ) {
     M( ERRMSG, "Ygraph_listBackNode","back list numbered 1-n\n" ) ;
   }
-  
+
   if ( listNum <= (INT) node->backEdge[SIZE] ) {
     edge = node->backEdge[listNum];
     if (edge->node1 == node) {
@@ -575,20 +575,20 @@ VOID Ygraph_nodeIntervalPop(YGRAPHPTR graph)
 }
 
 /*-------------------------------------------------
-  Ygraph_nodeInsert: insert a node into the graph  
+  Ygraph_nodeInsert: insert a node into the graph
   -------------------------------------------------*/
 YNODEPTR  Ygraph_nodeInsert( YGRAPHPTR graph, VOIDPTR nodeData)
 {
-  
+
   YNODE    nodeDummy;
   YNODEPTR nodePtr;
-  
+
   /* does node already exist? */
   nodeDummy.data = nodeData;
   if ( (nodePtr = (YNODEPTR)Yrbtree_search (graph->nodeTree,&nodeDummy)) ) {
     return(nodePtr);  /* node already exists */
-  }  
-  
+  }
+
   /* create the new node */
   nodePtr = YMALLOC( 1, YNODE );
   nodePtr->adjEdge = YVECTOR_MALLOC ( LO, STEPSIZE, YEDGEPTR );
@@ -597,10 +597,10 @@ YNODEPTR  Ygraph_nodeInsert( YGRAPHPTR graph, VOIDPTR nodeData)
   nodePtr->adjEdge[SIZE] = nodePtr->backEdge[SIZE] = (YEDGEPTR) 0;
   nodePtr->data = nodeData;
   nodePtr->color = BLACK;
-  
+
   /* add node to the graph data structure */
   Yrbtree_insert(graph->nodeTree,nodePtr);
- 
+
   D("Ygraph_nodeInsert",
     ASSERTNFAULT(Ygraph_nodeVerify(nodePtr),"Ygraph_nodeInsert","bogus node");
     ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_nodeInsert","bogus graph");
@@ -620,54 +620,54 @@ VOID Ygraph_nodeDelete(YGRAPHPTR graph, YNODEPTR node,
   YEDGEPTR *a_p;   /* array pointer */
   YEDGEPTR *c_p;   /* current edge pointer */
   YEDGEPTR *l_p;   /* last edge pointer */
-  
-  
+
+
   userNodeFreeS = userNodeFree;
   userEdgeFreeS = userEdgeFree;
-  
+
   /* we need to remove all edges which contain this node */
-  /* do this by searching the adjEdge and backEdge lists */  
+  /* do this by searching the adjEdge and backEdge lists */
 
   for ( a_p = node->adjEdge; a_p;
        a_p = ( a_p == node->adjEdge ? node->backEdge:0 ) ) {
-    
+
     c_p = a_p + START;
     l_p =  c_p + (INT) a_p[SIZE];
-    
+
     /* node adj list for edges */
     for ( ; c_p < l_p; c_p++ ) {
-      
+
       edge = *c_p;
-      
+
       /* any edges found must be removed from other nodes adj list */
       if ( a_p == node->adjEdge ) {
-        /* for adjEdge tree get other node */      
+        /* for adjEdge tree get other node */
         if ( node == edge->node1 ) {
-	  node2 = edge->node2;
-	} else {
-	  node2 = edge->node1;
-	}
+          node2 = edge->node2;
+        } else {
+          node2 = edge->node1;
+        }
       } else {
         /* for backEdge tree get node1 */
         node2 = edge->node1;
       }
-      
+
       /* delete the edge from node2 adj edge lists */
       graph_adjedge_free(node2->adjEdge,edge);
       graph_adjedge_free(node2->backEdge,edge);
-      
+
       /* delete the edge from the global edge tree */
-      Yrbtree_delete(graph->edgeTree,edge,NULL); 
-      
+      Yrbtree_delete(graph->edgeTree,edge,NULL);
+
       /* free the edge */
       graph_edge_free(edge);
-      
+
     }
-  }  
+  }
 
   /* remove node from global graph node tree */
   Yrbtree_delete(graph->nodeTree,node,NULL);
-  
+
   /* free the node and user data */
   graph_node_free(node);
 }
@@ -743,8 +743,8 @@ YEDGEPTR Ygraph_edgeFindByNodes( YGRAPHPTR graph, YNODEPTR node1, YNODEPTR node2
       break;
     } else if ( ! (graph->flags & YGRAPH_DIRECTED) ) {
       if (  adjEdge->node2 == node1 && adjEdge->node1 == node2 ) {
-	edge = adjEdge;
-	break;
+        edge = adjEdge;
+        break;
       }
     }
   }
@@ -782,8 +782,8 @@ YEDGEPTR Ygraph_edgeFindByNodeData( YGRAPHPTR graph, VOIDPTR node1Data, VOIDPTR 
       break;
     } else if ( ! (graph->flags & YGRAPH_DIRECTED) ) {
       if (  adjEdge->node2 == node1 && adjEdge->node1 == node2 ) {
-	edge = adjEdge;
-	break;
+        edge = adjEdge;
+        break;
       }
     }
   }
@@ -799,7 +799,7 @@ YEDGEPTR Ygraph_edgeFind( YGRAPHPTR graph, VOIDPTR edgeData, VOIDPTR node1Data, 
   YEDGE edgeDummy;
   YNODE node1Dummy;
   YNODE node2Dummy;
-  
+
   edgeDummy.data = edgeData;
   /* user may have edge sorted by node data */
   node1Dummy.data = node1Data;
@@ -874,7 +874,7 @@ YEDGEPTR Ygraph_listAdjEdges( YNODEPTR node, INT listNum )
   if ( listNum < 1 ) {
     M( ERRMSG, "Ygraph_listAdjEdge","adj list numbered 1-n\n" ) ;
   }
-  
+
   if ( listNum <= (INT) node->adjEdge[SIZE] ) {
     edge = node->adjEdge[listNum];
   }
@@ -894,7 +894,7 @@ YEDGEPTR Ygraph_listBackEdges( YNODEPTR node, INT listNum )
   if ( listNum < 1 ) {
     M( ERRMSG, "Ygraph_listBackEdges","adj list numbered 1-n\n" ) ;
   }
-  
+
   if ( listNum <= (INT) node->backEdge[SIZE] ) {
     edge = node->backEdge[listNum];
   }
@@ -1004,20 +1004,20 @@ INT Ygraph_edgeWeightSet( YEDGEPTR edge, INT weight )
   -------------------------------------------------*/
 INT Ygraph_edgeWeights2Size( YGRAPHPTR graph )
 {
-  YEDGEPTR edge; 
+  YEDGEPTR edge;
   INT size;
-  
-  size = 0; 
-  
+
+  size = 0;
+
   Ygraph_edgeEnumeratePush(graph);
   for ( edge = (YEDGEPTR) Ygraph_edgeEnumerate(graph,TRUE);
        edge;
        edge = (YEDGEPTR) Ygraph_edgeEnumerate(graph,FALSE) ){
-    
+
     size += edge->weight;
   }
   Ygraph_edgeEnumeratePop(graph);
-  
+
   return (graph->size = size);
 }
 
@@ -1030,7 +1030,7 @@ int Ygraph_edgeType(YEDGEPTR edge)
 }
 
 /*-------------------------------------------------
-  Ygraph_edgeInsert: insert an edge into the graph  
+  Ygraph_edgeInsert: insert an edge into the graph
   The new YEDGEPTR is returned.
   If the edge already existed, NULL is returned.
   -------------------------------------------------*/
@@ -1044,7 +1044,7 @@ YEDGEPTR Ygraph_edgeInsert( YGRAPHPTR graph, VOIDPTR edgeData, INT edgeWeight,
   YEDGEPTR edge2;
   YEDGEPTR *c_p;
   YEDGEPTR *l_p;
-  
+
   node1 = Ygraph_nodeInsert ( graph, nodeData );
   node2 = Ygraph_nodeInsert ( graph, node2Data );
 
@@ -1062,32 +1062,32 @@ YEDGEPTR Ygraph_edgeInsert( YGRAPHPTR graph, VOIDPTR edgeData, INT edgeWeight,
       break;
     } else if ( ! (graph->flags & YGRAPH_DIRECTED) ) {
       if (  adjEdge->node2 == node1 && adjEdge->node1 == node2 ) {
-	edge = adjEdge;
-	break;
+        edge = adjEdge;
+        break;
       }
     }
   }
-    
+
   /* the edge does not exist, so we need to create it */
   if ( !edge ) {
     edge2 = YMALLOC( 1, YEDGE );
     edge2->node1 = node1;
     edge2->node2 = node2;
-    edge2->weight = edgeWeight; 
+    edge2->weight = edgeWeight;
     edge2->data = edgeData;
     edge2->color = WHITE;
     edge2->type = ( graph->flags & YGRAPH_DIRECTED );
-    
+
     /* edge is always add to node1 adj edge tree */
     node1->adjEdge = graph_adjedge_insert(node1->adjEdge,edge2);
-    
+
     /* edge is added to node2 adj edge tree if graph is not directed */
     if ( graph->flags & YGRAPH_DIRECTED ) {
       node2->backEdge = graph_adjedge_insert(node2->backEdge,edge2);
     } else {
       node2->adjEdge = graph_adjedge_insert(node2->adjEdge,edge2);
     }
-    
+
     /* Add edge to global edge tree */
     Yrbtree_insert(graph->edgeTree,edge2);
 
@@ -1137,7 +1137,7 @@ INT Ygraph_size(YGRAPHPTR graph)
 }
 
 /*-------------------------------------------------
-  Ygraph_copy: returns a copy of a graph  
+  Ygraph_copy: returns a copy of a graph
   -------------------------------------------------*/
 YGRAPHPTR Ygraph_copy(YGRAPHPTR graph)
 {
@@ -1146,26 +1146,26 @@ YGRAPHPTR Ygraph_copy(YGRAPHPTR graph)
   YNODEPTR node;
   INT (*nodeComp)();
   INT (*edgeComp)();
-  
+
   edgeComp = Yrbtree_get_compare(graph->edgeTree);
   nodeComp = Yrbtree_get_compare(graph->nodeTree);
-  
+
   /* initialize a new graph */
   newGraph = Ygraph_init( nodeComp, edgeComp,
                           graph->userEdgeWeight, graph->flags );
 
- 
+
   /* copy the draw functions */
   Ygraph_drawFunctions(newGraph,graph->userDrawNode,graph->userDrawEdge);
-  
+
   D("Ygraph_copy",
     ASSERTNFAULT(Ygraph_verify(graph),
-		 "Ygraph_copy","old graph verification fails");
+                 "Ygraph_copy","old graph verification fails");
     ASSERTNFAULT(Ygraph_verify(newGraph),
-		 "Ygraph_copy","new graph verification fails");
+                 "Ygraph_copy","new graph verification fails");
     );
 
-  
+
   /*  duplicate the nodes */
   for ( node = (YNODEPTR) Yrbtree_enumerate(graph->nodeTree,TRUE);
        node;
@@ -1175,20 +1175,20 @@ YGRAPHPTR Ygraph_copy(YGRAPHPTR graph)
     ASSERTNFAULT(Ygraph_nodeFind(graph,node->data),"Ygraph_copy","bad");
     ASSERTNFAULT(Ygraph_nodeFind(newGraph,node->data),"Ygraph_copy","bad");
   }
-  
+
   /* duplicate the edges */
   for ( edge = (YEDGEPTR) Yrbtree_enumerate(graph->edgeTree,TRUE);
        edge;
        edge = (YEDGEPTR) Yrbtree_enumerate(graph->edgeTree,FALSE)){
 
     Ygraph_edgeInsert ( newGraph, edge->data, edge->weight,
-		       edge->node1->data,edge->node2->data);
+                       edge->node1->data,edge->node2->data);
     /* DEBUG */
     ASSERTNFAULT( Ygraph_edgeFind(graph,edge->data,edge->node1->data,edge->node2->data),
-	"Ygraph_copy","bad");
+        "Ygraph_copy","bad");
     ASSERTNFAULT( Ygraph_edgeFind(newGraph,edge->data,edge->node1->data,edge->node2->data), "Ygraph_copy","bad");
   }
-  
+
    ASSERTNFAULT(Ygraph_nodeCount(newGraph)==Ygraph_nodeCount(graph),
                 "Ygraph_copy","node count mismatch");
 
@@ -1197,9 +1197,9 @@ YGRAPHPTR Ygraph_copy(YGRAPHPTR graph)
 
   D("Ygraph_copy",
     ASSERTNFAULT(Ygraph_verify(graph),
-		 "Ygraph_copy","old graph verification fails");
+                 "Ygraph_copy","old graph verification fails");
     ASSERTNFAULT(Ygraph_verify(newGraph),
-		 "Ygraph_copy","new graph verification fails");
+                 "Ygraph_copy","new graph verification fails");
     );
 
   /* return the copy */
@@ -1220,7 +1220,7 @@ VOID Ygraph_bfs(YGRAPHPTR graph, YNODEPTR sourceNode,YNODEPTR targetNode)
   YEDGEPTR *c_p;
   YEDGEPTR *l_p;
   YHEAPPTR heap;
-  
+
   if ( !sourceNode )  {
     M( ERRMSG, "Ygraph_bfs","BFS cannot start from a null node\n" ) ;
     return;
@@ -1228,11 +1228,11 @@ VOID Ygraph_bfs(YGRAPHPTR graph, YNODEPTR sourceNode,YNODEPTR targetNode)
 
   /* create a heap */
   heap = Yheap_init_with_parms(compare_node_distance);
-  
+
   /* initialize elements of priority heap with source adj edge */
   Yheap_insert(heap,sourceNode);
-  
-  /* initialize all nodes in the graph */  
+
+  /* initialize all nodes in the graph */
   for (nextNode = (YNODEPTR) Yrbtree_enumerate(graph->nodeTree,TRUE);
        nextNode;
        nextNode = (YNODEPTR) Yrbtree_enumerate(graph->nodeTree,FALSE) ) {
@@ -1240,44 +1240,44 @@ VOID Ygraph_bfs(YGRAPHPTR graph, YNODEPTR sourceNode,YNODEPTR targetNode)
     nextNode->distance = INT_MAX;
     nextNode->predecessor = nextNode;
   }
-  
+
   /* initialize the source */
   sourceNode->color = GRAY;
   sourceNode->distance = 0;
-  
+
   /* initially on the source is in the fifo */
   Yheap_insert(heap,sourceNode);
-  
+
   while ( (nextNode = (YNODEPTR) Yheap_delete_min(heap)) ) {
-    
+
     /* enumerate all of the adjacent nodes */
     c_p = nextNode->adjEdge + START;
     l_p = c_p + (INT) nextNode->adjEdge[SIZE];
-    
+
     /* search list for edges */
     for ( ; c_p < l_p; c_p++ ) {
-      
+
       adjEdge = *c_p;
-      
+
       /* get the adjacent node */
       if (adjEdge->node1 == nextNode) {
-	adjNode = adjEdge->node2;
+        adjNode = adjEdge->node2;
       } else {
-	ASSERT(adjEdge->node2 == nextNode,"Ygraph_bfs","corrupt graph");
-	adjNode = adjEdge->node1;
+        ASSERT(adjEdge->node2 == nextNode,"Ygraph_bfs","corrupt graph");
+        adjNode = adjEdge->node1;
       }
-      
+
       if ( adjNode->color != BLACK ) {
-	if ( adjNode->distance > nextNode->distance + 
+        if ( adjNode->distance > nextNode->distance +
              EDGEWEIGHT(graph,adjEdge) ) {
-	  adjNode->color = GRAY;
-	  adjNode->distance = nextNode->distance + adjEdge->weight;
-	  adjNode->predecessor = nextNode;
-	  Yheap_insert(heap,adjNode);
-	}
+          adjNode->color = GRAY;
+          adjNode->distance = nextNode->distance + adjEdge->weight;
+          adjNode->predecessor = nextNode;
+          Yheap_insert(heap,adjNode);
+        }
       }
     }    /* END enumerate all of the adjacent nodes */
-    
+
     nextNode->color = BLACK;
 
     /* if we found the target node, we can quit now */
@@ -1286,7 +1286,7 @@ VOID Ygraph_bfs(YGRAPHPTR graph, YNODEPTR sourceNode,YNODEPTR targetNode)
     }
 
   }  /* end pop items off of the queue */
-  
+
   if ( targetNode && targetNode != nextNode ) {
     M(WARNMSG,"Ygraph_bfs","target node specified, but not found\n");
   }
@@ -1310,14 +1310,14 @@ YDECKPTR Ygraph_path(YGRAPHPTR graph, YNODEPTR targetNode)
   YDECKPTR pathDeck ;
 
   pathDeck = Ydeck_init();
-  
+
   for (nextNode = targetNode; nextNode != nextNode->predecessor;
        nextNode = nextNode->predecessor ) {
     Ydeck_push(pathDeck,nextNode);
   }
 
   Ydeck_push(pathDeck,nextNode);
- 
+
   D("Ygraph_path",
     fprintf(stderr,"path found with %d nodes\n",Ydeck_size(pathDeck));
     ASSERTNFAULT(Ydeck_verify(pathDeck),"Ygraph_path","bad deck");
@@ -1344,25 +1344,25 @@ static VOID graph_dfs_visit(YNODEPTR node)
   YEDGEPTR *l_p;   /* last item in list pointer */
   YEDGEPTR *l2_p;   /* last item in list pointer */
   YDECKPTR swapDeck;
-  
+
   node->color = GRAY;
   dfs_timeS ++;
   node->start = dfs_timeS;
-  
+
  D("Ygraph_dfs",
    fprintf(stderr,"dfs visit start\n");
    Ygraph_draw(graphS);
    );
-  
+
   /* enumerate all of the adjacent nodes */
   c_p = node->adjEdge + START;
   l_p = c_p + (INT) node->adjEdge[SIZE];
-  
+
   /* search list for edges */
   for ( ; c_p < l_p; c_p++ ) {
-    
+
     adjEdge = *c_p;
-    
+
     /* get the adjacent node */
     if (adjEdge->node1 == node) {
       adjNode = adjEdge->node2;
@@ -1370,20 +1370,20 @@ static VOID graph_dfs_visit(YNODEPTR node)
       ASSERT(adjEdge->node2 == node,"graph_dfs","corrupt graph");
       adjNode = adjEdge->node1;
     }
- 
+
     /* This code handles mixed, directed, and undirected graphs */
     /* through the following */
     if (adjEdge->type == YGRAPH_NONDIRECTED ){
       if (adjNode == node->predecessor ) {
-	/* Do go not go back to parent on non directed edge */
+        /* Do go not go back to parent on non directed edge */
         continue;
       }
     }
 
     /* classify edge. white=tree edge, gray=back edge, */
     /* black=forward/cross edge.                       */
-    adjEdge->color = adjNode->color;  
-    
+    adjEdge->color = adjNode->color;
+
     D("Ygraph_dfs",
       if ( adjEdge->color == GRAY ) {
         fprintf(stderr,"edge classified as back edge (GRAY)\n");
@@ -1396,7 +1396,7 @@ static VOID graph_dfs_visit(YNODEPTR node)
       }
       Ygraph_draw(graphS);
       );
-    
+
     /* This code handles mixed, directed, and undirected graphs */
     /* through the following */
     /* this is necessary to correctly find back edges in the mixed case */
@@ -1411,83 +1411,83 @@ static VOID graph_dfs_visit(YNODEPTR node)
       node1 = adjNode;
       node2 = adjNode->predecessor;
       ancestorNode = node;
-      
-      swapDeck = Ydeck_init();
-      
-      while ( node2 != node1 && ancestorNode !=node1) {
-	
-	/* enumerate all of the adjacent nodes */
-	c2_p = node2->adjEdge + START;
-	l2_p = c2_p + (INT) node2->adjEdge[SIZE];
-	
-	/* search list for edges */
-	for ( ; c2_p < l2_p; c2_p++ ) {
-	  
-	  adjEdge = *c2_p;
-	  
-	  /* get the adjacent node */
-	  if (adjEdge->node1 == node1 ||
-	      adjEdge->node2 == node1 ) {
-            break;
-	  }   /* end get adj with adj node */
-	} /* end for each adjacent edge */
 
-	
-	if (adjEdge->type == YGRAPH_NONDIRECTED) {
-	  
-	  /* need to switch the direction traveled on this undirected edge */
-	  Ydeck_push(swapDeck,adjEdge);
-	  
+      swapDeck = Ydeck_init();
+
+      while ( node2 != node1 && ancestorNode !=node1) {
+
+        /* enumerate all of the adjacent nodes */
+        c2_p = node2->adjEdge + START;
+        l2_p = c2_p + (INT) node2->adjEdge[SIZE];
+
+        /* search list for edges */
+        for ( ; c2_p < l2_p; c2_p++ ) {
+
+          adjEdge = *c2_p;
+
+          /* get the adjacent node */
+          if (adjEdge->node1 == node1 ||
+              adjEdge->node2 == node1 ) {
+            break;
+          }   /* end get adj with adj node */
+        } /* end for each adjacent edge */
+
+
+        if (adjEdge->type == YGRAPH_NONDIRECTED) {
+
+          /* need to switch the direction traveled on this undirected edge */
+          Ydeck_push(swapDeck,adjEdge);
+
           node1 = node2;
           node2 = node2->predecessor;
-	  
-	  /* trace back forward/cross edge towards a common ancestor */
-	  while (ancestorNode->start > node1->start &&
-		 ancestorNode != ancestorNode->predecessor ) {
-	    ancestorNode = ancestorNode->predecessor;
-	  }    /* end trace back to potential ancestor */
-	  
-	} else {
-	  break;   /* an undirected edge was found. */
-	}      /* end if type is undirected */
-	
+
+          /* trace back forward/cross edge towards a common ancestor */
+          while (ancestorNode->start > node1->start &&
+                 ancestorNode != ancestorNode->predecessor ) {
+            ancestorNode = ancestorNode->predecessor;
+          }    /* end trace back to potential ancestor */
+
+        } else {
+          break;   /* an undirected edge was found. */
+        }      /* end if type is undirected */
+
       }   /* end for each node1/node2 pair */
-      
+
       if (ancestorNode == node1) {
         adjNode->predecessor = node;
         adjEdge->color = GRAY;
-        
-	D("Ygraph_dfs",
-	  fprintf(stderr,"mixed graph edge re-classified\n");
-	  Ygraph_draw(graphS);
-	  );
-	
+
+        D("Ygraph_dfs",
+          fprintf(stderr,"mixed graph edge re-classified\n");
+          Ygraph_draw(graphS);
+          );
+
         Ydeck_pop(swapDeck);
         while ( (adjEdge = (YEDGEPTR) Ydeck_pop(swapDeck)) ) {
           adjEdge->node1->predecessor = adjEdge->node2;
-	  D("Ygraph_dfs",
-	    fprintf(stderr,"%d predecessor = %d\n",
-		    adjEdge->node1->start,adjEdge->node2->start);
-	    );
-	  
-	}
+          D("Ygraph_dfs",
+            fprintf(stderr,"%d predecessor = %d\n",
+                    adjEdge->node1->start,adjEdge->node2->start);
+            );
+
+        }
 
       }
-      Ydeck_free(swapDeck,NULL);      
+      Ydeck_free(swapDeck,NULL);
     } /* end if this is a back Edge, handle special mixed case */
-    
+
     if (adjNode->color == WHITE) {
       adjNode->predecessor = node;
       graph_dfs_visit(adjNode);
     }
   }
- 
+
  Ydeck_push(graphS->topSortDeck,node);
- 
+
  node->color = BLACK;
  dfs_timeS ++;
  node->finish = dfs_timeS;
- 
+
  D("Ygraph_dfs",
    fprintf(stderr,"dfs visit complete\n");
    Ygraph_draw(graphS);
@@ -1505,8 +1505,8 @@ YDECKPTR Ygraph_dfs(YGRAPHPTR graph)
 
   graphS = graph;
   graph->topSortDeck = Ydeck_init();
-  
-  /* initialize all nodes in the graph */  
+
+  /* initialize all nodes in the graph */
   for (nextNode = (YNODEPTR) Yrbtree_enumerate(graph->nodeTree,TRUE);
        nextNode;
        nextNode = (YNODEPTR) Yrbtree_enumerate(graph->nodeTree,FALSE) ) {
@@ -1514,15 +1514,15 @@ YDECKPTR Ygraph_dfs(YGRAPHPTR graph)
     nextNode->distance = INT_MAX;
     nextNode->predecessor = nextNode;
   }
-  
+
  D("Ygraph_dfs",
    fprintf(stderr,"Ygraph_dfsstart\n");
    Ygraph_draw(graph);
    );
 
   dfs_timeS = 0;
-  
-  /* do the depth first search */  
+
+  /* do the depth first search */
   for (nextNode = (YNODEPTR) Yrbtree_enumerate(graph->nodeTree,TRUE);
        nextNode;
        nextNode = (YNODEPTR) Yrbtree_enumerate(graph->nodeTree,FALSE) ) {
@@ -1530,7 +1530,7 @@ YDECKPTR Ygraph_dfs(YGRAPHPTR graph)
       graph_dfs_visit(nextNode);
     }
   }
-   
+
   return(graph->topSortDeck);
 }
 
@@ -1547,12 +1547,12 @@ YDECKPTR Ygraph_mst_kruskal(YGRAPHPTR graph)
   /* initialize mst deck */
   Ydeck_free(graph->mstDeck,NULL);
   graph->mstDeck = Ydeck_init();
-  
+
   /* initialize disjoint set and heap */
   dset = Ydset_init(set_compare_node_ptr);
   heap = Yheap_init_with_parms(compare_edge_weight);
-  
-  /* initialize elements of priority heap and disjoint sets */  
+
+  /* initialize elements of priority heap and disjoint sets */
   for (nextEdge = (YEDGEPTR) Yrbtree_enumerate(graph->edgeTree,TRUE);
        nextEdge;
        nextEdge = (YEDGEPTR) Yrbtree_enumerate(graph->edgeTree,FALSE) ) {
@@ -1560,18 +1560,18 @@ YDECKPTR Ygraph_mst_kruskal(YGRAPHPTR graph)
     Ydset_find(dset,nextEdge->node2);
     Yheap_insert(heap,nextEdge);
   }
-  
+
   while ( (nextEdge = (YEDGEPTR)Yheap_delete_min(heap)) ) {
     if ( Ydset_find_set(dset,nextEdge->node1) !=
-  	 Ydset_find_set(dset,nextEdge->node2)     ) {
+         Ydset_find_set(dset,nextEdge->node2)     ) {
       Ydset_union(dset,nextEdge->node1,nextEdge->node1);
       Ydeck_push(graph->mstDeck,nextEdge->data);
     }
   }
-  
+
   Yheap_free(heap);
   Ydset_free(dset,NULL);
-  
+
   return(graph->mstDeck);
 }
 
@@ -1586,8 +1586,8 @@ YDECKPTR Ygraph_mst_prim(YGRAPHPTR graph, YNODEPTR source)
   YHEAPPTR heap;
   YEDGEPTR *c_p;
   YEDGEPTR *l_p;
-  
-  /* initialize edge colors */  
+
+  /* initialize edge colors */
   for (nextEdge = (YEDGEPTR) Yrbtree_enumerate(graph->edgeTree,TRUE);
        nextEdge;
        nextEdge = (YEDGEPTR) Yrbtree_enumerate(graph->edgeTree,FALSE) ) {
@@ -1595,20 +1595,20 @@ YDECKPTR Ygraph_mst_prim(YGRAPHPTR graph, YNODEPTR source)
     nextEdge->node1->color = WHITE;  /* mark node not found */
     nextEdge->node2->color = WHITE;  /* mark node not found */
   }
-  
+
   /* initialize mst deck */
   Ydeck_free(graph->mstDeck,NULL);
   graph->mstDeck = Ydeck_init();
-  
+
   /* initialize disjoint set and heap */
   heap = Yheap_init_with_parms(compare_edge_weight);
-  
+
   /* initialize elements of priority heap with source adj edge */
 
   /* enumerate all of the adjacent nodes */
   c_p = source->adjEdge + START;
   l_p = c_p + (INT) source->adjEdge[SIZE];
-  
+
   /* search list for edges */
   for ( ; c_p < l_p; c_p++ ) {
     nextEdge = *c_p;
@@ -1616,34 +1616,34 @@ YDECKPTR Ygraph_mst_prim(YGRAPHPTR graph, YNODEPTR source)
     Yheap_insert(heap,nextEdge);
   }
   source->color = BLACK;  /* make node as edges queued */
-  
+
   while ( (nextEdge = (YEDGEPTR)Yheap_delete_min(heap)) ) {
     nextEdge->color = BLACK;  /* make edge as part of mst */
     Ydeck_push(graph->mstDeck,nextEdge->data);
-    
-    for ( nextNode = nextEdge->node1; nextNode; nextNode = 
-	 nextNode == nextEdge->node1 ? nextEdge->node2:NIL(YNODEPTR) ) {
+
+    for ( nextNode = nextEdge->node1; nextNode; nextNode =
+         nextNode == nextEdge->node1 ? nextEdge->node2:NIL(YNODEPTR) ) {
       if ( nextNode->color != BLACK ) {
-	
-	/* enumerate all of the adjacent nodes */
-	c_p = nextNode->adjEdge + START;
-	l_p = c_p + (INT) nextNode->adjEdge[SIZE];
-	
-	/* search list for edges */
-	for ( ; c_p < l_p; c_p++ ) {
-	  adjEdge = *c_p;
-	  if (adjEdge->color == WHITE) {
-	    adjEdge->color=GRAY;        /* mark edge as queued */
-	    Yheap_insert(heap,nextEdge);
-	  }
-	}
-	nextNode->color = BLACK;  /* make node as edges queued */
+
+        /* enumerate all of the adjacent nodes */
+        c_p = nextNode->adjEdge + START;
+        l_p = c_p + (INT) nextNode->adjEdge[SIZE];
+
+        /* search list for edges */
+        for ( ; c_p < l_p; c_p++ ) {
+          adjEdge = *c_p;
+          if (adjEdge->color == WHITE) {
+            adjEdge->color=GRAY;        /* mark edge as queued */
+            Yheap_insert(heap,nextEdge);
+          }
+        }
+        nextNode->color = BLACK;  /* make node as edges queued */
       }
     }
   }
-  
+
   Yheap_free(heap);
-  
+
   return(graph->mstDeck);
 }
 
@@ -1660,17 +1660,17 @@ VOID Ygraph_dijkstra(YGRAPHPTR graph, YNODEPTR sourceNode)
   YEDGEPTR *l_p;
   YNODEPTR nextNode;
   YHEAPPTR heap;
-  
+
     D("Ygraph_dijkstra",
       fprintf(stderr,"start dijkstra \n");
       ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_dijkstra","bogus graph");
       Ygraph_draw(graph);
       );
-    
+
   ASSERTNFAULT(Ygraph_nodeFind(graph,sourceNode->data),
     "Ygraph_dijkstra","no source");
 
-  /* initialize all nodes in the graph */  
+  /* initialize all nodes in the graph */
   for (nextNode=(YNODEPTR)Yrbtree_enumerate(graph->nodeTree,TRUE);
        nextNode;
        nextNode=(YNODEPTR)Yrbtree_enumerate(graph->nodeTree,FALSE)){
@@ -1682,77 +1682,77 @@ VOID Ygraph_dijkstra(YGRAPHPTR graph, YNODEPTR sourceNode)
   sourceNode->distance = 0;
   sourceNode->predecessor = sourceNode;
   sourceNode->color = GRAY; /* mark node as on heap */
-  
+
   /* initialize disjoint set and heap */
   heap = Yheap_init_with_parms(compare_node_distance);
-  
+
   /* initialize elements of priority heap with source adj edge */
   Yheap_insert(heap,sourceNode);
-  
+
   D("Ygraph_dijkstra",
     fprintf(stderr,"dijkstra initialized\n");
     Ygraph_draw(graph);
     );
-  
+
   while ( (nextNode = (YNODEPTR)Yheap_delete_min(heap)) ) {
-    
+
     /* the priority queue code does not allow an arbitrary item */
     /* in the queue to change its key.  If a node is relaxed, */
     /* it is added to the queue again.  Thus, a node may be in the queue */
     /* more than once.  The colors are used to detect this situation */
-    
+
     if (nextNode->color == BLACK) {
       continue;  /* node was relaxed and is already done */
     }
-    
+
     /* enumerate all of the adjacent edges */
     c_p = nextNode->adjEdge + START;
     l_p = c_p + (INT) nextNode->adjEdge[SIZE];
-    
+
     /* search list for edges */
     for ( ; c_p < l_p; c_p++ ) {
       adjEdge = *c_p;
-      
+
       /* get the adjacent node */
       if (adjEdge->node1 == nextNode) {
-	adjNode = adjEdge->node2;
+        adjNode = adjEdge->node2;
       } else {
-	ASSERT(adjEdge->node2 == nextNode,"graph_dfs","corrupt graph");
-	adjNode = adjEdge->node1;
+        ASSERT(adjEdge->node2 == nextNode,"graph_dfs","corrupt graph");
+        adjNode = adjEdge->node1;
       }
-      
+
       /* relax */
       if ( adjNode->distance > nextNode->distance +
            EDGEWEIGHT(graph,adjEdge) ) {
-	adjNode->distance = nextNode->distance + adjEdge->weight;
-	adjNode->predecessor = nextNode;
+        adjNode->distance = nextNode->distance + adjEdge->weight;
+        adjNode->predecessor = nextNode;
         adjNode->color = GRAY;   /* mark edge as in heap */
         Yheap_insert(heap,adjNode);
-	
-	D("Ygraph_dijkstra",
-	  fprintf(stderr,"dijkstra adj node relaxed\n");
-	  ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_dijkstra","bogus graph");
-	  // Ygraph_draw(graph);   /* debug */
-	  );
+
+        D("Ygraph_dijkstra",
+          fprintf(stderr,"dijkstra adj node relaxed\n");
+          ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_dijkstra","bogus graph");
+          // Ygraph_draw(graph);   /* debug */
+          );
       }
-      
+
     }
     nextNode->color = BLACK;  /* make node as done */
   }
-  
+
   D("Ygraph_dijkstra",
     fprintf(stderr,"dijkstra complete\n");
     ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_dijkstra","bogus graph");
     Ygraph_draw(graph);
     );
-  
-  
+
+
   Yheap_free(heap);
 }
 
 
 /*----------------------------------------------------------
-  Ygraph_bellman_ford: single source shortest path for 
+  Ygraph_bellman_ford: single source shortest path for
   directed edge graph.
   Returns TRUE if shortest path found.
   Returns FALSE if negative weight cycle exists
@@ -1766,13 +1766,13 @@ BOOL Ygraph_bellman_ford(YGRAPHPTR graph, YNODEPTR sourceNode)
   YTREEPTR tree;
   INT count;
   INT numberOfNodes;
-  
+
   /* make sure graph is directed edge graph */
   if ( ! ( graph->flags & YGRAPH_DIRECTED ) ) {
     M( ERRMSG, "Ygraph_bellman_ford","not a directed graph\n" ) ;
   }
-  
-  /* initialize all nodes in the graph */  
+
+  /* initialize all nodes in the graph */
   for (nextNode=(YNODEPTR)Yrbtree_enumerate(graph->nodeTree,TRUE);
        nextNode;
        nextNode=(YNODEPTR)Yrbtree_enumerate(graph->nodeTree,FALSE)){
@@ -1780,38 +1780,38 @@ BOOL Ygraph_bellman_ford(YGRAPHPTR graph, YNODEPTR sourceNode)
     nextNode->predecessor = NIL(YNODEPTR);
   }
   sourceNode->distance = 0;
-  
+
   numberOfNodes = Yrbtree_size( graph->nodeTree );
-  
+
   for ( count = 1; count < numberOfNodes; count ++) {
     tree = graph->edgeTree;
     for (nextEdge = (YEDGEPTR) Yrbtree_enumerate(tree,TRUE);
-	 nextEdge;
-	 nextEdge = (YEDGEPTR) Yrbtree_enumerate(tree,FALSE) ) {
-      
+         nextEdge;
+         nextEdge = (YEDGEPTR) Yrbtree_enumerate(tree,FALSE) ) {
+
       node1 = nextEdge->node1;
       node2 = nextEdge->node2;
-      
+
       /* relax */
       if ( node2->distance > node1->distance + EDGEWEIGHT(graph,nextEdge) ) {
-	node2->distance = node1->distance + nextEdge->weight;
-	node2->predecessor = node1;
+        node2->distance = node1->distance + nextEdge->weight;
+        node2->predecessor = node1;
       }
     }
   }
-  
+
   for (nextEdge = (YEDGEPTR) Yrbtree_enumerate(tree,TRUE);
        nextEdge;
        nextEdge = (YEDGEPTR) Yrbtree_enumerate(tree,FALSE) ) {
     node1 = nextEdge->node1;
     node2 = nextEdge->node2;
-    
+
     /* check for negative weight cycle*/
     if ( node2->distance > node1->distance + nextEdge->weight ) {
       return (FALSE);
     }
   }
-  
+
   /* no negative weight cycle, so shortest path is valid */
   return(TRUE);
 }
@@ -1819,11 +1819,11 @@ BOOL Ygraph_bellman_ford(YGRAPHPTR graph, YNODEPTR sourceNode)
 /*----------------------------------------------------------------
   Ygraph_cycles: uses depth first search to find cycles
   in a graph.  The returned deck contains all cycles.
-  Each cycle is a deck. 
+  Each cycle is a deck.
   User is responsible for freeing decks
   ------------------------------------------------------------------*/
 YDECKPTR Ygraph_cycles(YGRAPHPTR graph)
-     
+
 {
   YNODEPTR node1;
   YNODEPTR node2;
@@ -1833,80 +1833,80 @@ YDECKPTR Ygraph_cycles(YGRAPHPTR graph)
   YDECKPTR subtractCycle;
   YDECKPTR cycle1;
   YDECKPTR cycle2;
-  
+
   graph->cycleDecks = Ydeck_init();
-  
+
   Ygraph_dfs(graph);
-  
+
   D("Ygraph_cycles",
     ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_cycles","bad graph");
     Ygraph_draw(graph);
     );
-  
+
   /* walk all edges and find back edges (GRAY) */
   for ( edge = Ygraph_edgeEnumerate(graph,TRUE); edge;
        edge = Ygraph_edgeEnumerate(graph,FALSE) ) {
-    
+
     /* For a directed graph, only gray edges are part of cycles */
     /* If a graph contains undirected edges, use black edges also */
     if ( edge->color == GRAY ) {
-      
+
       D("Ygraph_cycles",
-	ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_cycles","bad graph");
-	fprintf(stderr,"back edge found\n");
-	);
-      
+        ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_cycles","bad graph");
+        fprintf(stderr,"back edge found\n");
+        );
+
       node1 = Ygraph_edgeNode1(edge);
       node2 = Ygraph_edgeNode2(edge);
-      
+
       cycle1 = Ygraph_path(graph,node1);
-      
+
       /* give Ygraph_path a fresh deck for next call */
       /* Actuallly, Ygraph_path does this.   */
-      
+
       cycle2 = Ygraph_path(graph,node2);
-      
+
       /* give Ygraph_path a fresh deck for next call */
       /* Actuallly, Ygraph_path does this.   */
-      
+
       /* the cycle is max deck - min deck*/
       if ( Ydeck_size(cycle1) > Ydeck_size(cycle2) ) {
-	cycle = cycle1;
-	subtractCycle = cycle2;
-	finalNode = node2;
+        cycle = cycle1;
+        subtractCycle = cycle2;
+        finalNode = node2;
       } else {
-	cycle = cycle2;
-	subtractCycle = cycle1;
-	finalNode = node1;
+        cycle = cycle2;
+        subtractCycle = cycle1;
+        finalNode = node1;
       }
-      
+
       /* subtract out nodes which are not part of the cycle */
       while( Ydeck_pop(subtractCycle) ) {
-	Ydeck_pop(cycle);
+        Ydeck_pop(cycle);
       }
-      
+
       Ydeck_free(subtractCycle,NULL);
-      
+
       /* complete the loop */
       Ydeck_push(cycle,finalNode);
       Ydeck_enqueue(cycle,finalNode);
-      
+
       Ydeck_push(graph->cycleDecks,cycle);
     }
   }
-  
+
   D("Ygraph_cycles",
     ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_cycles","bad graph");
     fprintf(stderr,"%d cycles found\n",Ydeck_size(graph->cycleDecks));
     );
-  
+
   return(graph->cycleDecks);
 }
 
 
 /*-------------------------------------------------
   Ygraph_nodeRequired: insert a node which must be
-  part of any steiner tree  
+  part of any steiner tree
   -------------------------------------------------*/
 YNODEPTR Ygraph_nodeRequired( YGRAPHPTR graph, YNODEPTR node, YNODEPTR equivNode)
 {
@@ -1918,10 +1918,10 @@ YNODEPTR Ygraph_nodeRequired( YGRAPHPTR graph, YNODEPTR node, YNODEPTR equivNode
     /* make sure nodes are valid */
     ASSERTNFAULT(Ygraph_nodeVerify(node),routineNameS,"bogus node");
     );
-  
+
   if ( equivNode ) {
-    
-    D(routineNameS,    
+
+    D(routineNameS,
       ASSERTNFAULT(Ygraph_nodeVerify(equivNode),routineNameS,"bogus node");
       );
 
@@ -1950,7 +1950,7 @@ INT Ygraph_nodeRequiredCount(YGRAPHPTR graph)
 
 /*-------------------------------------------------
   Ygraph_clearRequired: clear all nodes which must
-                       part of any steiner tree  
+                       part of any steiner tree
   -------------------------------------------------*/
 VOID Ygraph_clearRequired(YGRAPHPTR graph)
 {
@@ -1964,8 +1964,8 @@ VOID Ygraph_clearRequired(YGRAPHPTR graph)
 YNODEPTR Ygraph_enumerateRequired(YGRAPHPTR graph, BOOL startFlag)
 {
   YNODEPTR node;
-  
-  if ( graph->sourceSet ) {    
+
+  if ( graph->sourceSet ) {
     return( (YNODEPTR) Ydset_enumerate(graph->sourceSet,startFlag) );
   } else {
     return( NIL(YNODEPTR) );
@@ -1984,13 +1984,13 @@ VOID Ygraph_edgePrime( YGRAPHPTR graph, YEDGEPTR edge)
   /* make sure edge is valid */
   ASSERTNFAULT(Ygraph_edgeVerify(edge),routineNameS,"bogus node");
   );
-  
+
   Ydeck_push( graph->primeDeck, edge );
 }
 
 /*-------------------------------------------------
   Ygraph_clearPrime: clear all nodes which must
-                       part of any steiner tree  
+                       part of any steiner tree
   -------------------------------------------------*/
 VOID Ygraph_clearPrime(YGRAPHPTR graph)
 {
@@ -2011,8 +2011,8 @@ static YDECKPTR steiner_trace_back(YEDGEPTR bridgeEdge)
   YEDGEPTR traceBackEdge;
   YEDGEPTR *c_p;
   YEDGEPTR *l_p;
-  YDECKPTR traceBackDeck;   
-   
+  YDECKPTR traceBackDeck;
+
 
   /* cycle has been found.  save the edges to help generate n */
   /* best steiner trees */
@@ -2039,20 +2039,20 @@ static YDECKPTR steiner_trace_back(YEDGEPTR bridgeEdge)
     /* enumerate all of the adjacent edges */
     c_p = currentNode->predecessor->adjEdge + START;
     l_p = c_p + (INT) currentNode->predecessor->adjEdge[SIZE];
-    
+
     /* search list for edges */
     for ( ; c_p < l_p; c_p++ ) {
       traceBackEdge = *c_p;
-      
+
       if ( traceBackEdge->node1 == currentNode ||
              traceBackEdge->node2 == currentNode ) {
-	  currentNode = currentNode->predecessor;
-	  break;
-	}
+          currentNode = currentNode->predecessor;
+          break;
+        }
       }  /* end look for trace back edge */
 
       traceBackEdge->color = GRAY;              /* mark edge as traced */
-      
+
       if ( traceBackNode == sourceNode ) {
         Ydeck_push(traceBackDeck,traceBackEdge);
       } else {
@@ -2066,12 +2066,12 @@ static YDECKPTR steiner_trace_back(YEDGEPTR bridgeEdge)
   ASSERTNFAULT(Ydeck_verify(traceBackDeck),routineNameS,"bad deck");
   );
 
-  return(traceBackDeck);  
+  return(traceBackDeck);
 
 }
 
 /*--------------------------------------------------
-  Perform a beadth first seach to 
+  Perform a beadth first seach to
   find a single path between nodes of different sets.
   Use Ygraph_nodeRequired() to set up initial sets.
   Use Ygraph_clearRequired() to clear initial sets.
@@ -2097,10 +2097,10 @@ YDECKPTR Ygraph_requiredPath(YGRAPHPTR graph)
 
   bestSpanEdge = NIL(YEDGEPTR);
   bestSpanDistanceS = INT_MAX;
-  
+
   /* create a heap */
   heap = Yheap_init_with_parms(compare_node_distance);
-  
+
   /* The BFS starts simultaneously from all pins.  Use disjoint sets */
   /* to handle equivalent pins */
   dset = Ydset_init(set_compare_node_ptr);
@@ -2108,7 +2108,7 @@ YDECKPTR Ygraph_requiredPath(YGRAPHPTR graph)
   /* return nil if no path can be found */
   spanDeck = NIL(YDECKPTR);
 
-  /* initialize all nodes in the graph */  
+  /* initialize all nodes in the graph */
   for (node = (YNODEPTR) Yrbtree_enumerate(graph->nodeTree,TRUE);
        node;
        node = (YNODEPTR) Yrbtree_enumerate(graph->nodeTree,FALSE) ) {
@@ -2116,7 +2116,7 @@ YDECKPTR Ygraph_requiredPath(YGRAPHPTR graph)
     node->distance = INT_MAX;
     node->predecessor = node;
   }
-  
+
   sourceSetCount = 0;
 
   /* initialize the priority queue with nodes to be a part of the tree */
@@ -2167,77 +2167,77 @@ YDECKPTR Ygraph_requiredPath(YGRAPHPTR graph)
     fprintf(stderr,"%s: initialize\n",routineNameS);
     Ygraph_draw(graph); /* DEBUG */
     );
-  
+
   while ( (nextNode = (YNODEPTR) Yheap_delete_min(heap)) ) {
-    
+
     if (nextNode->color == BLACK) {
       continue;  /* node was relaxed and is already done */
     }
-    
+
     nextNode->color = BLACK;
     Ydset_union(dset,nextNode,nextNode->predecessor);
 
     /* enumerate all of the adjacent nodes */
     c_p = nextNode->adjEdge + START;
     l_p = c_p + (INT) nextNode->adjEdge[SIZE];
-    
+
     /* search list for edges */
     for ( ; c_p < l_p; c_p++ ) {
-      
+
       adjEdge = *c_p;
-      
+
       /* get the adjacent node */
       if (adjEdge->node1 == nextNode) {
-	adjNode = adjEdge->node2;
+        adjNode = adjEdge->node2;
       } else {
-	ASSERT(adjEdge->node2 == nextNode,"Ygraph_bfs","corrupt graph");
-	adjNode = adjEdge->node1;
+        ASSERT(adjEdge->node2 == nextNode,"Ygraph_bfs","corrupt graph");
+        adjNode = adjEdge->node1;
       }
-      
+
       if ( adjNode->color != BLACK ) {
-	if ( adjNode->distance > nextNode->distance + 
-	    EDGEWEIGHT(graph,adjEdge) ) {
-	  adjNode->color = GRAY;
-	  adjNode->distance = nextNode->distance + EDGEWEIGHT(graph,adjEdge);
-	  adjNode->predecessor = nextNode;
-	  Yheap_insert(heap,adjNode);
-	}
+        if ( adjNode->distance > nextNode->distance +
+            EDGEWEIGHT(graph,adjEdge) ) {
+          adjNode->color = GRAY;
+          adjNode->distance = nextNode->distance + EDGEWEIGHT(graph,adjEdge);
+          adjNode->predecessor = nextNode;
+          Yheap_insert(heap,adjNode);
+        }
       } else if ( nextNode->predecessor != adjNode ) {
 
         if (Ydset_find_set(dset,adjNode) != Ydset_find_set(dset,nextNode) ) {
-	  
+
           /* we have found a connection, but it is not necessarily the */
           /* best connection.  We cannot be sure until the cost of nodes */
           /* on the heap, exceedS the cost of the current best connection */
 
-	  if ( nextNode->distance > bestSpanDistanceS ) {
-	    /* we cannot find a better connection force stop */
-	    Yheap_empty(heap);
-	    break;
+          if ( nextNode->distance > bestSpanDistanceS ) {
+            /* we cannot find a better connection force stop */
+            Yheap_empty(heap);
+            break;
 
-	  } else {
+          } else {
 
-	    distance = nextNode->distance + adjNode->distance + 
-	      EDGEWEIGHT(graph,adjEdge);
+            distance = nextNode->distance + adjNode->distance +
+              EDGEWEIGHT(graph,adjEdge);
 
-	    if ( distance < bestSpanDistanceS ) {
-	      bestSpanDistanceS = distance;
-	      bestSpanEdge = adjEdge;
-	    }
-	    
-	  }
-	}
+            if ( distance < bestSpanDistanceS ) {
+              bestSpanDistanceS = distance;
+              bestSpanEdge = adjEdge;
+            }
+
+          }
+        }
       }
-      
+
     }    /* END enumerate all of the adjacent nodes */
-    
+
     D(routineNameS,
       fprintf(stderr,"%s: ready to pop heap\n",routineNameS);
       Ygraph_draw(graph); /* DEBUG */
       );
-    
+
   }  /* end pop items off of the queue */
-  
+
   /* if a bridge edge was found, trace it back in both directions */
   if ( bestSpanEdge ) {
     spanDeck = steiner_trace_back(bestSpanEdge);
@@ -2292,12 +2292,12 @@ YGRAPHPTR Ygraph_steiner(YGRAPHPTR graph, INT maxImproves)
   INT (*compareEdge)();
   INT (*compareNode)();
   int done = FALSE;
-  
+
   /* first run a sanity on the graph */
   D( routineNameS,
     ASSERTNFAULT(Ygraph_verify(graph),"generateTrees","bogus graph");
     );
-  
+
   /* initialize internal data structures */
 
   /* use priority queue keyed on node distance for BFS type tree building */
@@ -2340,7 +2340,7 @@ YGRAPHPTR Ygraph_steiner(YGRAPHPTR graph, INT maxImproves)
      edge = (YEDGEPTR) Ydeck_getData(savePrimeDeck);
      node1 = edge->node1;
      node2 = edge->node2;
-     
+
      edge->color = BLACK;  /* make edge as part of tree */
      Ygraph_edgeInsert(steinerGraph,edge->data,edge->weight,
             node1->data,node2->data);
@@ -2351,7 +2351,7 @@ YGRAPHPTR Ygraph_steiner(YGRAPHPTR graph, INT maxImproves)
     fprintf(stderr,"%s steiner tree primed\n",routineNameS);
     Ygraph_draw(graph); /* DEBUG */
     );
-  
+
   /* replace graph prime deck and source set with our own */
   /* this allows us to change the source set as the tree is built up */
   graph->sourceSet = dset;
@@ -2359,7 +2359,7 @@ YGRAPHPTR Ygraph_steiner(YGRAPHPTR graph, INT maxImproves)
 
   for ( pathDeck = Ygraph_requiredPath(graph); pathDeck;
         pathDeck = Ygraph_requiredPath(graph) ) {
-    
+
      while ( (edge = (YEDGEPTR) Ydeck_pop( pathDeck )) )  {
         node1 = edge->node1;
         node2 = edge->node2;
@@ -2371,7 +2371,7 @@ YGRAPHPTR Ygraph_steiner(YGRAPHPTR graph, INT maxImproves)
 
      Ydeck_free(pathDeck,NULL);
   }
-  
+
   graph->primeDeck = savePrimeDeck;
   graph->sourceSet = saveSourceSet;
 
@@ -2388,7 +2388,7 @@ YGRAPHPTR Ygraph_steiner(YGRAPHPTR graph, INT maxImproves)
             Ygraph_edgeCount(steinerGraph), Ygraph_nodeCount(steinerGraph));
     Ygraph_draw(graph); /* DEBUG */
     );
-  
+
   return(steinerGraph);
 }
 
@@ -2419,7 +2419,7 @@ VOID Ygraph_steinerImprove(YGRAPHPTR graph,YGRAPHPTR steinerGraph, INT maxIterat
   int numEdges;
   int pass;
   int r;
-  
+
   if ( ! Ygraph_nodeCount(steinerGraph) ) {
     M(ERRMSG,routineNameS,"aborting: steiner graph has no nodes\n");
     return;
@@ -2438,148 +2438,148 @@ VOID Ygraph_steinerImprove(YGRAPHPTR graph,YGRAPHPTR steinerGraph, INT maxIterat
 
   pathTree = Yrbtree_init(compare_edge);
   primeDeck = Ydeck_init();
-  
+
   while ( maxIterations-- ) {
-    
+
     /* get a random edge */
     numEdges = Yrbtree_size(steinerGraph->edgeTree);
     r = Yacm_random() % numEdges;
-    
+
     edge = (YEDGEPTR) Yrbtree_enumerate(steinerGraph->edgeTree,TRUE);
     while ( r-- ) {
       edge = (YEDGEPTR) Yrbtree_enumerate(steinerGraph->edgeTree,FALSE);
     }
-    
+
     Yrbtree_insert(pathTree,edge);
 
     oldWeight = EDGEWEIGHT(steinerGraph,edge);
-    
+
     node1 = edge->node1;
     node2 = edge->node2;
-    
+
     /* build a path starting with this edge */
     /* the path should extend until the end points are */
     /* nodes with degree > 2  OR  a required node */
-    
+
     for ( pass = 0; pass < 2; pass ++ ) {
-      
+
       if ( pass ) {
-	node = node1;
-	lastNode = node2;
+        node = node1;
+        lastNode = node2;
       } else {
-	node = node2;
-	lastNode = node1;
+        node = node2;
+        lastNode = node1;
       }
-      
+
       origNode = Ygraph_nodeFind(graph,node->data);
-      
+
       while (  Ygraph_nodeDegree(node) <= 2 &&
-	     ! Ydset_search(graph->sourceSet,origNode)  ) { 
-	
-	for ( count = 1; (nextEdge = (YEDGEPTR) Ygraph_listAdjEdges(node,count));
-	     count++ ) {
-	  
-	  /* get adjacent nodes */
-	  if ( nextEdge->node1 == node ) {
-	    nextNode = nextEdge->node2;
-	  } else {
-	    nextNode = nextEdge->node1;
-	  }
-	  
-	  /* avoid backtrace */
-	  if ( nextNode == lastNode ) {
-	    continue;
-	  }
-	  
-	  lastNode = node;
+             ! Ydset_search(graph->sourceSet,origNode)  ) {
+
+        for ( count = 1; (nextEdge = (YEDGEPTR) Ygraph_listAdjEdges(node,count));
+             count++ ) {
+
+          /* get adjacent nodes */
+          if ( nextEdge->node1 == node ) {
+            nextNode = nextEdge->node2;
+          } else {
+            nextNode = nextEdge->node1;
+          }
+
+          /* avoid backtrace */
+          if ( nextNode == lastNode ) {
+            continue;
+          }
+
+          lastNode = node;
           node = nextNode;
           origNode = Ygraph_nodeFind(graph,node->data);
 
-	  oldWeight += EDGEWEIGHT(steinerGraph,nextEdge);
-	  Yrbtree_insert(pathTree,nextEdge);
-	  break;
-	}
-	
+          oldWeight += EDGEWEIGHT(steinerGraph,nextEdge);
+          Yrbtree_insert(pathTree,nextEdge);
+          break;
+        }
+
         ASSERTNFAULT(node,"Ygraph_steinerImprove","dangling node found");
         ASSERTNFAULT(origNode, "Ygraph_steinerImprove",
                                "node in steiner, but not original graph\n");
-	
+
       } /* end while node is unrequired or degree < 2 */
     }  /* end for each pass */
-    
+
     /* save the users required nodes and prime edges */
     /* this routine will change them */
     savePrimeDeck = graph->primeDeck;
     graph->primeDeck = primeDeck;
-    
+
     /* build a new prime deck.  This deck cointains all edges in */
     /* the existing steiner tree except the segment determined above */
     for ( edge = (YEDGEPTR) Yrbtree_enumerate(steinerGraph->edgeTree,TRUE);
-	 edge;
-	 edge = (YEDGEPTR) Yrbtree_enumerate(steinerGraph->edgeTree,FALSE) ) {
-      
+         edge;
+         edge = (YEDGEPTR) Yrbtree_enumerate(steinerGraph->edgeTree,FALSE) ) {
+
       if ( !Yrbtree_search(pathTree,edge) ) {
-        node1 = edge->node1;	
-        node2 = edge->node2;	
-	edge2 = Ygraph_edgeFindByNodeData( graph, node1->data, node2->data );
-	Ydeck_push(primeDeck,edge2);
+        node1 = edge->node1;
+        node2 = edge->node2;
+        edge2 = Ygraph_edgeFindByNodeData( graph, node1->data, node2->data );
+        Ydeck_push(primeDeck,edge2);
       }
-      
+
     }
-    
+
     connectDeck = Ygraph_requiredPath(graph);
-    
+
     /* restore the original prime deck */
     graph->primeDeck = savePrimeDeck;
-    
+
     newWeight = 0;
     for ( Ydeck_top(connectDeck); Ydeck_notEnd(connectDeck);
-	 Ydeck_down(connectDeck) ) {
+         Ydeck_down(connectDeck) ) {
       edge = (YEDGEPTR) Ydeck_getData(connectDeck);
       newWeight += edge->weight;
     }
-    
+
     if ( newWeight < oldWeight ) {
-      
+
       D("Ygraph_steinerImprove",
         fprintf(stderr,"steiner graph improved %d -> %d\n",
-		oldWeight,newWeight);
-	);
+                oldWeight,newWeight);
+        );
 
       /* remove old edges from the graph */
       for ( edge2 = (YEDGEPTR) Yrbtree_enumerate(pathTree,TRUE);
-	   edge2;
-	   edge2 = (YEDGEPTR) Yrbtree_enumerate(pathTree,FALSE) ) {
-	Ygraph_edgeDelete(steinerGraph,edge2,NULL);
+           edge2;
+           edge2 = (YEDGEPTR) Yrbtree_enumerate(pathTree,FALSE) ) {
+        Ygraph_edgeDelete(steinerGraph,edge2,NULL);
       }
-      
+
       /* put new edges into the graph */
       while ( (edge2 = (YEDGEPTR) Ydeck_pop(connectDeck)) ) {
-	node1 = edge2->node1;
-	node2 = edge2->node2;
-	Ygraph_edgeInsert(steinerGraph, edge2->data, edge2->weight,
-			  node1->data, node2->data);
+        node1 = edge2->node1;
+        node2 = edge2->node2;
+        Ygraph_edgeInsert(steinerGraph, edge2->data, edge2->weight,
+                          node1->data, node2->data);
       }  /* end put new edges into graph */
-      
+
     }  /* end if new weight is better than old weight */
 
       Yrbtree_empty(pathTree,NULL);
       Ydeck_empty(primeDeck,NULL);
       Ydeck_free(connectDeck,NULL);
-    
+
   }    /* end for each iteration count */
 
   Ygraph_edgeWeights2Size(steinerGraph);
 
-  Yrbtree_free(pathTree,NULL);      
+  Yrbtree_free(pathTree,NULL);
   Ydeck_free(primeDeck,NULL);
 }
-  
+
 /*----------------------------------------------------------
   Ygraph_nodeVerify:  exercise graph data structures
   ----------------------------------------------------------*/
 int Ygraph_nodeVerify(YNODEPTR node)
-{ 
+{
   int rc = TRUE;
 
   if (YcheckDebug(node) < sizeof(YNODE)) {
@@ -2587,13 +2587,13 @@ int Ygraph_nodeVerify(YNODEPTR node)
     rc = FALSE;
   }
 
-  if ( YcheckDebug( &node->adjEdge[LO] )  < 
+  if ( YcheckDebug( &node->adjEdge[LO] )  <
       ( sizeof(YEDGEPTR) * ( (INT) node->adjEdge[MAXSIZE] - LO + 1 ) ) ) {
     M(ERRMSG,"Ygraph_nodeVerify","bogus node adj edge list\n");
     rc = FALSE;
   }
-  
-  if ( YcheckDebug( &node->backEdge[LO] )  < 
+
+  if ( YcheckDebug( &node->backEdge[LO] )  <
       ( sizeof(YEDGEPTR) * ( (INT) node->backEdge[MAXSIZE] - LO + 1 ) ) ) {
     M(ERRMSG,"Ygraph_nodeVerify","bogus node adj edge list\n");
     rc = FALSE;
@@ -2606,7 +2606,7 @@ int Ygraph_nodeVerify(YNODEPTR node)
   Ygraph_edgeVerify:  exercise graph data structures
   ----------------------------------------------------------*/
 int Ygraph_edgeVerify(YEDGEPTR edge)
-{  
+{
   int rc = TRUE;
 
   if (YcheckDebug(edge) < sizeof(YEDGE)) {
@@ -2637,7 +2637,7 @@ int Ygraph_edgeVerify(YEDGEPTR edge)
   Ygraph_verify:  exercise graph data structures
   ----------------------------------------------------------*/
 int Ygraph_verify(YGRAPHPTR graph)
-{  
+{
   YNODEPTR node;
   YNODEPTR node1;
   YNODEPTR node2;
@@ -2649,42 +2649,42 @@ int Ygraph_verify(YGRAPHPTR graph)
   YEDGEPTR adjEdge;
   YEDGEPTR *c_p;
   YEDGEPTR *l_p;
-  
+
   int rc = TRUE;
-  
+
   ASSERTNFAULT(YcheckDebug(graph) >= sizeof(YGRAPH),
-	       "Ygraph_verify","graph memory corrupt");
-  
+               "Ygraph_verify","graph memory corrupt");
+
   if ( ! Yrbtree_verify(graph->nodeTree) ) {
     M(ERRMSG,"Ygraph_verify","bogus graph node tree\n");
     rc = FALSE;
   }
-  
+
   if ( ! Yrbtree_verify(graph->edgeTree) ) {
     M(ERRMSG,"Ygraph_verify","bogus graph edge tree\n");
     rc = FALSE;
   }
-  
+
   if ( ! Ydeck_verify(graph->primeDeck) ) {
     M(ERRMSG,"Ygraph_verify","bogus prime deck\n");
     rc = FALSE;
   }
-  
+
   if ( ! Ydeck_verify(graph->cyclePrimeDecks) ) {
     M(ERRMSG,"Ygraph_verify","cyclePrimeDecks\n");
     rc = FALSE;
   }
-  
+
   if ( ! Ydset_verify(graph->sourceSet) ) {
     M(ERRMSG,"Ygraph_verify","bogus graph source tree\n");
     rc = FALSE;
   }
-  
+
   if ( graph->flags < 0  || graph->flags > YGRAPH_DIRECTED ) {
     M(ERRMSG,"Ygraph_verify","bogus graph flags\n");
     rc = FALSE;
   }
-  
+
   Ygraph_nodeEnumeratePush(graph);
   for ( node = (YNODEPTR) Ygraph_nodeEnumerate(graph,TRUE);
        node;
@@ -2694,20 +2694,20 @@ int Ygraph_verify(YGRAPHPTR graph)
       M(ERRMSG,"Ygraph_verify","graph has bogus node\n");
       rc = FALSE;
     }
-    
+
     node2 = Ygraph_nodeFind(graph,node->data);
     if ( !node2 ) {
       M(ERRMSG,"Ygraph_verify","could not find node\n");
       rc = FALSE;
     }
-    
+
     if ( node2 != node ) {
       M(WARNMSG,"Ygraph_verify","found duplicate node\n");
       rc = FALSE;
     }
 
     /* check node's adjacent edge list */
-  
+
     c_p = node->adjEdge + START;
     l_p = c_p + (INT) node->adjEdge[SIZE];
 
@@ -2716,13 +2716,13 @@ int Ygraph_verify(YGRAPHPTR graph)
     for ( ; c_p < l_p; c_p++ ) {
       adjEdge = *c_p;
       if ( ! Ygraph_edgeVerify(adjEdge) ) {
-	M(ERRMSG,"Ygraph_verify","node has bogus adj edge\n");
-	rc = FALSE;
+        M(ERRMSG,"Ygraph_verify","node has bogus adj edge\n");
+        rc = FALSE;
       }
     }
 
     /* check node's back edge list */
-  
+
     c_p = node->backEdge + START;
     l_p = c_p + (INT) node->backEdge[SIZE];
 
@@ -2731,36 +2731,36 @@ int Ygraph_verify(YGRAPHPTR graph)
     for ( ; c_p < l_p; c_p++ ) {
       adjEdge = *c_p;
       if ( ! Ygraph_edgeVerify(adjEdge) ) {
-	M(ERRMSG,"Ygraph_verify","node has bogus back edge\n");
-	rc = FALSE;
+        M(ERRMSG,"Ygraph_verify","node has bogus back edge\n");
+        rc = FALSE;
       }
     }
 
 
   }
   Ygraph_nodeEnumeratePop(graph);
-  
+
   /* Verify all the edges in the graph */
   Ygraph_edgeEnumeratePush(graph);
   for ( edge = (YEDGEPTR) Ygraph_edgeEnumerate(graph,TRUE);
        edge;
        edge = (YEDGEPTR) Ygraph_edgeEnumerate(graph,FALSE) ){
-    
+
     if ( ! Ygraph_edgeVerify(edge) ) {
       M(ERRMSG,"Ygraph_verify","graph has bogus edge\n");
       rc = FALSE;
     }
-    
+
     if ( ! Ygraph_nodeVerify(edge->node1) ) {
       M(ERRMSG,"Ygraph_verify","graph has bogus node\n");
       rc = FALSE;
     }
-    
+
     if ( ! Ygraph_nodeVerify(edge->node2) ) {
       M(ERRMSG,"Ygraph_verify","graph has bogus node\n");
       rc = FALSE;
     }
-    
+
     /* see if the edge's exists in its node adj trees  */
 
     node1 = edge->node1;
@@ -2774,16 +2774,16 @@ int Ygraph_verify(YGRAPHPTR graph)
     /* enumerate all of the adjacent edges */
     c_p = node1->adjEdge + START;
     l_p = c_p + (INT) node1->adjEdge[SIZE];
-    
+
     /* search list for edges */
     for ( edge2=NIL(YEDGEPTR) ; c_p < l_p; c_p++ ) {
       adjEdge = *c_p;
       if (adjEdge->node1 == node1 && adjEdge->node2 == node2 ) {
-	edge2 = adjEdge;
-	break;
+        edge2 = adjEdge;
+        break;
       }
     }
-    
+
     if ( !edge2 ) {
       M(ERRMSG,"Ygraph_verify","could not find edge in edge's node1 list\n");
       rc = FALSE;
@@ -2794,13 +2794,13 @@ int Ygraph_verify(YGRAPHPTR graph)
 
     c_p = node1->backEdge + START;
     l_p = c_p + (INT) node1->backEdge[SIZE];
-    
+
     /* search list for edges */
     for ( edge3=NIL(YEDGEPTR) ; c_p < l_p; c_p++ ) {
       adjEdge = *c_p;
       if (adjEdge->node1 == node1 && adjEdge->node2 == node2 ) {
-	edge3 = adjEdge;
-	break;
+        edge3 = adjEdge;
+        break;
       }
     }
 
@@ -2812,16 +2812,16 @@ int Ygraph_verify(YGRAPHPTR graph)
     /* enumerate all of the adjacent edges */
     c_p = node2->adjEdge + START;
     l_p = c_p + (INT) node2->adjEdge[SIZE];
-    
+
     /* search list for edges */
     for ( edge4=NIL(YEDGEPTR) ; c_p < l_p; c_p++ ) {
       adjEdge = *c_p;
       if (adjEdge->node1 == node1 && adjEdge->node2 == node2 ) {
-	edge4 = adjEdge;
-	break;
+        edge4 = adjEdge;
+        break;
       }
     }
-    
+
     if ( edge->type == YGRAPH_DIRECTED ) {
       if ( edge4 ) {
         M(ERRMSG,"Ygraph_verify","directed edge in edge's node2 adj list\n");
@@ -2837,16 +2837,16 @@ int Ygraph_verify(YGRAPHPTR graph)
 
     c_p = node2->backEdge + START;
     l_p = c_p + (INT) node2->backEdge[SIZE];
-    
+
     /* search list for edges */
     for ( edge5=NIL(YEDGEPTR) ; c_p < l_p; c_p++ ) {
       adjEdge = *c_p;
       if (adjEdge->node1 == node1 && adjEdge->node2 == node2 ) {
-	edge5 = adjEdge;
-	break;
+        edge5 = adjEdge;
+        break;
       }
     }
-    
+
     if ( edge->type == YGRAPH_NONDIRECTED ) {
       if ( edge5 ) {
        M(ERRMSG,"Ygraph_verify","undirected edge in edge's node2 back list\n");
@@ -2864,10 +2864,10 @@ int Ygraph_verify(YGRAPHPTR graph)
       M(ERRMSG,"Ygraph_verify","edge has Null node\n");
       rc = FALSE;
     }
-    
+
   }    /* end for each edge */
   Ygraph_edgeEnumeratePop(graph);
-  
+
   return(rc);
 }
 
@@ -2881,11 +2881,11 @@ VOID Ygraph_dump(YGRAPHPTR graph,
 {
   YEDGEPTR edge;
   YNODEPTR node;
-  
+
   D("Ygraph_dump",
     ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_dump","bogus graph");
     );
-  
+
   fprintf(stderr,"graph has %d edges \n",Ygraph_edgeCount(graph));
 
   if ( printEdge ) {
@@ -2893,28 +2893,28 @@ VOID Ygraph_dump(YGRAPHPTR graph,
     Ygraph_edgeEnumeratePush(graph);
     /* now draw the edges */
     for (edge=Ygraph_edgeEnumerate(graph,TRUE); edge;
-	 edge=Ygraph_edgeEnumerate(graph,FALSE) ) {
-      (*printEdge)(edge);    
+         edge=Ygraph_edgeEnumerate(graph,FALSE) ) {
+      (*printEdge)(edge);
     }     /* end for each edge */
     Ygraph_edgeEnumeratePop(graph);
 
   }
-  
+
 
   fprintf(stderr,"graph has %d nodes \n",Ygraph_nodeCount(graph));
 
-  if ( printNode ) {    
+  if ( printNode ) {
 
     Ygraph_nodeEnumeratePush(graph);
     /* now draw the nodes which have not yet been drawn */
     for (node = Ygraph_nodeEnumerate(graph,TRUE); node;
-	 node = Ygraph_nodeEnumerate(graph,FALSE) ) {
-      (*printNode)(node);    
+         node = Ygraph_nodeEnumerate(graph,FALSE) ) {
+      (*printNode)(node);
     }
     Ygraph_nodeEnumeratePop(graph);
-    
+
   }     /* end for each node */
-  
+
 }
 
 /*---------------------------------------------------------
@@ -2946,7 +2946,7 @@ VOID Ygraph_setEdgeWeightFunction(YGRAPHPTR graph,
 }
 
 /*---------------------------------------------------------
-  Call the users drawing functions for all required nodes 
+  Call the users drawing functions for all required nodes
   To use this function first call Ygraph_drawFunctions().
   The user's node draw function will be passed a node and a color.
   The user's edge draw function will be passed an edge and a color.
@@ -2974,24 +2974,24 @@ VOID Ygraph_setEdgeWeightFunction(YGRAPHPTR graph,
 VOID Ygraph_drawRequired(YGRAPHPTR graph)
 {
   YNODEPTR node;
-  
+
   D("Ygraph_drawRequired",
     ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_drawRequired","bogus graph");
     );
-  
-  if ( graph->userDrawNode ) {    
+
+  if ( graph->userDrawNode ) {
 
     /* now draw the nodes which have not yet been drawn */
     for (node = (YNODEPTR) Ydset_enumerate(graph->sourceSet,TRUE); node;
-	 node = (YNODEPTR) Ydset_enumerate(graph->sourceSet,FALSE) ) {
-      (*graph->userDrawNode)(node,node->color);    
+         node = (YNODEPTR) Ydset_enumerate(graph->sourceSet,FALSE) ) {
+      (*graph->userDrawNode)(node,node->color);
     }
 
-    
+
   }     /* end for each node */
-  
+
   TWflushFrame();       /* draw any pending events */
-  
+
   D("Ygraph_drawRequired",
     TWmessage("Waiting for keypress:");
     getchar();
@@ -3030,23 +3030,23 @@ VOID Ygraph_drawRequired(YGRAPHPTR graph)
 VOID Ygraph_drawPrime(YGRAPHPTR graph)
 {
   YEDGEPTR edge;
-  
+
   D("Ygraph_drawPrime",
     ASSERTNFAULT(Ygraph_verify(graph),"Ygraph_drawPrime","bogus graph");
     );
-  
-  if ( graph->userDrawEdge ) {    
-    
+
+  if ( graph->userDrawEdge ) {
+
     /* now draw the nodes which have not yet been drawn */
     for ( Ydeck_top(graph->primeDeck); Ydeck_notEnd(graph->primeDeck);
-	 Ydeck_down(graph->primeDeck ) ) {
+         Ydeck_down(graph->primeDeck ) ) {
       edge = (YEDGEPTR) Ydeck_getData(graph->primeDeck);
-      (*graph->userDrawEdge)(edge,edge->color);    
+      (*graph->userDrawEdge)(edge,edge->color);
     }
-    
-    
+
+
   }     /* end for each node */
-  
+
   TWflushFrame();       /* draw any pending events */
 
   D("Ygraph_drawPrime",
@@ -3089,44 +3089,44 @@ VOID Ygraph_draw(YGRAPHPTR graph)
 {
   YEDGEPTR edge;
   YNODEPTR node;
-  
+
   D("Ygraph_draw",
     ASSERTNFAULT(Ygraph_verify(graph),"generateTrees","bogus graph");
     );
-  
+
   if ( graph->userDrawEdge ) {
 
     Ygraph_edgeEnumeratePush(graph);
     /* now draw the edges */
     for (edge=Ygraph_edgeEnumerate(graph,TRUE); edge;
-	 edge=Ygraph_edgeEnumerate(graph,FALSE) ) {
-      (*graph->userDrawEdge)(edge,edge->color);    
+         edge=Ygraph_edgeEnumerate(graph,FALSE) ) {
+      (*graph->userDrawEdge)(edge,edge->color);
     }     /* end for each edge */
     Ygraph_edgeEnumeratePop(graph);
 
   }
-  
 
-  if ( graph->userDrawNode ) {    
+
+  if ( graph->userDrawNode ) {
 
     Ygraph_nodeEnumeratePush(graph);
     /* now draw the nodes which have not yet been drawn */
     for (node = Ygraph_nodeEnumerate(graph,TRUE); node;
-	 node = Ygraph_nodeEnumerate(graph,FALSE) ) {
-      (*graph->userDrawNode)(node,node->color);    
+         node = Ygraph_nodeEnumerate(graph,FALSE) ) {
+      (*graph->userDrawNode)(node,node->color);
     }
     Ygraph_nodeEnumeratePop(graph);
-    
+
   }     /* end for each node */
-  
+
   TWflushFrame();       /* draw any pending events */
-  
+
   D("Ygraph_draw",
     TWmessage("Waiting for keypress:");
     getchar();
     TWmessage("keypress acknowledged...");
     );
-  
+
 }
 
 #ifdef TEST
@@ -3142,10 +3142,10 @@ static int compare_node( YNODEPTR node1, YNODEPTR node2 )
 {
   DATAPTR n1;
   DATAPTR n2;
-  
+
   n1 = Ygraph_nodeData(node1);
   n2 = Ygraph_nodeData(node2);
-  
+
   return( strcmp(n1->name,n2->name) );
 } /* end node */
 
@@ -3191,7 +3191,7 @@ static char *make_data( char *string )
 
 {
   DATAPTR data ;
-  
+
   data = YMALLOC( 1, DATA ) ;
   data->len = strlen(string) + 1 ;
   data->name = YMALLOC( data->len, char ) ;
@@ -3216,19 +3216,19 @@ main()
   YDECKPTR pathDeck;
 
   YdebugMemory( TRUE ) ;
-    
+
   fprintf(stderr,"start\n");
 
   /* initialize a graph with no compare edge function AND no graph flags */
   graph = Ygraph_init(compare_node,NULL,NULL,NULL);
 
   /* make some data */
-  the = (DATAPTR) make_data("the");  
-  one = (DATAPTR) make_data("one");  
-  red = (DATAPTR) make_data("red");  
-  fox = (DATAPTR) make_data("fox");  
+  the = (DATAPTR) make_data("the");
+  one = (DATAPTR) make_data("one");
+  red = (DATAPTR) make_data("red");
+  fox = (DATAPTR) make_data("fox");
   jumped = (DATAPTR) make_data("jumped");
-  silverish = (DATAPTR) make_data("silverish");  
+  silverish = (DATAPTR) make_data("silverish");
 
   /* build the graph with edge weights = 1 but with no data */
   Ygraph_edgeInsert(graph,NULL,1,the,one);
@@ -3255,7 +3255,7 @@ main()
   fprintf(stderr,"\nshortest path from `the` to `jumped`\n");
   fprintf(stderr,"edge weights = 1\n");
   while ( node = (YNODEPTR) Ydeck_pop(pathDeck) ) {
-    print_node_data(node);    
+    print_node_data(node);
   }
   fprintf(stderr,"\n");
 
@@ -3278,7 +3278,7 @@ main()
   fprintf(stderr,"\nshortest path from `the` to `jumped`\n");
   fprintf(stderr,"edge weights = number of chars word\n");
   while ( node = (YNODEPTR) Ydeck_pop(pathDeck) ) {
-    print_node_data(node);    
+    print_node_data(node);
   }
   fprintf(stderr,"\n");
 
@@ -3293,7 +3293,7 @@ main()
 
 
   /* free the graph */
-  Ygraph_free(graph, free_data, NULL);  
+  Ygraph_free(graph, free_data, NULL);
   fprintf( stderr, "Final memory:%d\n", YgetCurMemUse() ) ;
   Yprint_stats( stderr ) ;
   Ydump_mem() ;
