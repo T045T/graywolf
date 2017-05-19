@@ -513,4 +513,10 @@ Function:
     Otherwise, no fill will be added.
 */
 
+extern BOOL TWget_arb_fill();
+/*
+Function:
+    Return the current value of arb_fill (see above).
+*/
+
 #endif /* DRAW_H */
