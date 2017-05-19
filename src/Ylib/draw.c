@@ -194,6 +194,7 @@ static char SccsId[] = "@(#) draw.c (Yale) version 3.41 3/10/92" ;
 #include <yalecad/debug.h>
 #include <yalecad/buster.h>
 #include <yalecad/dbinary.h>
+#include <yalecad/program.h>
 #include <yalecad/project.h>
 
 #define YDRAW_VARS
