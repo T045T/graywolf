@@ -265,6 +265,8 @@ void Ybuster_free()
 } /* end Ybuster_free */
 /* ***************************************************************** */
 
+// Forward declaration because it's used in verify
+BOOL Ybuster_check_rect( INT xx1, INT yy1, INT xx2, INT yy2 );
 
 /*--------------------------------
   run a sanity check on data.
