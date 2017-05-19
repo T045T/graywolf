@@ -37,15 +37,15 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    edcolors.c                                       
-DESCRIPTION:These routines allow user to toggle colors of the 
+/* -----------------------------------------------------------------
+FILE:       edcolors.c
+DESCRIPTION:These routines allow user to toggle colors of the
     display.
 CONTENTS:   TWtoggleColors()
-DATE:	    Sep 23, 1989 - added TWtoggleColors()
+DATE:       Sep 23, 1989 - added TWtoggleColors()
 REVISIONS:  Dec  7, 1990 - updated for new dialog procedure.
-	    Wed May  1 18:56:14 EDT 1991 - added toggle for arb fill.
-	    Sun Nov  3 12:52:21 EST 1991 - fixed gcc complaints.
+            Wed May  1 18:56:14 EDT 1991 - added toggle for arb fill.
+            Sun Nov  3 12:52:21 EST 1991 - fixed gcc complaints.
 ----------------------------------------------------------------- */
 #ifndef lint
 static char SccsId[] = "@(#) edcolors.c (Yale) version 1.8 12/15/91" ;
@@ -101,9 +101,9 @@ VOID TWtoggleColors()
     init_field( 1, 1,30, 8, " REJECT ", BUTTONTYPE, TWRED, 0 ) ;
 
     if( TWget_arb_fill() ){
-	init_field( 2, 3, 5, 9, "Arb Fill:" , CASETYPE,  TWBLACK, 3 ) ;
+        init_field( 2, 3, 5, 9, "Arb Fill:" , CASETYPE,  TWBLACK, 3 ) ;
     } else {
-	init_field( 2, 3, 5, 9, "Arb Fill:" , CASETYPE,  TWBLACK, 4 ) ;
+        init_field( 2, 3, 5, 9, "Arb Fill:" , CASETYPE,  TWBLACK, 4 ) ;
     }
     init_field( 3, 3, 30, 3, "on", BUTTONTYPE, TWGREEN, 1 ) ;
     init_field( 4, 3, 35, 3, "off", BUTTONTYPE, TWRED, 1 ) ;
@@ -112,24 +112,24 @@ VOID TWtoggleColors()
     row = 5 ;
     group = 1 ;
     for( i = 1, field = 5; i <= numcolors; i++ ){
-	field++ ;
-	if( i == 1 ){ /* white - change to black 2 */
-	    color = 2 ;
-	} else {
-	    color = i ;
-	}
-	/* set current initial switch position */
-	if( colorOn[i] ){
-	    init_field( field, ++row, 5, 5, colors[i], CASETYPE,
-		color, field+1 ) ;
-	} else {
-	    init_field( field, ++row, 5, 5, colors[i], CASETYPE,
-		color, field+2 ) ;
-	}
-	init_field( ++field, row, 30, 3, "on", BUTTONTYPE,
-	    color, ++group ) ;
-	init_field( ++field, row, 35, 3, "off", BUTTONTYPE,
-	    color, group ) ;
+        field++ ;
+        if( i == 1 ){ /* white - change to black 2 */
+            color = 2 ;
+        } else {
+            color = i ;
+        }
+        /* set current initial switch position */
+        if( colorOn[i] ){
+            init_field( field, ++row, 5, 5, colors[i], CASETYPE,
+                color, field+1 ) ;
+        } else {
+            init_field( field, ++row, 5, 5, colors[i], CASETYPE,
+                color, field+2 ) ;
+        }
+        init_field( ++field, row, 30, 3, "on", BUTTONTYPE,
+            color, ++group ) ;
+        init_field( ++field, row, 35, 3, "off", BUTTONTYPE,
+            color, group ) ;
     }
     /* terminate list with zeros */
     init_field( ++field, 0, 0, 0, 0, 0, 0, 0 ) ;
@@ -137,24 +137,24 @@ VOID TWtoggleColors()
     /* initialization complete */
 
     if( (answer = TWdialog( fieldS, "colors", NULL )) ){
-	if( answer[3].bool ){
-	    TWarb_fill( TRUE ) ;
-	} else {
-	    TWarb_fill( FALSE ) ;
-	}
-	for( i = 7, color = 0; i < numfields; i +=3 ){
-	    if( answer[i].bool ){
-    		colorOn[++color] = TRUE ;
-	    } else {
-    		colorOn[++color] = FALSE ;
-	    }
-	}
+        if( answer[3].bool ){
+            TWarb_fill( TRUE ) ;
+        } else {
+            TWarb_fill( FALSE ) ;
+        }
+        for( i = 7, color = 0; i < numfields; i +=3 ){
+            if( answer[i].bool ){
+                colorOn[++color] = TRUE ;
+            } else {
+                colorOn[++color] = FALSE ;
+            }
+        }
     }
     /* cleanup memory */
     for( i = 0; i < numfields; i++ ){
-	if( fieldS[i].string ){
-	    YFREE( fieldS[i].string ) ;
-	}
+        if( fieldS[i].string ){
+            YFREE( fieldS[i].string ) ;
+        }
     }
     YFREE( fieldS ) ;
 } /* end TWtoggleColors */
