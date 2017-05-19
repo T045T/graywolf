@@ -155,12 +155,12 @@ static char SccsId[] = "@(#) okmalloc.c (Yale) version 3.24 3/6/92" ;
    arguments to memory user routines so that we can pass the file
    and line number from the preprocessor.
 ----------------------------------------------------------------- */
-#define MEM_DEBUG1	,file,line
-#define MEM_DEBUG2      char *file ; int line ;
+#define MEM_DEBUG_EXTRA_ARG_DEFS	, char *file, int line
+#define MEM_DEBUG_EXTRA_ARGS    	, file, line
 #define ALLOC_NAME_SIZE 40
 #else
-#define MEM_DEBUG1
-#define MEM_DEBUG2
+#define MEM_DEBUG_EXTRA_ARG_DEFS
+#define MEM_DEBUG_EXTRA_ARGS
 #endif /* MEM_DEBUG */
 
 /* conditional compile for the memory manager */
@@ -253,8 +253,7 @@ static MEMOBJPTR name_listS = &name_sentinelS ;
 
 /* ++++++++++++++++++ HEAP MANAGEMENT ROUTINES ++++++++++++++ */
 /* ---------heap_dispose--------- */
-static status_t  heapDispose (ptr)
-char_p        ptr;
+static status_t  heapDispose (char_p ptr)
 {
    status_t     st;
    trailer_p     tail;
@@ -338,8 +337,7 @@ char_p        ptr;
 
 /* ---------- Utility Routines ---------- */
 
-static status_t  allocateRegion (min_size)
-INT            min_size;
+static status_t  allocateRegion (INT min_size)
 {
 typedef  INT   *tag_p;
 
@@ -433,8 +431,7 @@ typedef  INT   *tag_p;
 
 
 /* -------- heap_init -------- */
-static status_t  heapInit (initial_size)
-INT           initial_size;
+static status_t  heapInit (INT initial_size)
 {
    status_t     st;
    block_p       block;
@@ -469,10 +466,7 @@ INT           initial_size;
 
 
 /* -------- heap_new --------- */
-static status_t  heapNew (ptr, req_size MEM_DEBUG1 )
-char_p        *ptr;
-INT           req_size;
-MEM_DEBUG2
+static status_t  heapNew (char_p *ptr, INT req_size MEM_DEBUG_EXTRA_ARG_DEFS )
 {
    status_t       st;
    INT            excess;
@@ -591,9 +585,7 @@ VOID Ydump_mem()
 
 /*  SUBSTITION CALLS FOR C RUN TIME LIBRARY */
 
-VOID Ysafe_free(ptr MEM_DEBUG1 )
-VOIDPTR ptr;
-MEM_DEBUG2
+VOID Ysafe_free(VOIDPTR ptr MEM_DEBUG_EXTRA_ARG_DEFS)
 {
     if( !( ptr ) ){
 	fprintf( stderr, 
@@ -608,9 +600,7 @@ MEM_DEBUG2
     }
 }
 
-VOID Ysafe_cfree(ptr MEM_DEBUG1 )
-VOIDPTR ptr;
-MEM_DEBUG2
+VOID Ysafe_cfree(VOIDPTR ptr MEM_DEBUG_EXTRA_ARG_DEFS )
 {
     if( !( ptr ) ){
 	fprintf(stderr,
@@ -626,16 +616,14 @@ MEM_DEBUG2
 }
 
 
-char *Ysafe_malloc(bytes MEM_DEBUG1 )
-INT bytes;
-MEM_DEBUG2
+char *Ysafe_malloc(INT bytes MEM_DEBUG_EXTRA_ARG_DEFS )
 {
    char *ptr;
    char *i;
    if (bytes<5) {
       bytes = 8;
    }
-   statuS = heapNew (&ptr, bytes MEM_DEBUG1 );
+   statuS = heapNew (&ptr, bytes MEM_DEBUG_EXTRA_ARGS );
    if (statuS.all!=heap_ok){
        errno = statuS.all ;	
        kill(getpid(),SIGUSR1);
@@ -643,10 +631,7 @@ MEM_DEBUG2
    return(ptr);
 }
 
-char *Ysafe_calloc(num_entries, bytes MEM_DEBUG1 )
-INT num_entries;
-INT bytes;
-MEM_DEBUG2 
+char *Ysafe_calloc(INT num_entries, INT bytes MEM_DEBUG_EXTRA_ARG_DEFS )
 {
    char *ptr;
    long *i;
@@ -656,7 +641,7 @@ MEM_DEBUG2
    if (k<5) {
       k = 8;
    }
-   statuS = heapNew (&ptr, k MEM_DEBUG1 );
+   statuS = heapNew (&ptr, k MEM_DEBUG_EXTRA_ARGS );
    if (statuS.all!=heap_ok){
        errno = statuS.all ;	
        kill(getpid(),SIGUSR1);
@@ -668,10 +653,7 @@ MEM_DEBUG2
    return(ptr);
 }
 
-char *Ysafe_realloc(ptr, bytes MEM_DEBUG1 )
-VOIDPTR ptr;
-INT bytes;
-MEM_DEBUG2
+char *Ysafe_realloc(VOIDPTR ptr, INT bytes MEM_DEBUG_EXTRA_ARG_DEFS )
 {
 
    char               *ptr2;
@@ -681,7 +663,7 @@ MEM_DEBUG2
    trailer_p          tail;
 
    /* allocate new memory */
-   ptr2 = Ysafe_malloc(bytes MEM_DEBUG1 );
+   ptr2 = Ysafe_malloc(bytes MEM_DEBUG_EXTRA_ARGS );
 
    /* get current size of ptr */
    headPtr = (block_p) ((INT) ptr - sizeof(header_t));
@@ -702,7 +684,7 @@ MEM_DEBUG2
    }
 
 
-   Ysafe_free(ptr MEM_DEBUG1 );
+   Ysafe_free(ptr MEM_DEBUG_EXTRA_ARGS );
 
    return(ptr2);
 }
@@ -990,13 +972,11 @@ char *s ;
 
 /* *******  memory convenience functions  ******* */
 /* ALLOCATE an array [lo..hi] of the given size not initialized */
-char *Yvector_alloc( lo, hi, size MEM_DEBUG1 )
-INT size, lo, hi ;
-MEM_DEBUG2
+char *Yvector_alloc( INT lo, INT hi, INT size MEM_DEBUG_EXTRA_ARG_DEFS )
 {
     char *array_return ;
 
-    array_return = (char *) Ysafe_malloc((unsigned) (hi-lo+1)*size MEM_DEBUG1 ) ;
+    array_return = (char *) Ysafe_malloc((unsigned) (hi-lo+1)*size MEM_DEBUG_EXTRA_ARGS ) ;
     if( array_return ){
 	return( array_return - size * lo ) ;
     }
@@ -1005,13 +985,11 @@ MEM_DEBUG2
 } /* end Yvector_alloc */
 
 /* ALLOCATE an array [lo..hi] of the given size initialized to zero */
-char *Yvector_calloc( lo, hi, size MEM_DEBUG1 )
-INT size, lo, hi ;
-MEM_DEBUG2
+char *Yvector_calloc( INT lo, INT hi, INT size MEM_DEBUG_EXTRA_ARG_DEFS )
 {
     char *array_return ;
 
-    array_return = (char *) Ysafe_calloc((unsigned) (hi-lo+1),size MEM_DEBUG1 ) ;
+    array_return = (char *) Ysafe_calloc((unsigned) (hi-lo+1),size MEM_DEBUG_EXTRA_ARGS ) ;
     if( array_return ){
 	return( array_return - size * lo ) ;
     }
@@ -1020,17 +998,14 @@ MEM_DEBUG2
 } /* end Yvector_calloc */
 
 /* REALLOCATE an array [lo..hi] of the given size no initialization */
-char *Yvector_realloc( array_orig, lo, hi, size MEM_DEBUG1 )
-VOIDPTR array_orig ;
-INT size, lo, hi ;
-MEM_DEBUG2
+char *Yvector_realloc( VOIDPTR array_orig, INT lo, INT hi, INT size MEM_DEBUG_EXTRA_ARG_DEFS )
 {
     char *adj_array ;          /* put back the offset */
     char *array_return ;       /* the new offset */
 
     adj_array = ((char *) array_orig) + lo * size ;
     array_return = (char *) 
-	Ysafe_realloc( adj_array, (unsigned) (hi-lo+1)*size MEM_DEBUG1 ) ;
+	Ysafe_realloc( adj_array, (unsigned) (hi-lo+1)*size MEM_DEBUG_EXTRA_ARGS ) ;
     if( array_return ){
 	return( array_return - size * lo ) ;
     }
@@ -1038,12 +1013,9 @@ MEM_DEBUG2
 
 } /* end Yvector_realloc */
 
-VOID Yvector_free( array, lo, size MEM_DEBUG1 )
-VOIDPTR array ;
-INT lo, size ;
-MEM_DEBUG2
+VOID Yvector_free( VOIDPTR array, INT lo, INT size MEM_DEBUG_EXTRA_ARG_DEFS )
 {
-    Ysafe_free( ((char *)array) + lo * size MEM_DEBUG1 ) ;
+    Ysafe_free( ((char *)array) + lo * size MEM_DEBUG_EXTRA_ARGS ) ;
 } /* end Yvector_free */
 
 /* ************************* TEST ROUTINES ******************************** */
