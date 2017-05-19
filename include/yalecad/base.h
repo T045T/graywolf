@@ -51,6 +51,9 @@ static char Ybase_HId[] = "@(#) base.h version 1.34 3/5/92" ;
 */
 #endif /* YALE */
 
+//TODO(nberg): Remove all ifdefs that depend on this in one nice commit
+#define linux
+
 #ifndef STDIO_H
 #define STDIO_H
 #include <stdio.h> 
