@@ -124,11 +124,6 @@ typedef long SHORT_LONG ;
 #define double garbage
 #endif /* FIND_GARBAGE */
 
-#if defined(THINK_C)	/* Mac */
-
-#include <yalecad/mac.h>
-
-#elif defined(linux) || defined(ultrix)
 
 #ifndef	_LIMITS_H_
 #include <limits.h>
@@ -142,7 +137,7 @@ typedef long SHORT_LONG ;
 #define DBL_MAX 1.0E38
 #endif /* test on DBL_MAX */
 
-#else /* not ultrix or linux; i.e., doesn't have limits.h (?) */
+#if 0 /* not ultrix or linux; i.e., doesn't have limits.h (?) */
 
 /* for foreign machines - conservative numbers */
 #ifndef R6000
@@ -168,6 +163,7 @@ typedef long SHORT_LONG ;
 #define PROTOTYPES_OK
 #endif /* Mac, linux */
 
+#define PROTOTYPES_OK
 #ifdef PROTOTYPES_OK
 #define  P1( a )                        a
 #define  P2( a,b )                      a,b
