@@ -79,6 +79,7 @@ static char SccsId[] = "@(#) wgraphics.c version 3.8 8/12/91" ;
 #include <yalecad/debug.h>
 #include <yalecad/dbinary.h>
 #include <yalecad/wgraphics.h>
+#include <yalecad/program.h>
 #include <yalecad/string.h>
 
 #define NODIRECTORY     1
@@ -96,9 +97,7 @@ static  INT  numCellS = 0 ; /* cell counter */
 static  INT  numNetS = 0 ;  /* net counter */
 static  INT  numCharS = 0 ; /* symbol table counter */
 
-BOOL TWinitWGraphics( numC, desiredColors)
-INT  numC ;
-char **desiredColors ;
+BOOL TWinitWGraphics( INT numC, char *desiredColors)
 {
 
     char *Yfixpath() ;
@@ -128,8 +127,47 @@ char **desiredColors ;
 
 } /* end function TWinitWGraphics */
 
+/* write size of data at end of files and close them if frames are open */
+VOID TWflushWFrame()
+{
+    char dummy[5] ;
+    UNSIGNED_INT nitems ;
+    INT numw ;
+    INT excess ;
 
-TWcloseWGraphics()
+    /* check to see if other files are open */
+    if( frameOpenS ){
+	nitems = (UNSIGNED_INT) 1 ;
+	/* terminate the file with number of records in each file */
+	numw = fwrite( &numCellS,sizeof(UNSIGNED_INT),nitems,cellFileS ) ;
+	ASSERT( numw == 1, "startNewFrame", "Number written zero" ) ;
+	numw = fwrite( &numNetS, sizeof(UNSIGNED_INT),nitems,netFileS ) ;
+	ASSERT( numw == 1, "startNewFrame", "Number written zero" ) ;
+	/* need to put on integer boundary */
+	if( (excess = numCharS % 4) ){
+	    /* pad the remainder with dummy */
+	    nitems = (UNSIGNED_INT) (4 - excess ) ;
+	    numw = fwrite( dummy, sizeof(char), nitems, symbFileS ) ;
+	    ASSERT( numw == nitems,"startNewFrame","Number written zero");
+	}
+	nitems = (UNSIGNED_INT) 1 ;
+	numw = fwrite( &numCharS,sizeof(UNSIGNED_INT),nitems,symbFileS ) ;
+	ASSERT( numw == 1, "startNewFrame", "Number written zero" ) ;
+
+	/* files are open close them */
+	ASSERT( cellFileS, "startNewFrame", "cell file should be open" ) ;
+	TWCLOSE( cellFileS ) ;
+	ASSERT( netFileS, "startNewFrame", "net file should be open" ) ;
+	TWCLOSE( netFileS ) ;
+	ASSERT( symbFileS, "startNewFrame", "symb file should be open" ) ;
+	TWCLOSE( symbFileS ) ;
+	/* signal that frame has been closed */
+	frameOpenS = FALSE ;
+    }
+
+} /* TWflushWFrame */
+
+VOID TWcloseWGraphics()
 {
 
     if(!(initS )){
@@ -145,7 +183,7 @@ TWcloseWGraphics()
 
 } /* end TWcloseGraphics */
 
-TWstartWFrame()
+VOID TWstartWFrame()
 {
     char filename[LRECL] ;
     char dummy[5] ;
@@ -190,48 +228,8 @@ TWstartWFrame()
 
 } /* end startWFrame */
 
-/* write size of data at end of files and close them if frames are open */
-TWflushWFrame()
-{
-    char dummy[5] ;
-    UNSIGNED_INT nitems ;
-    INT numw ;
-    INT excess ;
 
-    /* check to see if other files are open */
-    if( frameOpenS ){
-	nitems = (UNSIGNED_INT) 1 ;
-	/* terminate the file with number of records in each file */
-	numw = fwrite( &numCellS,sizeof(UNSIGNED_INT),nitems,cellFileS ) ;
-	ASSERT( numw == 1, "startNewFrame", "Number written zero" ) ;
-	numw = fwrite( &numNetS, sizeof(UNSIGNED_INT),nitems,netFileS ) ;
-	ASSERT( numw == 1, "startNewFrame", "Number written zero" ) ;
-	/* need to put on integer boundary */
-	if( excess = numCharS % 4 ){
-	    /* pad the remainder with dummy */
-	    nitems = (UNSIGNED_INT) (4 - excess ) ;
-	    numw = fwrite( dummy, sizeof(char), nitems, symbFileS ) ;
-	    ASSERT( numw == nitems,"startNewFrame","Number written zero");
-	}
-	nitems = (UNSIGNED_INT) 1 ;
-	numw = fwrite( &numCharS,sizeof(UNSIGNED_INT),nitems,symbFileS ) ;
-	ASSERT( numw == 1, "startNewFrame", "Number written zero" ) ;
-
-	/* files are open close them */
-	ASSERT( cellFileS, "startNewFrame", "cell file should be open" ) ;
-	TWCLOSE( cellFileS ) ;
-	ASSERT( netFileS, "startNewFrame", "net file should be open" ) ;
-	TWCLOSE( netFileS ) ;
-	ASSERT( symbFileS, "startNewFrame", "symb file should be open" ) ;
-	TWCLOSE( symbFileS ) ;
-	/* signal that frame has been closed */
-	frameOpenS = FALSE ;
-    }
-
-} /* TWflushWFrame */
-
-TWsetWFrame( number )
-INT number ;
+VOID TWsetWFrame( INT number )
 {
     char fileName[LRECL] ;
 
@@ -255,19 +253,60 @@ INT number ;
 /* *********  GENERIC WRITE ROUTINES **************  */
 /* draw a rectangle whose diagonals are (x1,y1) and (x2,y2) */
 /* 	if the specified color is default or invalid, use default color */
-TWdrawWPin( ref_num, x1,y1,x2,y2,color,label)
-INT     ref_num ; /* reference number */
-INT	x1,y1,x2,y2, color;
-char	*label;
+VOID TWdrawWRect( INT ref_num,
+                  INT x1, INT y1,
+                  INT x2, INT y2,
+                  INT color, char *label)
+{
+    DATABOX record ;
+    UNSIGNED_INT nitems ;
+    INT numw ; /* number of records written */
+
+    /* fill up data record  file destination net file */
+    record.ref = (UNSIGNED_INT) ref_num ;
+    record.x1 = x1 ;
+    record.x2 = x2 ;
+    record.y1 = y1 ;
+    record.y2 = y2 ;
+    record.color = color ;
+    /* now store string in symbol table if given */
+    if( label ){
+	/* write string to symbol table file */
+	nitems = (UNSIGNED_INT) ( strlen( label ) + 1 ) ;
+	numw = fwrite( label, sizeof(char), nitems, symbFileS ) ;
+	ASSERT( numw == nitems, "drawWRect", 
+	    "Couldn't write to string table" );
+	/* now store in net file offset in table */
+	record.label = numCharS ;
+	/* now update offset to include this string */
+	numCharS += (INT) nitems ;
+	
+    } else {
+	record.label = 0 ;
+    }
+    /* now write record */
+    nitems = (UNSIGNED_INT) 1 ;
+    numw = fwrite( &record, sizeof(DATABOX),nitems,cellFileS ) ;
+    numCellS++ ;
+    ASSERT( numw == 1, "drawWRect", "Record not written..." ) ;
+
+} /* end drawWRect */
+
+/* draw a rectangle whose diagonals are (x1,y1) and (x2,y2) */
+/* 	if the specified color is default or invalid, use default color */
+VOID TWdrawWPin( INT ref_num,
+                 INT x1, INT y1,
+                 INT x2, INT y2,
+                 INT color, char *label)
 {
     TWdrawWRect( ref_num, x1,y1,x2,y2,color,label) ;
 } /* end drawWPin */
 
 /* draw a one pixel tall line segment from x1,y1 to x2,y2 */
-TWdrawWLine( ref_num,x1,y1,x2,y2,color,label)
-INT     ref_num ; /* reference number */
-INT	x1,y1,x2,y2,color ;
-char	*label;
+VOID TWdrawWLine( INT ref_num,
+                  INT x1, INT y1,
+                  INT x2, INT y2,
+                  INT color, char *label)
 {	
     DATABOX record ;
     UNSIGNED_INT nitems ;
@@ -303,45 +342,4 @@ char	*label;
     numNetS++ ;
 
 } /* end drawWLine */
-
-/* draw a rectangle whose diagonals are (x1,y1) and (x2,y2) */
-/* 	if the specified color is default or invalid, use default color */
-TWdrawWRect( ref_num, x1,y1,x2,y2,color,label)
-INT     ref_num ; /* reference number */
-INT	x1,y1,x2,y2, color;
-char	*label;
-{
-    DATABOX record ;
-    UNSIGNED_INT nitems ;
-    INT numw ; /* number of records written */
-
-    /* fill up data record  file destination net file */
-    record.ref = (UNSIGNED_INT) ref_num ;
-    record.x1 = x1 ;
-    record.x2 = x2 ;
-    record.y1 = y1 ;
-    record.y2 = y2 ;
-    record.color = color ;
-    /* now store string in symbol table if given */
-    if( label ){
-	/* write string to symbol table file */
-	nitems = (UNSIGNED_INT) ( strlen( label ) + 1 ) ;
-	numw = fwrite( label, sizeof(char), nitems, symbFileS ) ;
-	ASSERT( numw == nitems, "drawWRect", 
-	    "Couldn't write to string table" );
-	/* now store in net file offset in table */
-	record.label = numCharS ;
-	/* now update offset to include this string */
-	numCharS += (INT) nitems ;
-	
-    } else {
-	record.label = 0 ;
-    }
-    /* now write record */
-    nitems = (UNSIGNED_INT) 1 ;
-    numw = fwrite( &record, sizeof(DATABOX),nitems,cellFileS ) ;
-    numCellS++ ;
-    ASSERT( numw == 1, "drawWRect", "Record not written..." ) ;
-
-} /* end drawWRect */
 /* ************************************************************** */
