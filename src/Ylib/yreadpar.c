@@ -348,10 +348,10 @@ VOID Yreadpar_init( char *design_name, INT parfile, INT filter, BOOL abortFlag )
     char *data ;                /* rule data to be stored */
     static BOOL rules_unreadL=TRUE; /* false after the rules have been read */
 
-    if( suffix = id2suffix( parfile ) ){
+    if( (suffix = id2suffix( parfile )) ){
 	prog_idS = parfile ;
 	sprintf( filename, "%s.%s", design_name, suffix ) ;
-	if( pname = id2prog( filter )){
+	if( (pname = id2prog( filter )) ){
 	    filter_idS = filter ;
 	    strcpy( filterNameS, pname ) ;
 	} else {
@@ -377,7 +377,7 @@ VOID Yreadpar_init( char *design_name, INT parfile, INT filter, BOOL abortFlag )
 
 
     /* TRY to read the RULES SECTION of the parameter file */
-    while( bufferptr = fgets( bufferS, LRECL, fpS ) ){
+    while( (bufferptr = fgets( bufferS, LRECL, fpS )) ){
 	lineS++ ;
 	/* remove leading blanks */
 	bufferptr = Yremove_lblanks( bufferptr ) ;
@@ -465,7 +465,7 @@ VOID Yreadpar_init( char *design_name, INT parfile, INT filter, BOOL abortFlag )
 		/* we need two mechanisms : layerid to layername - use array */
 		/* and layername to layerid - use balanced tree */
 		layerArrayS[numlayS] = Ystrclone( tokens[1] ) ;
-		data = make_data( tokens[1], (char *) numlayS, LAYER_T ) ;
+		data = make_data( tokens[1], (char *) (size_t) numlayS, LAYER_T ) ;
 		if( data ) Yrbtree_insert( rule_treeS, data ) ;
 		/* store the values of res, cap, and routing preference */
 		data = make_data( tokens[1], tokens[2], RESISTANCE_T ) ;
@@ -513,7 +513,7 @@ char **Yreadpar_next( char **lineptr, INT *line, INT *numtokens,
     /* assume that every option is on */
     *onNotOff = TRUE ; 
     rule_section = FALSE ;
-    while( bufferptr = fgets( bufferS, LRECL, fpS )){
+    while( (bufferptr = fgets( bufferS, LRECL, fpS )) ){
 	/* parse file */
 	lineS++ ;
 	*line = lineS ;
@@ -608,8 +608,8 @@ YPARPTR Yreadpar_file()
     YRBTREE_INIT( store, compare_parameter );
 
     /* assume that every option is on */
-    while( tokens = Yreadpar_next( &lineptr, &line, &numtokens,
-	&onNotOff, &wildcard )){
+    while( (tokens = Yreadpar_next( &lineptr, &line, &numtokens,
+                                    &onNotOff, &wildcard )) ){
 	if( numtokens == 0 ){
 	    continue ;
 	}
@@ -673,7 +673,8 @@ DOUBLE Yreadpar_spacing( char *object1, char *object2 )
     sprintf( key, "%s/%s:%c", object1, object2, SPACING_T ) ;
     data_buffer.rule = key ;
 
-    if( data = (RULEPTR) Yrbtree_search( rule_treeS, (char *) &(data_buffer) ) ){
+    if( (data = (RULEPTR) Yrbtree_search( rule_treeS,
+                                          (char *) &(data_buffer) )) ){
 	return( data->value.fvalue ) ;
     } else if( verboseS ){
 	sprintf( YmsgG, 
@@ -681,9 +682,8 @@ DOUBLE Yreadpar_spacing( char *object1, char *object2 )
 	    object1, object2 );
 	M( ERRMSG, "Yreadpar_spacing", YmsgG ) ;
 	M( ERRMSG, NULL, "\tDefaulting to zero.\n\n" ) ;
-	return( 0 ) ;
     }
-
+    return( 0 ) ;
 } /* end Yreadpar_spacing */
 
 DOUBLE Yreadpar_width( char *object )
@@ -696,7 +696,8 @@ DOUBLE Yreadpar_width( char *object )
     /* first build the key */
     sprintf( key, "%s:%c", object, WIDTH_T ) ;
     data_buffer.rule = key ;
-    if( data = (RULEPTR) Yrbtree_search( rule_treeS, (char *) &(data_buffer) ) ){
+    if( (data = (RULEPTR) Yrbtree_search( rule_treeS,
+                                          (char *) &(data_buffer) )) ){
 	return( data->value.fvalue ) ;
     } else {
 	sprintf( YmsgG, 
@@ -732,7 +733,8 @@ DOUBLE Yreadpar_layer_res( char *object )
     /* first build the key */
     sprintf( key, "%s:%c", object, RESISTANCE_T ) ;
     data_buffer.rule = key ;
-    if( data = (RULEPTR) Yrbtree_search( rule_treeS, (char *) &(data_buffer) ) ){
+    if( (data = (RULEPTR) Yrbtree_search( rule_treeS,
+                                          (char *) &(data_buffer) )) ){
 	return( data->value.fvalue ) ;
     } else if( verboseS ){
 	sprintf( YmsgG, 
@@ -740,9 +742,9 @@ DOUBLE Yreadpar_layer_res( char *object )
 	    object );
 	M( ERRMSG, "Yreadpar_layer_res", YmsgG ) ;
 	M( ERRMSG, NULL, "\tDefaulting to zero.\n\n" ) ;
-	return( 0 ) ;
     }
 
+    return( 0 ) ;
 } /* end Yreadpar_layer_res */
 
 DOUBLE Yreadpar_layer_cap( char *object )
@@ -755,7 +757,8 @@ DOUBLE Yreadpar_layer_cap( char *object )
     /* first build the key */
     sprintf( key, "%s:%c", object, CAPACITANCE_T ) ;
     data_buffer.rule = key ;
-    if( data = (RULEPTR) Yrbtree_search( rule_treeS, (char *) &(data_buffer) ) ){
+    if( (data = (RULEPTR) Yrbtree_search( rule_treeS,
+                                          (char *) &(data_buffer) )) ){
 	return( data->value.fvalue ) ;
     } else if( verboseS ){
 	sprintf( YmsgG, 
@@ -763,9 +766,9 @@ DOUBLE Yreadpar_layer_cap( char *object )
 	    object );
 	M( ERRMSG, "Yreadpar_layer_cap", YmsgG ) ;
 	M( ERRMSG, NULL, "\tDefaulting to zero.\n\n" ) ;
-	return( (DOUBLE) 0.0 ) ;
     }
 
+    return( (DOUBLE) 0.0 ) ;
 } /* end Yreadpar_layer_cap */
 
 BOOL Yreadpar_layer_HnotV( char *object )
@@ -779,7 +782,8 @@ BOOL Yreadpar_layer_HnotV( char *object )
     /* first build the key */
     sprintf( key, "%s:%c", object, DIRECTION_T ) ;
     data_buffer.rule = key ;
-    if( data = (RULEPTR) Yrbtree_search( rule_treeS, (char *) &(data_buffer) ) ){
+    if( (data = (RULEPTR) Yrbtree_search( rule_treeS,
+                                          (char *) &(data_buffer) )) ){
 	return( data->value.bvalue ) ;
     } else if( verboseS ){
 	sprintf( YmsgG, 
@@ -787,9 +791,9 @@ BOOL Yreadpar_layer_HnotV( char *object )
 	    object );
 	M( ERRMSG, "Yreadpar_layer_HnotV", YmsgG ) ;
 	M( ERRMSG, NULL, "\tDefaulting to horizontal.\n\n" ) ;
-	return( TRUE ) ;
     }
 
+    return( TRUE ) ;
 } /* end Yreadpar_layer_HnotV */
 
 INT Yreadpar_layer2id( char *object )
@@ -802,7 +806,8 @@ INT Yreadpar_layer2id( char *object )
     /* first build the key */
     sprintf( key, "%s:%c", object, LAYER_T ) ;
     data_buffer.rule = key ;
-    if( data = (RULEPTR) Yrbtree_search( rule_treeS, (char *) &(data_buffer) ) ){
+    if( (data = (RULEPTR) Yrbtree_search( rule_treeS,
+                                          (char *) &(data_buffer) )) ){
 	return( data->value.ivalue ) ;
     } else if( verboseS ){
 	sprintf( YmsgG, 
@@ -810,9 +815,9 @@ INT Yreadpar_layer2id( char *object )
 	    object );
 	M( ERRMSG, "Yreadpar_layer2id", YmsgG ) ;
 	M( ERRMSG, NULL, "\tDefaulting to horizontal.\n\n" ) ;
-	return( TRUE ) ;
     }
 
+    return( TRUE ) ;
 } /* end Yreadpar_layer2id */
 
 char *Yreadpar_id2layer( INT layerid )
@@ -851,16 +856,17 @@ char *Yreadpar_vianame( char *object1, char *object2 )
     } else {
 	sprintf( key, "%s/%s:%c", object2, object1, VIA_T ) ;
     }
-    if( data = (RULEPTR) Yrbtree_search( rule_treeS, (char *) &(data_buffer) ) ){
+    if( (data = (RULEPTR) Yrbtree_search( rule_treeS,
+                                          (char *) &(data_buffer) )) ){
 	return( data->value.svalue ) ;
     } else if( verboseS ){
 	sprintf( YmsgG, 
 	    "Could not find a via between layers %s and %s.\n",
 	    object1, object2 );
 	M( ERRMSG, "Yreadpar_vianame", YmsgG ) ;
-	return( NIL(char *) ) ;
     }
 
+    return( NIL(char *) ) ;
 } /* end Yreadpar_vianame */
 
 char *Yreadpar_viaId2name( INT viaid )
