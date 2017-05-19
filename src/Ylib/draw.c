@@ -180,6 +180,7 @@ static char SccsId[] = "@(#) draw.c (Yale) version 3.41 3/10/92" ;
 #ifndef NOGRAPHICS
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -187,6 +188,7 @@ static char SccsId[] = "@(#) draw.c (Yale) version 3.41 3/10/92" ;
 
 #include <yalecad/base.h>
 #include <yalecad/file.h>
+#include <yalecad/menus.h>
 #include <yalecad/message.h>
 #include <yalecad/hash.h>
 #include <yalecad/string.h>
@@ -481,7 +483,7 @@ static BOOL TWinit(INT argc, char **argv, INT numC, char **desiredColors,
     if( (colorS = XDisplayCells( dpyS, screenS )) > 2 ){
         /* if color number of display cells > 0 */
         colorS = TRUE ;
-        if( reply = XGetDefault( dpyS, GRAPHICS, "bw" )){
+        if( (reply = XGetDefault( dpyS, GRAPHICS, "bw" )) ){
             if( strcmp( reply, "on" ) == STRINGEQ ){
                 colorS = FALSE ;
             }
@@ -492,7 +494,7 @@ static BOOL TWinit(INT argc, char **argv, INT numC, char **desiredColors,
 
 
     /* set font and get font info */
-    if(font = XGetDefault( dpyS, GRAPHICS, "font" )){
+    if( (font = XGetDefault( dpyS, GRAPHICS, "font" )) ){
         fontinfoS = TWgetfont( font, &fontS ) ;
         infoBoxS.fontname = font ;
     } else {
@@ -506,32 +508,32 @@ static BOOL TWinit(INT argc, char **argv, INT numC, char **desiredColors,
         }
     }
     /* see if we should turn on the stipple pattern */
-    if( reply = XGetDefault( dpyS, GRAPHICS, "stipple" )){
+    if( (reply = XGetDefault( dpyS, GRAPHICS, "stipple" )) ){
         if( strcmp( reply, "on" ) == STRINGEQ ){
             stippleS = TRUE ;
         }
     }
     /* see if we should turn on/off the rectangular fill */
-    if( reply = XGetDefault( dpyS, GRAPHICS, "rectangle_fill" )){
+    if( (reply = XGetDefault( dpyS, GRAPHICS, "rectangle_fill" )) ){
         if( strcmp( reply, "off" ) == STRINGEQ ){
             rect_fillS = FALSE ; /* dont fill rectangles - default on */
         }
     }
     /* see if we should turn on/off the arbitrary fill */
-    if( reply = XGetDefault( dpyS, GRAPHICS, "arbitrary_fill" )){
+    if( (reply = XGetDefault( dpyS, GRAPHICS, "arbitrary_fill" )) ){
         if( strcmp( reply, "off" ) == STRINGEQ ){
             fillArbS = FALSE ; /* dont fill arbs - default on */
         }
     }
     /* see if we should turn off the reverse video */
-    if( reply = XGetDefault( dpyS, GRAPHICS, "reverse" )){
+    if( (reply = XGetDefault( dpyS, GRAPHICS, "reverse" )) ){
         if( strcmp( reply, "on" ) == STRINGEQ ){
             reverseS = TRUE ;
         }
     }
 
     /* see if we need to reset the wait time to redraw */
-    if( reply = XGetDefault( dpyS, GRAPHICS, "wait_time" )){
+    if( (reply = XGetDefault( dpyS, GRAPHICS, "wait_time" )) ){
         TWsafe_wait_timeG = atoi( reply ) ;
     } else {
         TWsafe_wait_timeG = 2 ;
@@ -539,7 +541,7 @@ static BOOL TWinit(INT argc, char **argv, INT numC, char **desiredColors,
 
 
     /* initialize position */
-    if( winstr = XGetDefault( dpyS, GRAPHICS, "geometry" )){
+    if( (winstr = XGetDefault( dpyS, GRAPHICS, "geometry" )) ){
         m = XParseGeometry( winstr,&winxS,&winyS,&winwidthS,&winheightS) ;
         if( m & XNegative ){
             winxS = XDisplayWidth( dpyS, screenS ) + winxS ;
@@ -1579,8 +1581,8 @@ VOID TWmoveRect( INT *x1, INT *y1, INT *x2, INT *y2,
     last_time = 0 ;
     while(!(press )){
         /* check for user input from mouse */
-        if( press = XCheckTypedWindowEvent( dpyS,drawS,
-                ButtonPress,&event ) ){
+        if( (press = XCheckTypedWindowEvent( dpyS,drawS,
+                                             ButtonPress,&event )) ){
             /* we have an event from the pointer */
             /* put event back on queue  and call TWgetPt */
             XPutBackEvent( dpyS, &event ) ;
@@ -1591,8 +1593,8 @@ VOID TWmoveRect( INT *x1, INT *y1, INT *x2, INT *y2,
             *y1 = *y2 - height_user ;
         } /* otherwise continue to loop */
         /* move rectangle */
-        if( XCheckTypedWindowEvent( dpyS,drawS,
-                MotionNotify,&event ) ){
+        if( (XCheckTypedWindowEvent( dpyS,drawS,
+                                     MotionNotify,&event )) ){
             /* avoid to many events to screen wait 50 msec.*/
             if( event.xmotion.time - last_time < 50 ){
                 continue ;
@@ -1852,10 +1854,10 @@ VOID TW3Dnormal_view()
 /*-------------------------
     Draws a 3 dimensional cube.
   -------------------------*/
-INT TW3DdrawCube(INT ref_num,
-                 INT x1, INT y1, INT z1,
-                 INT x2, INT y2, INT z2,
-                 INT color, char *label)
+VOID TW3DdrawCube(INT ref_num,
+                  INT x1, INT y1, INT z1,
+                  INT x2, INT y2, INT z2,
+                  INT color, char *label)
 {
     /* try it as a solid */
     /* side face 1 */
@@ -2066,7 +2068,7 @@ static VOID closeFrame()
         numw = fwrite( &numNetS, sizeof(UNSIGNED_INT),nitems,netFileS ) ;
         ASSERT( numw == 1, "startNewFrame", "Number written zero" ) ;
         /* need to put on integer boundary */
-        if( excess = numCharS % 4 ){
+        if( (excess = numCharS % 4) ){
             /* pad the remainder with dummy */
             nitems = (UNSIGNED_INT) (4 - excess ) ;
             numw = fwrite( dummy, sizeof(char), nitems, symbFileS ) ;
@@ -2246,7 +2248,7 @@ static VOID drawWArb( INT ref, INT color, char *label )
             drawDArb( ref, color, label ) ;
             break ;
     }
-    while( bustptr = Ybuster() ){
+    while( (bustptr = Ybuster()) ){
         /* l = bustptr[1].x ; */
         /* r = bustptr[4].x ; */
         /* b = bustptr[1].y ; */
