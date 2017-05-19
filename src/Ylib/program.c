@@ -65,8 +65,10 @@ static char SccsId[] = "@(#) program.c version 3.8 3/4/92" ;
 #endif
 
 #include <yalecad/base.h>
+#include <yalecad/debug.h>
 #include <yalecad/message.h>
 #include <yalecad/program.h>
+#include <yalecad/timer.h>
 
 static char programName[LRECL];
 static char progVersion[LRECL];
@@ -89,7 +91,7 @@ char *YinitProgram(char *name, char *version, VOID (*introTextFunction)())
   sprintf(programName,"%s",name);
   sprintf(progVersion,"%s",version);
 
-  if ( date = getCompileDate() ){
+  if ( (date = getCompileDate()) ){
     sprintf(progDate,"%s",date);
   } else {
     sprintf(progDate,"unknown") ;
@@ -128,7 +130,7 @@ void YexitPgm(INT status)
         Ymessage_mode( M_VERBOSE ) ;
     }
 
-    if( name = YgetProgName() ){
+    if( (name = YgetProgName()) ){
         if( errorCount ){
             sprintf(message,"\n%s terminated abnormally with %d error[s] and %d warning[s]\n\n",
                 name,errorCount,warningCount) ;
