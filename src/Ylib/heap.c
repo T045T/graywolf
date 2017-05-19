@@ -275,7 +275,7 @@ extern VOIDPTR Yheap_delete_min(heap)
   HEAP_EL el;
   VOIDPTR rtn;
   
-  if (el = heap->top) {
+  if ((el = heap->top)) {
     heap->top = meld(get_left(el), get_rite(el), heap->heap_cmp);
     rtn = get_data(el);
     free_heap_el(el);
@@ -529,8 +529,8 @@ static VOID free_heap_el(el)
 
 extern VOID Yheap_check_mem()
 {
-  fprintf(stderr,"\theaps_allocated = %d\n", heaps_allocated);
-  fprintf(stderr,"\theap_els_allocated = %d\n", heap_els_allocated);
+  fprintf(stderr,"\theaps_allocated = %ld\n", heaps_allocated);
+  fprintf(stderr,"\theap_els_allocated = %ld\n", heap_els_allocated);
 }   /*  heap_check_mem  */
 
 /*--------------------------------
