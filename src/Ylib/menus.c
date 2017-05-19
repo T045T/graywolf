@@ -214,14 +214,14 @@ static BOOL persistenceS = TRUE ;    /* whether message is persistent */
 #define SLEEPTIME   (unsigned) 2     /* sleep for two seconds */
 
 /* define static functions */
-static set_window_lights( P1(BOOL flag) ) ;
-static resize_windows( P2( INT winwidth, INT winheight ) ) ;
-static debug_menus( P1(TWMENUPTR menu_field) ) ;
-static draw_persistent_message( P1(char *message) ) ;
+static VOID set_window_lights( P1(BOOL flag) ) ;
+static VOID resize_windows( P2( INT winwidth, INT winheight ) ) ;
+static VOID debug_menus( P1(TWMENUPTR menu_field) ) ;
+static VOID draw_persistent_message( P1(char *message) ) ;
 
 
 /* get information from main draw routine and set it */
-TWinforMenus( )
+VOID TWinforMenus( )
 {
     TWINFOPTR TWgetDrawInfo() ;
 
@@ -251,7 +251,7 @@ INT TWsaveState()
     return( (INT) backS ) ;
 } /* end TWgetWindowId */
 
-TWrestoreState()
+VOID TWrestoreState()
 {
     long event_mask ;  /* used to set input selection to window */
     XWindowAttributes wattr;  /* get the window attributes */
@@ -283,9 +283,7 @@ TWrestoreState()
 } /* end TWgetWindowId */
 
 /* retrieve the window information only occurs during a parasite */
-Window TWgetWindowId( dpy, backwindow )
-Display *dpy ;
-Window backwindow ;
+Window TWgetWindowId( Display *dpy, Window backwindow )
 {
     Atom menuAtom ; /* need to store menu property */
     Atom messageAtom ; /* need to store message property */
@@ -328,8 +326,7 @@ Window backwindow ;
 } /* end TWgetWindowId */
 
 /* perform initialization of menu windows */
-BOOL TWinitMenuWindow( menu_fields )
-TWMENUPTR menu_fields ;
+BOOL TWinitMenuWindow( TWMENUPTR menu_fields )
 {
     MENUPTR menuptr ;  /* temporary for speed */
     TWMENUPTR mptr ;   /* current field of the menu fields */
@@ -588,7 +585,7 @@ TWMENUPTR menu_fields ;
 	
 } /* end TWinitMenuWindow */
 
-TWdrawMenus()
+VOID TWdrawMenus()
 {
     INT i ;
     MENUPTR menuptr ;
@@ -606,8 +603,7 @@ TWdrawMenus()
 } /* end TWdrawMenus */
 
 /* turn top window entering and leaving lights */
-static set_window_lights( flag )
-BOOL flag ;
+static VOID set_window_lights( BOOL flag )
 {
     INT i ;            /* window counter */
     MENUPTR menuptr ;  /* pointer to current window */
@@ -986,8 +982,7 @@ INT TWcheckMouse()
 
 } /* end TWcheckMouse */
 
-TWdisableMenu( menu_item )
-INT menu_item ;
+VOID TWdisableMenu( INT menu_item )
 {
     INT      menu ;            /* counter */
     INT      entry ;           /* counter */
@@ -1008,8 +1003,7 @@ INT menu_item ;
     }
 } /* end TWdisableMenu() */
 
-TWenableMenu( menu_item )
-INT menu_item ;
+VOID TWenableMenu( INT menu_item )
 {
     INT      menu ;            /* counter */
     INT      entry ;           /* counter */
@@ -1030,8 +1024,7 @@ INT menu_item ;
     }
 } /* end TWenableMenu() */
 
-TWgetPt( x, y )
-INT *x, *y ;
+VOID TWgetPt( INT *x, INT *y )
 {
     BOOL press ;            /* tells whether button has been pushed */
     XEvent event ;          /* describes button event */
@@ -1075,8 +1068,7 @@ INT *x, *y ;
     
 } /* end TWgetPt */
 
-TWmessage( message )
-char *message ;
+VOID TWmessage( char *message )
 {
     if( persistenceS ){
 	if( message ){
@@ -1089,8 +1081,7 @@ char *message ;
 
 } /* end TWmessage */
 
-TWmessagePersistence(flag)
-BOOL flag ;
+VOID TWmessagePersistence(BOOL flag)
 {
     persistenceS = flag ;
     if( flag ){
@@ -1099,8 +1090,7 @@ BOOL flag ;
     }
 } /* end TWmessagePersistence() */
 
-static draw_persistent_message( non_persistent_message )
-char *non_persistent_message ;
+static VOID draw_persistent_message( char *non_persistent_message )
 {
     INT fwidth ; /* font width */
     char *message ;   /* message to output */
@@ -1123,8 +1113,7 @@ char *non_persistent_message ;
     XFlush( dpyS ) ;
 } /* end draw_persistent_message() */
 
-char *TWgetString( directions )
-char *directions ;
+char *TWgetString( char *directions )
 {
     BOOL press ;            /* tells whether keyboard has been pushed */
     BOOL finish ;           /* tells whether we have received a return */
@@ -1230,8 +1219,7 @@ char *directions ;
 /* TWgetPt2 allows the user to get a point from either the keyboard */
 /* or from the using the mouse */
 /* returns TRUE if entered from keyboard, false from mouse */
-BOOL TWgetPt2( x, y )
-INT *x, *y ;
+BOOL TWgetPt2( INT *x, INT *y )
 {
     BOOL press ;                /* tells whether button has been pushed */
     BOOL ok ;                     /* whether keyboard input is ok */
@@ -1305,7 +1293,7 @@ INT *x, *y ;
 } /* end TWgetPt2 */
 
 /* start receiving events concerning mouse tracking */
-TWmouse_tracking_start()
+VOID TWmouse_tracking_start()
 {
     long event_mask ;         /* set events */
 
@@ -1319,8 +1307,7 @@ TWmouse_tracking_start()
 
 /* get the current mouse position */
 /* returns true if position has changed */
-BOOL TWmouse_tracking_pt( x, y )
-INT *x, *y ;
+BOOL TWmouse_tracking_pt( INT *x, INT *y )
 {
     XEvent event ;            /* describes event */
     INT xtemp, ytemp ;        /* current position of pointer */
@@ -1460,7 +1447,7 @@ BOOL TWinterupt()
 } /* end TWinterupt */
 
 /* update windows if configuration changes */
-TWcheckReconfig()
+VOID TWcheckReconfig()
 {
     INT height ;              /* height of current backing window */
     XEvent event ;            /* describes configuration event */
@@ -1508,8 +1495,7 @@ TWcheckReconfig()
 } /* end TWcheckReconfig */
 
 
-static resize_windows( winwidth, winheight )
-INT winwidth, winheight ;
+static VOID resize_windows( INT winwidth, INT winheight )
 {
     INT halfstep ;            /* menu half spacing */
     INT xpos ;                /* position of menu */
@@ -1573,7 +1559,7 @@ INT winwidth, winheight ;
 } /* end TWcheckReconfig */
 
 
-TWfreeMenuWindows()
+VOID TWfreeMenuWindows()
 {
     INT i, j ;              /* counters */
     MENUPTR menuptr ;       /* temporary for selected menu record */
@@ -1599,8 +1585,7 @@ TWfreeMenuWindows()
 } /* end TWfreeMenuWindow */
 
 
-TWMENUPTR TWread_menus( filename )
-char *filename ;
+TWMENUPTR TWread_menus( char *filename )
 {
     char buffer[LRECL], *bufferptr ;
     char **tokens ;         /* for parsing menu file */
@@ -1722,8 +1707,7 @@ char *filename ;
 
 #include <ctype.h>
 
-static char *cap_item( sptr )
-char *sptr ;
+static char *cap_item( char *sptr )
 {
     static char bufferL[LRECL] ;
     INT len ;                 /* string length */
@@ -1749,8 +1733,7 @@ char *sptr ;
     return( bufferL ) ;
 } /* end cap_item */
 
-static debug_menus( menu_field )
-TWMENUPTR menu_field ;
+static VOID debug_menus( TWMENUPTR menu_field )
 {
     INT i ;                   /* counter */
     INT count ;               /* number of fields */
