@@ -68,19 +68,19 @@ static char SccsId[] = "@(#) file.c version 3.11 10/20/91" ;
 #endif
 
 #include <stdio.h>
+#include <unistd.h>
+
 #include <yalecad/base.h>
 #include <yalecad/file.h>
 #include <yalecad/message.h>
+#include <yalecad/program.h>
 
 #define SERROR  0
 
 /* ----------------------------------------------------------------- 
                       File routines                                 */ 
 	  
-FILE *YopenFile(filename,readwrite,abort)
-char *filename ;
-char *readwrite ;
-BOOL  abort ;
+FILE *YopenFile(char *filename, char *readwrite, BOOL abort)
 {
 
     FILE *fileptr ;
@@ -101,8 +101,7 @@ BOOL  abort ;
 #include <sys/stat.h>
 
 /* check if a file exists */
-BOOL YfileExists(pathname)
-char *pathname ;
+BOOL YfileExists(char *pathname)
 {
     struct stat buf;
 
@@ -114,8 +113,7 @@ char *pathname ;
     return(FALSE) ;
 }
 
-char *Yfile_slink( pathname )
-char *pathname ;
+char *Yfile_slink( char *pathname )
 {
     INT len ;
     static char buf[BUFSIZ] ;
@@ -137,13 +135,12 @@ char *pathname ;
 #include <sys/dir.h>
 
 /* check if a directory exists */
-BOOL YdirectoryExists(pathname)
-char *pathname ;
+BOOL YdirectoryExists(char *pathname)
 {
     DIR *dp ;
 
     if( pathname ){
-	if( dp = opendir(pathname) ){
+        if( (dp = opendir(pathname)) ){
 	    closedir(dp) ;
 	    return(TRUE) ;
 	}
@@ -154,9 +151,7 @@ char *pathname ;
 #ifndef HPUX
 
 #include <sys/file.h>
-FILE *Yfile_create_lock( filename, readNotWrite ) 
-char *filename ;
-BOOL readNotWrite ;
+FILE *Yfile_create_lock( char *filename, BOOL readNotWrite ) 
 {
     INT fd ;             /* file descriptor */
     INT status ;         /* return status */
@@ -201,8 +196,7 @@ BOOL readNotWrite ;
 } /* end Yfile_create_lock */
 
 /* see a file is locked */
-BOOL Yfile_test_lock( filename ) 
-char *filename ;
+BOOL Yfile_test_lock( char *filename ) 
 {
     INT fd ;             /* file descriptor */
     INT status ;         /* return status */
@@ -230,9 +224,7 @@ char *filename ;
 
 #include <unistd.h>
 #include <sys/file.h>
-FILE *Yfile_create_lock( filename, readNotWrite ) 
-char *filename ;
-BOOL readNotWrite ;
+FILE *Yfile_create_lock( char *filename, BOOL readNotWrite ) 
 {
     INT fd ;             /* file descriptor */
     INT status ;         /* return status */
@@ -276,8 +268,7 @@ BOOL readNotWrite ;
 } /* end Yfile_create_lock */
 
 /* see a file is locked */
-BOOL Yfile_test_lock( filename ) 
-char *filename ;
+BOOL Yfile_test_lock( char *filename ) 
 {
     INT fd ;             /* file descriptor */
     INT status ;         /* return status */
