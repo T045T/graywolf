@@ -37,17 +37,17 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    stats.c                                       
+/* -----------------------------------------------------------------
+FILE:       stats.c
 DESCRIPTION:Get runtime statistics in UNIX.
 CONTENTS:   Yprint_stats( fdat )
-		FILE fdat ;
-	    DOUBLE Ycpu_time()
-DATE:	    May  5, 1990 
+                FILE fdat ;
+            DOUBLE Ycpu_time()
+DATE:       May  5, 1990
 REVISIONS:  Oct  4, 1990 - added elaspse time for the mips machine.
-	    Fri Jan 25 15:44:46 PST 1991 - added AVOID conditional
-		compile for HPUX.
-	    Wed Feb 26 03:56:25 EST 1992 - added date for reference.
+            Fri Jan 25 15:44:46 PST 1991 - added AVOID conditional
+                compile for HPUX.
+            Wed Feb 26 03:56:25 EST 1992 - added date for reference.
 ----------------------------------------------------------------- */
 #ifndef lint
 static char SccsId[] = "@(#) stats.c version 3.8 2/26/92" ;
@@ -99,7 +99,7 @@ void Yprint_stats( FILE *fout )
     char *YcurTime();	/* Forward declaration */
 
     struct rusage	rusage	;
-    struct rlimit 	rlp	;
+    struct rlimit       rlp	;
     caddr_t		p	;
 
     /***********************************************************
@@ -130,7 +130,7 @@ void Yprint_stats( FILE *fout )
     scale = (user + systemTime) * 100.0 ;
     if (scale == 0.0)
     {
-	scale = 0.001 ;
+        scale = 0.001 ;
     }
     /* now get elapsed time */
     Ytimer_elapsed( &elapsed_time ) ;
@@ -144,7 +144,7 @@ void Yprint_stats( FILE *fout )
 
     // This tends to segfault.  Don't know why (Tim, 10/14/08)
     // fprintf(fout, "Date        : %s\n\n", YcurTime(0)) ;
-    timestring = YcurTime(0); 
+    timestring = YcurTime(0);
     fprintf(fout, "Date        : %s\n\n", timestring) ;
 
     fprintf(fout, "User    time:%6.1f seconds\n", user) ;
@@ -155,18 +155,18 @@ void Yprint_stats( FILE *fout )
     data = (rusage.ru_idrss + rusage.ru_isrss) / scale + 0.5 ;
     fprintf(fout, "Average resident text size       = %5dK\n", text) ;
     fprintf(fout, "Average resident data+stack size = %5dK\n", data) ;
-    fprintf(fout, "Maximum resident size            = %5ldK\n", 
-	rusage.ru_maxrss/2) ;
+    fprintf(fout, "Maximum resident size            = %5ldK\n",
+        rusage.ru_maxrss/2) ;
     fprintf(fout, "Virtual memory size              = %5dK\n", vm_used) ;
-    fprintf(fout, "Virtual memory limit             = %5dK (%dK)\n", 
-	vm_soft_limit, vm_limit) ;
+    fprintf(fout, "Virtual memory limit             = %5dK (%dK)\n",
+        vm_soft_limit, vm_limit) ;
 
     if( YgetMaxMemUse() ){
-	fprintf(fout, "Maximum heap size                = %5d\n", 
-	    YgetMaxMemUse() ) ;
-	fprintf(fout, "Current heap size                = %5d\n", 
-	    YgetCurMemUse() ) ;
-    } 
+        fprintf(fout, "Maximum heap size                = %5d\n",
+            YgetMaxMemUse() ) ;
+        fprintf(fout, "Current heap size                = %5d\n",
+            YgetCurMemUse() ) ;
+    }
 
     fprintf(fout, "\nMajor page faults = %ld\n", rusage.ru_majflt) ;
     fprintf(fout, "Minor page faults = %ld\n", rusage.ru_minflt) ;
@@ -178,7 +178,7 @@ void Yprint_stats( FILE *fout )
     fprintf(fout, "Context switch (voluntary) = %ld\n", rusage.ru_nvcsw) ;
     fprintf(fout, "Context switch (involuntary) = %ld\n", rusage.ru_nivcsw) ;
 
-#else 
+#else
     fprintf(fout,"Usage statistics not available\n") ;
 #endif
 
@@ -213,4 +213,3 @@ main()
 }
 
 #endif
-    
