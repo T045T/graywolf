@@ -92,8 +92,7 @@ static YTREEPTR debug_treeS ;
 static INT compare_routine( P2(ROUTINEPTR key1, ROUTINEPTR key2 ) ) ;
 static ROUTINEPTR make_data_debug( P2(char *string, BOOL debugOn ) ) ;
 
-BOOL Ydebug( routine ) 
-char *routine ;
+BOOL Ydebug( char *routine ) 
 {   
     ROUTINEPTR data ;                 /* the matched data record */
     ROUTINE routine_key ;             /* used to test key */
@@ -137,7 +136,7 @@ BOOL YdebugAssert()
     return( debugFlagS ) ;
 } /* end YdebugAssert */
 
-YdebugWrite()
+VOID YdebugWrite()
 {
     ROUTINEPTR data ;              /* the data in the tree */
     FILE *fp ;                   /* write to the debug file */
@@ -160,8 +159,7 @@ YdebugWrite()
     }
 }
 
-YsetDebug( flag )
-BOOL flag ;
+VOID YsetDebug( BOOL flag )
 {
 
     char buffer[LRECL], *bufferptr ;
@@ -197,15 +195,12 @@ BOOL flag ;
     debugFlagS = flag ;
 } /* end YsetDebug */
 
-static INT compare_routine( key1, key2 )
-ROUTINEPTR key1, key2 ;
+static INT compare_routine( ROUTINEPTR key1, ROUTINEPTR key2 )
 {
     return( strcmp( key1->routine, key2->routine ) ) ;
 } /* end compare */
 
-static ROUTINEPTR make_data_debug( string, debugOn )
-char *string ;
-BOOL debugOn ;
+static ROUTINEPTR make_data_debug( char *string, BOOL debugOn )
 {
     ROUTINEPTR data ;
 
@@ -215,9 +210,7 @@ BOOL debugOn ;
     return( data ) ;
 } /* end make_data_debug */
 
-YfixDebug( ptr, type )
-char *ptr ;
-INT type ;
+VOID YfixDebug( char *ptr, INT type )
 {
     switch( type ){
     case 0: /* integer */

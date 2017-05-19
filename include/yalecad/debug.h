@@ -164,13 +164,13 @@ Function:
     Returns TRUE if debug is on.  It returns FALSE otherwise.
 */
 
-extern YdebugWrite() ;
+extern VOID YdebugWrite() ;
 /* 
 Function:
     Write the debug data structure to a file.
 */
 
-extern YsetDebug( P1(BOOL flag ) ) ;
+extern VOID YsetDebug( P1(BOOL flag ) ) ;
 /* 
 Function:
     Turn the debug functions on or off.  It will cause the evaluation
