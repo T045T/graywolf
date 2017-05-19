@@ -81,8 +81,7 @@ INT Yacm_random()
 
 } /* end acm_random */
 
-Yset_random_seed( seed )
-INT seed ;
+VOID Yset_random_seed( INT seed )
 {
     seed = ABS(seed) ;
     if( seed == 0 ){
