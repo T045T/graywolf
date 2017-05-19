@@ -71,6 +71,8 @@ REVISIONS: Apr 10, 1990 - rewrote debug routines so that each individual
 static char SccsId[] = "@(#) ydebug.c (Yale) version 3.15 2/7/92" ;
 #endif
 
+#include <string.h>
+
 #include <yalecad/base.h>
 #include <yalecad/rbtree.h>
 #include <yalecad/file.h>
@@ -102,8 +104,8 @@ BOOL Ydebug( char *routine )
         return_code = FALSE ;
         if( routine ){
             routine_key.routine = routine ;
-            if( data = (ROUTINEPTR)
-                Yrbtree_search( debug_treeS, (char *) &(routine_key) ) ){
+            if( (data = (ROUTINEPTR)
+                 Yrbtree_search( debug_treeS, (char *) &(routine_key) )) ){
                 if( data->debugOn ){
                     return_code = TRUE ;
                 }
@@ -173,8 +175,8 @@ VOID YsetDebug( BOOL flag )
         /* initialize tree of routine name */
         YRBTREE_INIT( debug_treeS, compare_routine );
         line = 0 ;
-        if( fp = TWOPEN( DBGFILE, "r", NOABORT ) ){
-            while( bufferptr=fgets(buffer,LRECL,fp )){
+        if( (fp = TWOPEN( DBGFILE, "r", NOABORT )) ){
+            while( (bufferptr = fgets(buffer,LRECL,fp )) ){
                 /* parse file */
                 line ++ ; /* increment line number */
                 tokens = Ystrparser( bufferptr, " \t\n", &numtokens );
