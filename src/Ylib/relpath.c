@@ -61,7 +61,6 @@ char *known_path, *rel_path ; /* known path and relative path to it */
     char known_fpath[LRECL] ; /* full path of known obj */
     char *ptr ;               /* used to replace obj with relative path */
     char *result ;            /* resulting path */
-    char *Yfixpath(), *strrchr(), *strcat() ;
     INT  up ;              /* keeps count of backtracking up dir tree */
 
     /* make a copy of path */
@@ -95,13 +94,13 @@ char *known_path, *rel_path ; /* known path and relative path to it */
     /* now find matching slashes in known path */
     /* find last backslash */
     for(  ; up > 0 ; up-- ){ 
-	if( ptr = strrchr( known_fpath, '/' )){
+        if( (ptr = strrchr( known_fpath, '/' )) ){
 	    *ptr = EOS ;
 	} else {
 	    return( NULL ) ; /* problem */
 	}
     }
-    if( known_fpath ){
+    if( strlen(known_fpath) != 0 ){
 	strcat( known_fpath, "/" ) ;
 	strcat( known_fpath, rel_path ) ;
 	result = (char *) Ystrclone(known_fpath);
