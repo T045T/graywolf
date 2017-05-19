@@ -37,10 +37,10 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    system.c                                       
+/* -----------------------------------------------------------------
+FILE:       system.c
 DESCRIPTION:system routines
-DATE:	    Apr 26, 1990 
+DATE:       Apr 26, 1990
 REVISIONS:  May 12, 1990 - added move file and getenv.
 ----------------------------------------------------------------- */
 #ifndef lint
@@ -56,21 +56,21 @@ INT Ysystem( char *program, BOOL abortFlag, char *exec_statement, INT (abort_fun
     INT status ;        /* return status from program */
 
     if( (status = system( exec_statement )) ){
-	/* get status from exit routine */
-	status = (status & 0x0000FF00) >> 8 ;/* return code in 2nd byte */
-	/* now determine the program */
+        /* get status from exit routine */
+        status = (status & 0x0000FF00) >> 8 ;/* return code in 2nd byte */
+        /* now determine the program */
 
-	sprintf( YmsgG, "Program %s returned with exit code:%d\n",program,
-	    status );
-	M( ERRMSG, NULL, YmsgG ) ;
-	if( abort_func ){
-	    (*abort_func)() ;
-	}
-	if( abortFlag ){
-	    YexitPgm( PGMFAIL ) ; /* exit the program */
-	}
-	return( status ) ;
-    } 
+        sprintf( YmsgG, "Program %s returned with exit code:%d\n",program,
+            status );
+        M( ERRMSG, NULL, YmsgG ) ;
+        if( abort_func ){
+            (*abort_func)() ;
+        }
+        if( abortFlag ){
+            YexitPgm( PGMFAIL ) ; /* exit the program */
+        }
+        return( status ) ;
+    }
     return( 0 ) ;
 } /* end Ysystem */
 

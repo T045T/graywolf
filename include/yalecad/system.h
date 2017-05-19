@@ -1,8 +1,8 @@
-/* ----------------------------------------------------------------- 
-FILE:	    system.h                                       
+/* -----------------------------------------------------------------
+FILE:       system.h
 CONTENTS:   definitions for system functions.
-DATE:	    Tue Oct 29 15:05:57 EST 1991
-REVISIONS:  
+DATE:       Tue Oct 29 15:05:57 EST 1991
+REVISIONS:
 ----------------------------------------------------------------- */
 #ifndef YSYSTEM_H
 #define YSYSTEM_H
