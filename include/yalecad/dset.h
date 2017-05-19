@@ -1,12 +1,12 @@
-/* ----------------------------------------------------------------- 
-FILE:	    dset.h                                       
-DESCRIPTION:include file for disjoint set utility functions 
-CONTENTS:   
-DATE:	    Apr 26, 1991 
-REVISIONS:  Sun Dec  8 23:30:16 EST 1991 - removed indirection 
-		from the comparison functions.
-	    Sun Dec 15 02:44:47 EST 1991 - now store sub/superset
-		tree with the set itself.
+/* -----------------------------------------------------------------
+FILE:       dset.h
+DESCRIPTION:include file for disjoint set utility functions
+CONTENTS:
+DATE:       Apr 26, 1991
+REVISIONS:  Sun Dec  8 23:30:16 EST 1991 - removed indirection
+                from the comparison functions.
+            Sun Dec 15 02:44:47 EST 1991 - now store sub/superset
+                tree with the set itself.
 ----------------------------------------------------------------- */
 #ifndef YDSET_H
 #define YDSET_H
@@ -29,7 +29,7 @@ typedef struct ydsetrec {
 
 /*---------------------------------------
   Ydset_init()
-  NOTE that the users comparison function will be similar to 
+  NOTE that the users comparison function will be similar to
   comparison function used in the rbtree package.
   ---------------------------------------*/
 extern YDSETPTR Ydset_init( P1(INT (*compare_func)() ) ) ;
@@ -59,7 +59,7 @@ extern VOIDPTR Ydset_enumerate( P2(YDSETPTR set, BOOL startFlag));
 Function:
     Enumerate all of the elements of the super set
 */
-     
+
 /*---------------------------------------
   ---------------------------------------*/
 extern VOIDPTR Ydset_enumerate_superset( P2(YDSETPTR set, BOOL startFlag));
@@ -73,11 +73,11 @@ extern VOIDPTR Ydset_enumerate_parents( P2(YDSETPTR dset, BOOL startFlag) ) ;
 Function:
     Enumerate the parents of the super set
 */
-     
+
 /*---------------------------------------
   ---------------------------------------*/
 extern VOIDPTR Ydset_enumerate_subset( P3 (YDSETPTR set,VOIDPTR subsetData,
-					BOOL startFlag));
+                                        BOOL startFlag));
 /*
 Function:
   Find the set which subsetData is an element of.  Enumerate all
@@ -117,7 +117,7 @@ extern VOIDPTR Ydset_union( P3(YDSETPTR set, VOIDPTR x, VOIDPTR y ) ) ;
 /*
 Function:
     Perform union operation on two data items for the given set.
-    If either data item does not exist, the item is created 
+    If either data item does not exist, the item is created
     and put in set.
     Returns the subset name.
 */
@@ -154,4 +154,3 @@ extern INT Ydset_verify( P1(YDSETPTR set));
 extern VOID Ydset_dump(P2( YDSETPTR set, VOID (*printFunc)() ) );
 
 #endif /* YDSET_H */
-

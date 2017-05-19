@@ -37,34 +37,34 @@
  *
  */
 
-/*----------------------------------------------------------------- 
-FILE:	    dset.c                                       
-DESCRIPTION:disjoint set utility functions 
-CONTENTS:   
-DATE:	    Apr 26, 1991 
+/*-----------------------------------------------------------------
+FILE:       dset.c
+DESCRIPTION:disjoint set utility functions
+CONTENTS:
+DATE:       Apr 26, 1991
 REVISIONS:  Original Version      -WS
             Jun 91 - Hide one level of indirection from user  -RAW
             Oct 91 -  Changed type for stricter gcc -RAW
-	    Sun Dec  8 23:28:03 EST 1991 - removed indirection needed
-		in comparison functions.
-	    Mon Dec  9 15:30:38 EST 1991 - added back the useful
-		function - Ydset_enumerate_parents.  Also now free all
-		memory correctly.
-	    Tue Dec 10 01:46:21 EST 1991 added Ydset_interval and fixed
-		problem with Ydset_enumerate_parents.
-	    Sun Dec 15 02:28:14 EST 1991 - added dset_dump_tree.
+            Sun Dec  8 23:28:03 EST 1991 - removed indirection needed
+                in comparison functions.
+            Mon Dec  9 15:30:38 EST 1991 - added back the useful
+                function - Ydset_enumerate_parents.  Also now free all
+                memory correctly.
+            Tue Dec 10 01:46:21 EST 1991 added Ydset_interval and fixed
+                problem with Ydset_enumerate_parents.
+            Sun Dec 15 02:28:14 EST 1991 - added dset_dump_tree.
 ----------------------------------------------------------------- */
 #ifndef lint
 static char SccsId[] = "@(#) dset.c version 1.13 2/3/92";
 #endif
-     
+
 #define  YDSET_DEFS
 #include <yalecad/base.h>
 #include <yalecad/debug.h>
 #include <yalecad/message.h>
 #include <yalecad/rbtree.h>
 #include <yalecad/dset.h>
-     
+
 /* ********************** STRUCTURE DEFINITIONS ******************* */
 typedef struct dset_element {
   VOIDPTR data ;
@@ -123,7 +123,7 @@ static VOID dset_free_trees( YDSETPTR dset )
 static INT compare_parents(ELEMENTPTR p1, ELEMENTPTR p2)
 {
   return ( p1->parent - p2->parent );
-} 
+}
 
 /*-----------------------
   -----------------------*/
@@ -146,7 +146,7 @@ static ELEMENTPTR link( ELEMENTPTR x, ELEMENTPTR y )
     x->parent = y ;
     if( x->rank == y->rank ){
       if (x!=y) {
-	y->size += x->size;
+        y->size += x->size;
       }
       y->rank++ ;
     } else {
@@ -162,10 +162,10 @@ static ELEMENTPTR find( YDSETPTR dset, VOIDPTR data )
 {
   ELEMENT test ;  /* dummy record for comparison */
   ELEMENTPTR ptr ; /* the found/new node in rbtree */
-  
+
   dsetS = dset ;
   test.data = data ;
-  /* 
+  /*
     This section finds the dset data structure
     for the given data.  If it doesn't exist it
     creates a new dset record.
@@ -180,13 +180,13 @@ static ELEMENTPTR find( YDSETPTR dset, VOIDPTR data )
     Yrbtree_insert( dset->dtree, ptr ) ;
     return( ptr ) ;
   }
-  
-  /* 
+
+  /*
     Now that we have the dset data structure,
     compress the path
     */
   ptr = path_compression( ptr ) ;
-  
+
   return( ptr ) ;
 } /* end find */
 
@@ -198,7 +198,7 @@ static ELEMENTPTR dset_find_set( YDSETPTR dset, VOIDPTR data )
 {
   ELEMENT dummy ;
   ELEMENTPTR ptr ;
-  
+
   dsetS = dset ;
   dummy.data = data;
   if( (ptr = (ELEMENTPTR) Yrbtree_search( dset->dtree, &dummy )) ){
@@ -215,13 +215,13 @@ static ELEMENTPTR dset_find_set( YDSETPTR dset, VOIDPTR data )
 /*---------------------------------------------------------------------
   Ydset_init()
   NOTE that the users comparison function will be passed handles rather
-  then pointers.  Thus, the user comparison function must do an 
+  then pointers.  Thus, the user comparison function must do an
   added level of indirection
   ---------------------------------------------------------------------*/
 YDSETPTR Ydset_init( INT (*compare_func)() )
 {
   YDSETPTR dset ; /* in reality this is a YTREEPTR not anymore! */
-  
+
   dset = YMALLOC( 1, YDSETBOX ) ;
   dset->dtree = Yrbtree_init( compare_dset );
   dset->compare_func = compare_func ;
@@ -244,7 +244,7 @@ VOIDPTR Ydset_enumerate( YDSETPTR dset , BOOL startFlag )
   D("Ydset_enumerate",
     fprintf(stderr,"start Ydset_enumerate\n");
   );
-  
+
   dsetS = dset ;
   ptr = (ELEMENTPTR) Yrbtree_enumerate( dset->dtree, startFlag );
 
@@ -271,7 +271,7 @@ VOIDPTR Ydset_enumerate_superset( YDSETPTR dset , BOOL startFlag )
 {
   ELEMENTPTR ptr ;
   YTREEPTR dtree ;
-  
+
   D("Ydset_enumerate_superset",
     fprintf(stderr,"start Ydset_enumerate_superset\n");
   );
@@ -282,11 +282,11 @@ VOIDPTR Ydset_enumerate_superset( YDSETPTR dset , BOOL startFlag )
       Yrbtree_free(dset->superset_tree,NULL);
     }
     dset->superset_tree = Yrbtree_init(compare_parents);
-      
+
     /* sort elements by set */
     Yrbtree_enumeratePush(dtree);
     for ( ptr = (ELEMENTPTR)Yrbtree_enumerate( dtree, TRUE); ptr;
-	 ptr = (ELEMENTPTR)Yrbtree_enumerate( dtree, FALSE) ) {
+         ptr = (ELEMENTPTR)Yrbtree_enumerate( dtree, FALSE) ) {
       /* compress path so everyone will point to same parent */
       path_compression( ptr ) ; /* compress the path */
       Yrbtree_insert(dset->superset_tree,ptr);
@@ -295,11 +295,11 @@ VOIDPTR Ydset_enumerate_superset( YDSETPTR dset , BOOL startFlag )
 
     ASSERTNFAULT(Yrbtree_size(dset->superset_tree) == Yrbtree_size(dtree),
        "Ydset_enumerate_superset","bogus superset sizes");
-    
+
   }   /* end if start flag */
-  
+
   ptr = (ELEMENTPTR)Yrbtree_enumerate( dset->superset_tree, startFlag);
-  
+
   D("Ydset_enumerate_superset",
     fprintf(stderr,"end Ydset_enumerate_superset\n");
   );
@@ -307,7 +307,7 @@ VOIDPTR Ydset_enumerate_superset( YDSETPTR dset , BOOL startFlag )
   if (ptr) {
     return ( ptr->data );
   }
-  
+
   return ( NIL(VOIDPTR) );
 } /* end Ydset_enumerate_superset() */
 
@@ -320,7 +320,7 @@ VOIDPTR Ydset_enumerate_parents( YDSETPTR dset , BOOL startFlag )
 
   ELEMENTPTR ptr ;
   YTREEPTR dtree ;
-  
+
   D("Ydset_enumerate_parents",
     fprintf(stderr,"start Ydset_enumerate_parents\n");
   );
@@ -331,25 +331,25 @@ VOIDPTR Ydset_enumerate_parents( YDSETPTR dset , BOOL startFlag )
       Yrbtree_free(dset->parent_tree,NULL);
     }
     dset->parent_tree = Yrbtree_init(compare_parents);
-      
+
     /* sort elements by set */
     Yrbtree_enumeratePush(dtree);
     for ( ptr = (ELEMENTPTR)Yrbtree_enumerate( dtree, TRUE); ptr;
-	 ptr = (ELEMENTPTR)Yrbtree_enumerate( dtree, FALSE) ) {
+         ptr = (ELEMENTPTR)Yrbtree_enumerate( dtree, FALSE) ) {
       /* compress path so everyone will point to same parent */
       ptr = path_compression( ptr ) ; /* compress the path */
 
       /* only add to tree if it is a unique parent */
       if(!(Yrbtree_search( dset->parent_tree, ptr ))){
-	  Yrbtree_insert(dset->parent_tree,ptr);
+          Yrbtree_insert(dset->parent_tree,ptr);
       }
     }
     Yrbtree_enumeratePop(dtree);
-    
+
   }   /* end if start flag */
-  
+
   ptr = (ELEMENTPTR)Yrbtree_enumerate( dset->parent_tree, startFlag);
-  
+
   D("Ydset_enumerate_parents",
     fprintf(stderr,"end Ydset_enumerate_parents\n");
   );
@@ -357,9 +357,9 @@ VOIDPTR Ydset_enumerate_parents( YDSETPTR dset , BOOL startFlag )
   if (ptr) {
     return ( ptr->data );
   }
-  
+
   return ( NIL(VOIDPTR) );
-  
+
 } /* end Ydset_enumerate_parents() */
 
 /*-----------------------------------------------------
@@ -373,7 +373,7 @@ VOIDPTR Ydset_enumerate_subset( YDSETPTR dset , VOIDPTR subsetData, BOOL startFl
   ELEMENTPTR parent ;
   ELEMENTPTR ptr ;
   YTREEPTR dtree ;
-  
+
   D("Ydset_enumerate_subset",
     fprintf(stderr,"start Ydset_enumerate_subset\n");
   );
@@ -383,7 +383,7 @@ VOIDPTR Ydset_enumerate_subset( YDSETPTR dset , VOIDPTR subsetData, BOOL startFl
       Yrbtree_free(dset->subset_tree,NULL);
     }
     dset->subset_tree = Yrbtree_init(compare_parents);
-      
+
     Ydset_find(dset,subsetData);  /* compress the path */
     parent = dset_find_set(dset,subsetData);  /* find parent of subset */
 
@@ -392,18 +392,18 @@ VOIDPTR Ydset_enumerate_subset( YDSETPTR dset , VOIDPTR subsetData, BOOL startFl
     dtree = dset->dtree ;
     Yrbtree_enumeratePush(dtree);
     for ( ptr = (ELEMENTPTR)Yrbtree_enumerate( dtree, TRUE); ptr;
-	 ptr = (ELEMENTPTR)Yrbtree_enumerate( dtree, FALSE) ) {
+         ptr = (ELEMENTPTR)Yrbtree_enumerate( dtree, FALSE) ) {
       path_compression( ptr ) ; /* compress the path */
       if ( ptr->parent == parent ) {
         Yrbtree_insert(dset->subset_tree,ptr);
       }
     }
     Yrbtree_enumeratePop(dtree);
-    
+
   }   /* end if start flag */
-  
+
   ptr = (ELEMENTPTR)Yrbtree_enumerate( dset->subset_tree, startFlag);
-  
+
   D("Ydset_enumerate_subset",
     fprintf(stderr,"end Ydset_enumerate_subset\n");
   );
@@ -411,16 +411,16 @@ VOIDPTR Ydset_enumerate_subset( YDSETPTR dset , VOIDPTR subsetData, BOOL startFl
   if (ptr) {
     return ( ptr->data );
   }
-  
+
   return ( NIL(VOIDPTR) );
-  
+
 } /* end Ydset_enumerate_subset */
 
 /*-----------------------
   Ydset_search
   -----------------------*/
 /*
-  Searches for an item in the set basically like 
+  Searches for an item in the set basically like
   rbtree_search works ; avoids makeset of the item
   which Ydset_find does by default.  Does not do
   path compression.  Good if no unions have been
@@ -431,7 +431,7 @@ VOIDPTR Ydset_search( YDSETPTR dset, VOIDPTR data )
 {
   ELEMENT dummy ;
   ELEMENTPTR ptr ;
-  
+
   dsetS = dset ;
   dummy.data = data;
   if( (ptr = (ELEMENTPTR) Yrbtree_search( dset->dtree, &dummy )) ){
@@ -483,7 +483,7 @@ VOID Ydset_empty( YDSETPTR dset , VOID (*userDelete)())
 VOIDPTR Ydset_union( YDSETPTR dset, VOIDPTR x, VOIDPTR y )
 {
   ELEMENTPTR p1, p2, p3 ;
-  
+
   D("Ydset_union",
     fprintf(stderr,"start Ydset_union size = %d\n",Yrbtree_size(dset->dtree));
   );
@@ -499,7 +499,7 @@ VOIDPTR Ydset_union( YDSETPTR dset, VOIDPTR x, VOIDPTR y )
   } else {
     p3 = p1;
   }
-  
+
   D("Ydset_union",
     fprintf(stderr,"end Ydset_union size = %d\n",Yrbtree_size(dset->dtree));
   );
@@ -516,7 +516,7 @@ VOIDPTR Ydset_union( YDSETPTR dset, VOIDPTR x, VOIDPTR y )
 VOIDPTR Ydset_find_set( YDSETPTR dset, VOIDPTR data )
 {
   ELEMENTPTR ptr ;
-  
+
   if ( (ptr = dset_find_set(dset, data)) ) {
     return( ptr->data ) ;
   }
@@ -531,7 +531,7 @@ VOIDPTR Ydset_find_set( YDSETPTR dset, VOIDPTR data )
 VOIDPTR Ydset_find( YDSETPTR dset, VOIDPTR data )
 {
   ELEMENTPTR ptr ;
-  
+
   if( (ptr = find( dset, data )) ){
     return( ptr->data ) ;
   }
@@ -551,7 +551,7 @@ INT Ydset_subset_size( YDSETPTR dset, VOIDPTR data )
 {
   ELEMENT dummy ;
   ELEMENTPTR ptr ;
-  
+
   if (dset){
     dsetS = dset ;
     dummy.data = data;
@@ -573,10 +573,10 @@ INT Ydset_verify( YDSETPTR dset )
 {
   ELEMENTPTR ptr ;
   INT sizeIn;
-  INT sizeOut;  
+  INT sizeOut;
   INT rc = TRUE;
   YTREEPTR dtree ;
-  
+
   dsetS = dset ;
   dtree = dset->dtree ;
   sizeIn = Ydset_superset_size(dset);
@@ -591,14 +591,14 @@ INT Ydset_verify( YDSETPTR dset )
   /* walk through all elements user find routines to recover itself */
   for ( ptr = (ELEMENTPTR)Yrbtree_enumerate( dtree, TRUE); ptr;
        ptr = (ELEMENTPTR)Yrbtree_enumerate( dtree, FALSE) ) {
-    if ( YcheckDebug(ptr) < sizeof(ELEMENT) ) { 
+    if ( YcheckDebug(ptr) < sizeof(ELEMENT) ) {
       M(ERRMSG,"Ydset_verify","corrupt element memory\n");
       rc = FALSE;
     }
 
   }
   Yrbtree_enumeratePop(dtree);
-  
+
   sizeOut = Ydset_superset_size(dset);
 
   /* make sure the size has not changed, this tell us if makeset is called */
@@ -621,7 +621,7 @@ VOID Ydset_dump(YDSETPTR dset, VOID (*printFunc)())
   ELEMENTPTR lastParent;
   ELEMENTPTR parent;
   ELEMENT dummy;
-  
+
   D("Ydset_dump",
     fprintf(stderr,"start Ydset_dump\n");
     );
@@ -636,14 +636,14 @@ VOID Ydset_dump(YDSETPTR dset, VOID (*printFunc)())
   fprintf(stderr,"set contains %d items\n",Yrbtree_size(dset->dtree));
   for ( ptr = (VOIDPTR)Ydset_enumerate_superset( dset, TRUE); ptr;
        ptr = (VOIDPTR)Ydset_enumerate_superset( dset, FALSE) ) {
-    
+
     parent = dset_find_set( dset,ptr );
     if ( parent != lastParent ) {
       fprintf(stderr,"\n%d items in set #%d [parent ",parent->size,count++);
       if ( printFunc ) {
-	(*printFunc)(parent);
+        (*printFunc)(parent);
       } else {
-	fprintf(stderr,"%ld ", (long) parent->data);
+        fprintf(stderr,"%ld ", (long) parent->data);
       }
       fprintf(stderr,"]:\n" ) ;
     }
@@ -676,10 +676,10 @@ VOIDPTR Ydset_interval( YDSETPTR dset,
   D("Ydset_interval",
     fprintf(stderr,"start Ydset_interval\n");
   );
-  
+
   dsetS = dset ;
   /* note we have to take address here because we will do dereferencing later */
-  ptr = (ELEMENTPTR) 
+  ptr = (ELEMENTPTR)
     Yrbtree_interval( dset->dtree, &low_key, &high_key, startFlag );
 
   D("Ydset_interval",
@@ -704,7 +704,7 @@ VOID Ydset_dump_tree(YDSETPTR dset, VOID(*print_key)())
   ELEMENTPTR lastParent;
   ELEMENTPTR parent;
   ELEMENT dummy;
-  
+
   D("Ydset_dump_tree",
     fprintf(stderr,"start Ydset_dump_tree\n");
   );
@@ -730,11 +730,11 @@ we need them....Just call Yrbtree push and pop. */
 static INT Ydset_compare_set( INT num1, INT num2 )
 {
     if( num1 == num2 ){
-	return( 0 ) ;
+        return( 0 ) ;
     } else if( num1 < num2 ){
-	return( -1 ) ;
+        return( -1 ) ;
     } else {
-	return( 1 ) ;
+        return( 1 ) ;
     }
 } /* end Ydset_compare_set */
 
@@ -760,7 +760,7 @@ set = Ydset_init( Ydset_compare_set ) ;
 for( i = 1; i <= 10; i++ ){
     q = (INT) Ydset_find( set, (VOIDPTR) i ) ;
     fprintf( stderr, "find:%d = %d ...\n", i, q ) ;
-} 
+}
 Ydset_union( set, (VOIDPTR) 1, (VOIDPTR) 2 ) ;
 fprintf( stderr, "1 belongs to %d\n", Ydset_find( set, (VOIDPTR) 1 )) ;
 printf("%d\n",Ydset_superset_size( set ));
@@ -780,7 +780,7 @@ for( q = (INT) Ydset_enumerate_subset( set, (VOIDPTR) 6, TRUE ) ;
 } /* end */
 fprintf( stderr, "\n" ) ;
 
-fprintf( stderr, "Six's parent is:%d\n", 
+fprintf( stderr, "Six's parent is:%d\n",
     (INT) Ydset_find_set( set, (VOIDPTR) 6 ) ) ;
 
 fprintf( stderr, "The size of the set 6 is in is:%d\n",
@@ -831,9 +831,9 @@ for( q = (INT) Ydset_enumerate_parents( set, TRUE ) ;
     q ;
     q = (INT) Ydset_enumerate_parents( set, FALSE ) ){
     for( j = (INT) Ydset_enumerate_subset( set, (VOIDPTR) q, TRUE ) ;
-	j ;
-	j = (INT) Ydset_enumerate_subset( set, (VOIDPTR) q, FALSE ) ){
-	fprintf( stderr, "%d ", j ) ;
+        j ;
+        j = (INT) Ydset_enumerate_subset( set, (VOIDPTR) q, FALSE ) ){
+        fprintf( stderr, "%d ", j ) ;
     } /* end */
     fprintf( stderr, "\n" ) ;
 } /* end */
