@@ -37,14 +37,14 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    mst.c                                       
+/* -----------------------------------------------------------------
+FILE:       mst.c
 DESCRIPTION:These routines find the minimum spanning tree of a net.
-	    USING PRIM'S ALGORITHM.
-CONTENTS:   
-DATE:	    Jun 21, 1989 
+            USING PRIM'S ALGORITHM.
+CONTENTS:
+DATE:       Jun 21, 1989
 REVISIONS:  Thu Oct 17 11:09:03 EDT 1991 - renamed functions according
-		to convention. Added mst_color function.
+                to convention. Added mst_color function.
 ----------------------------------------------------------------- */
 #ifndef lint
 static char SccsId[] = "@(#) mst.c (Yale) version 1.5 1/24/92" ;
@@ -64,15 +64,15 @@ static    INT countS ;           /* number of pins for this net */
 static    INT colorS = TWRED ;   /* default color is red */
 
 #define	SQUARE(a)    ((a)*(a))
-#define	INF	     INT_MAX
+#define	INF          INT_MAX
 
 static INT cost(INT i, INT j)
 /* return the square of the Euclidian distance of 2 points */
 {
-	if (i==j){
-	    return INF;
-	}
-	return( SQUARE(nodeXS[i]-nodeXS[j])+SQUARE(nodeYS[i]-nodeYS[j]) );
+        if (i==j){
+            return INF;
+        }
+        return( SQUARE(nodeXS[i]-nodeXS[j])+SQUARE(nodeYS[i]-nodeYS[j]) );
 } /* end cost */
 
 VOID Ymst_init( INT numpins )
@@ -88,9 +88,9 @@ VOID Ymst_init( INT numpins )
 VOID Ymst_free()
 {
     YFREE(nodeXS) ;
-    YFREE(nodeYS) ;	
+    YFREE(nodeYS) ;
     YFREE(closestS) ;
-    YFREE(lowcostS) ;	
+    YFREE(lowcostS) ;
 } /* end Ymst_free() */
 
 VOID Ymst_clear()
@@ -101,8 +101,8 @@ VOID Ymst_clear()
 VOID Ymst_addpt( INT x, INT y )
 {
     if( countS >= numpinS ){
-	fprintf( stderr, "Out of space - update number of pins for MST\n"); 
-	return ;
+        fprintf( stderr, "Out of space - update number of pins for MST\n");
+        return ;
     }
     nodeXS[countS] = x ;
     nodeYS[countS] = y ;
@@ -119,28 +119,28 @@ VOID Ymst_draw()
     INT c ;                   /* temp for cost */
 
     for( i = 1 ; i < countS; i++) {
-	closestS[i] = 0 ;
-	lowcostS[i] = cost( 0,i ) ;	
+        closestS[i] = 0 ;
+        lowcostS[i] = cost( 0,i ) ;
     }
     for( i = 1; i < countS; i++) {
-	mincost = lowcostS[1] ;
-	k = 1 ;
-	for( j = 2 ; j < countS ; j++ ){
-	    if( lowcostS[j] < mincost ) {
-		mincost = lowcostS[j] ;
-		k = j ;
-	    }
-	}
-	closest_pt = closestS[k] ;
-	TWdrawLine( i, nodeXS[k], nodeYS[k], 
-	    nodeXS[closest_pt], nodeYS[closest_pt], colorS, NULL ) ;
-	lowcostS[k] = INF;
-	for( j = 1 ; j < countS ; j++ ){
-	    if( ( c = cost(k,j) ) < lowcostS[j] && lowcostS[j] < INF ){
-		lowcostS[j] = c;
-		closestS[j] = k;
-	    }
-	}
+        mincost = lowcostS[1] ;
+        k = 1 ;
+        for( j = 2 ; j < countS ; j++ ){
+            if( lowcostS[j] < mincost ) {
+                mincost = lowcostS[j] ;
+                k = j ;
+            }
+        }
+        closest_pt = closestS[k] ;
+        TWdrawLine( i, nodeXS[k], nodeYS[k],
+            nodeXS[closest_pt], nodeYS[closest_pt], colorS, NULL ) ;
+        lowcostS[k] = INF;
+        for( j = 1 ; j < countS ; j++ ){
+            if( ( c = cost(k,j) ) < lowcostS[j] && lowcostS[j] < INF ){
+                lowcostS[j] = c;
+                closestS[j] = k;
+            }
+        }
     } /* end for( i = 1;... */
 
 } /* end Ymst_draw() */
@@ -155,23 +155,23 @@ VOID Ymst_enumerate( INT *x1, INT *y1, INT *x2, INT *y2, BOOL startFlag )
     static INT i ;            /* keep track of the edge */
 
     if( startFlag ){
-	for( i = 1 ; i < countS; i++) {
-	    closestS[i] = 0 ;
-	    lowcostS[i] = cost( 0,i ) ;	
-	}
-	i = 1;
+        for( i = 1 ; i < countS; i++) {
+            closestS[i] = 0 ;
+            lowcostS[i] = cost( 0,i ) ;
+        }
+        i = 1;
     } else {
-	if( ++i >= countS ){
-	    return ; /* no more edges left */
-	}
+        if( ++i >= countS ){
+            return ; /* no more edges left */
+        }
     }
     mincost = lowcostS[1] ;
     k = 1 ;
     for( j = 2 ; j < countS ; j++ ){
-	if( lowcostS[j] < mincost ) {
-	    mincost = lowcostS[j] ;
-	    k = j ;
-	}
+        if( lowcostS[j] < mincost ) {
+            mincost = lowcostS[j] ;
+            k = j ;
+        }
     }
     closest_pt = closestS[k] ;
     *x1 = nodeXS[k] ;
@@ -181,10 +181,10 @@ VOID Ymst_enumerate( INT *x1, INT *y1, INT *x2, INT *y2, BOOL startFlag )
 
     lowcostS[k] = INF;
     for( j = 1 ; j < countS ; j++ ){
-	if( ( c = cost(k,j) ) < lowcostS[j] && lowcostS[j] < INF ){
-	    lowcostS[j] = c;
-	    closestS[j] = k;
-	}
+        if( ( c = cost(k,j) ) < lowcostS[j] && lowcostS[j] < INF ){
+            lowcostS[j] = c;
+            closestS[j] = k;
+        }
     }
 
 } /* end Ymst_enumerate() */
