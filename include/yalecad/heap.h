@@ -1,16 +1,15 @@
-
 /****************************************************************************
  ****************************************************************************
 
-	File   : heap.h
-	Author : Ted Stanion
-	Date   : Mon Apr 30 22:36:17 1990
+        File   : heap.h
+        Author : Ted Stanion
+        Date   : Mon Apr 30 22:36:17 1990
 
-	Abstract : Include file for heap.c
+        Abstract : Include file for heap.c
 
-	Revisions :
+        Revisions :
 
-	Futures : 
+        Futures :
 
  ****************************************************************************
  ****************************************************************************/
@@ -26,11 +25,11 @@ static char YHeap_SccsId[] = "@(#) heap.h version 1.3 7/11/91";
 
 /****************************************************************************
 
-	Structure : heap
-	Author    : Ted Stanion
-	Date      : Mon Apr 30 22:57:04 1990
+        Structure : heap
+        Author    : Ted Stanion
+        Date      : Mon Apr 30 22:57:04 1990
 
-	Abstract : Top level data structure for heaps.
+        Abstract : Top level data structure for heaps.
 
 *****************************************************************************/
 
@@ -42,11 +41,11 @@ typedef struct heap {
 
 /****************************************************************************
 
-	Macro  : heap_empty
-	Author : Ted Stanion
-	Date   : Tue May  1 16:40:02 1990
+        Macro  : heap_empty
+        Author : Ted Stanion
+        Date   : Tue May  1 16:40:02 1990
 
-	Abstract : Returns TRUE if the heap is empty.
+        Abstract : Returns TRUE if the heap is empty.
 
 *****************************************************************************/
 
@@ -54,9 +53,9 @@ typedef struct heap {
 
 
 /************************************************************************
- *  									*
+ *                                                                      *
  *  Global Functions							*
- *  									*
+ *                                                                      *
  ************************************************************************/
 
 extern YHEAPPTR Yheap_init();
