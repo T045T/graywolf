@@ -37,15 +37,15 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    log.c 
+/* -----------------------------------------------------------------
+FILE:       log.c
 DESCRIPTION:This file contains routines for logging the
-	    execution times of the program.
+            execution times of the program.
 CONTENTS:   Ylog_msg( message )
-		char *message ;
-	    Ylog_start( message )
-		char *message ;
-DATE:	    May  7, 1989 - original coding.
+                char *message ;
+            Ylog_start( message )
+                char *message ;
+DATE:       May  7, 1989 - original coding.
 REVISIONS:  Aug  7, 1989 - Moved to libary.
 ----------------------------------------------------------------- */
 #ifndef lint
@@ -57,7 +57,7 @@ static char SccsId[] = "@(#) log.c version 1.2 8/28/90" ;
 #include <yalecad/message.h>
 #include <yalecad/file.h>
 
-static char cktNameS[LRECL] = " " ; 
+static char cktNameS[LRECL] = " " ;
 
 /* put a message in the log file */
 VOID Ylog_msg( char *message )
@@ -67,7 +67,7 @@ VOID Ylog_msg( char *message )
     char filename[LRECL] ;    /* log file name */
     FILE *fp ;                /* logfile */
 
-    sprintf( filename, "%s.log", cktNameS ) ;    
+    sprintf( filename, "%s.log", cktNameS ) ;
     fp = TWOPEN( filename, "a", ABORT ) ;
     time = YcurTime( &timestamp ) ;
     fprintf( fp, "time %8d %s:%s\n", timestamp, time, message ) ;
@@ -82,7 +82,7 @@ VOID Ylog_start( char *design, char *message )
     FILE *fp ;                /* logfile */
 
     strcpy( cktNameS, design ) ;
-    sprintf( filename, "%s.log", cktNameS ) ;    
+    sprintf( filename, "%s.log", cktNameS ) ;
     fp = TWOPEN( filename, "a", ABORT ) ;
     time = YcurTime( &timestamp ) ;
     fprintf( fp,"####################################################\n");
