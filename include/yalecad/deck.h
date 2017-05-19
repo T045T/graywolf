@@ -1,8 +1,8 @@
-/* ----------------------------------------------------------------- 
-DESCRIPTION:Insert file for deck library routines.  Add & subtract 
-members from a top/bottom of doubly-linked list. Multiple decks may 
+/* -----------------------------------------------------------------
+DESCRIPTION:Insert file for deck library routines.  Add & subtract
+members from a top/bottom of doubly-linked list. Multiple decks may
 occur simultaneously.  The complexity of the routines are as follows.
-    Ydeck_top         : O(1) 
+    Ydeck_top         : O(1)
     Ydeck_bottom      : O(1)
     Ydeck_up          : O(1)
     Ydeck_down        : O(1)
@@ -45,7 +45,7 @@ typedef struct {
 /* *********** list macros ***************** */
 
 #define Ydeck_up( deck_xyz )    (deck_xyz->current = deck_xyz->current->up)
-/* 
+/*
 Arguments:
     YDECK *deck_xyz ;
 Function:
@@ -53,7 +53,7 @@ Function:
 */
 
 #define Ydeck_down( deck_xyz )    (deck_xyz->current = deck_xyz->current->down)
-/* 
+/*
 Arguments:
     YDECK *deck_xyz ;
 Function:
@@ -61,7 +61,7 @@ Function:
 */
 
 #define Ydeck_top( deck_xyz )    (deck_xyz->current = deck_xyz->top)
-/* 
+/*
 Arguments:
     YDECK *deck_xyz ;
 Function:
@@ -69,7 +69,7 @@ Function:
 */
 
 #define Ydeck_bottom( deck_xyz )    ( deck_xyz->current = deck_xyz->bottom )
-/* 
+/*
 Arguments:
     YDECK *deck_xyz ;
 Function:
@@ -77,7 +77,7 @@ Function:
 */
 
 #define Ydeck_size( deck_xyz )    (deck_xyz->size)
-/* 
+/*
 Arguments:
     YDECK *deck_xyz ;
 Function:
@@ -85,11 +85,11 @@ Function:
 */
 
 #define Ydeck_getData( deck_xyz )    (deck_xyz->current->data)
-/* 
+/*
 Arguments:
     YDECK *deck_xyz ;
 Function:
-    Returns a pointer to data stored on current card 
+    Returns a pointer to data stored on current card
 */
 
 #define Ydeck_notEnd( deck_xyz )    (deck_xyz->current != Ydeck_sentinel())
@@ -101,29 +101,29 @@ Function:
     useful if the user wishes to make his own loop.
     eg)  for(Ydeck_top(); Ydeck_notEnd() ; Ydeck_down() ) {
              operations on Ydeck_getData();
-	     }
+             }
 */
 
 #define Ydeck_getTop( deck_xyz )    (deck_xyz->top->data)
-/* 
+/*
 Arguments:
     YDECK *deck_xyz ;
 Function:
-    Returns a pointer to data stored on the top card 
+    Returns a pointer to data stored on the top card
 */
 
 #define Ydeck_getBottom( deck_xyz )    (deck_xyz->bottom->data)
-/* 
+/*
 Arguments:
     YDECK *deck_xyz ;
 Function:
-    Returns a pointer to data stored on the bottom card 
+    Returns a pointer to data stored on the bottom card
 */
 
 
 /* *********** deck routines *************** */
 extern YDECK *Ydeck_init( /* */ ) ;
-/* 
+/*
 Arguments:
     none.
 Function:
@@ -131,7 +131,7 @@ Function:
 */
 
 extern VOID Ydeck_push( P2( YDECK *deck, VOIDPTR data ) ) ;
-/* 
+/*
 Arguments:
     YDECK *deck ;
     VOIDPTR data ;
@@ -141,7 +141,7 @@ Function:
 */
 
 extern VOID Ydeck_enqueue( P2( YDECK *deck, VOIDPTR data ) ) ;
-/* 
+/*
 Arguments:
     YDECK *deck ;
     VOIDPTR data ;
@@ -151,25 +151,25 @@ Function:
 */
 
 extern VOIDPTR Ydeck_pop( P1(YDECK *deck) ) ;
-/* 
+/*
 Arguments:
     YDECK *deck ;
 Function:
     Delete top item from deck.  If item does not exist does nothing unless
     debug switch has been turned on.  User is required to maintain
     memory of the data element.
-    Returns data (interger or pointer) stored on card.  
+    Returns data (interger or pointer) stored on card.
 */
 
 extern VOIDPTR Ydeck_dequeue( P1(YDECK *deck) ) ;
-/* 
+/*
 Arguments:
     YDECK *deck ;
 Function:
     Delete bottom item from deck.  If item does not exist does nothing unless
     debug switch has been turned on.  User is required to maintain
     memory of the data element.
-    Returns data (interger or pointer) stored on card.  
+    Returns data (interger or pointer) stored on card.
 */
 
 extern VOID Ydeck_dump ( P2( YDECK *deckPtr, VOID (*userPrint)() ) );
@@ -182,7 +182,7 @@ Function:
 */
 
 extern VOID Ydeck_empty( P2( YDECK *deck, VOID (*userDelete)() ) ) ;
-/* 
+/*
 Arguments:
     YDECK *deck ;
     (*userDelete)();
@@ -193,7 +193,7 @@ Function:
 */
 
 extern VOID Ydeck_free( P2( YDECK *deck, VOID (*userDelete)() ) ) ;
-/* 
+/*
 Arguments:
     YDECK *deck ;
     (*userdelete)();
@@ -212,8 +212,3 @@ Function:
 extern  int Ydeck_verify(P1(YDECK *deck));
 
 #endif /* DECK_H */
-
-
-
-
-
