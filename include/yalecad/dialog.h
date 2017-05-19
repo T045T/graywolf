@@ -1,8 +1,8 @@
-/* ----------------------------------------------------------------- 
-FILE:	    dialog.h                                       
+/* -----------------------------------------------------------------
+FILE:       dialog.h
 DESCRIPTION:user insert file for dialog box routines.
 CONTENTS:   typedefs and definitions
-DATE:	    Sep 16, 1989 - original coding.
+DATE:       Sep 16, 1989 - original coding.
 REVISIONS:  Dec  7, 1990 - added update function to dialog box.
 ----------------------------------------------------------------- */
 #ifndef DIALOG_H
@@ -26,7 +26,7 @@ typedef struct {
     INT   type ;
     INT   color ;
     INT   group ; /* used for CASETYPE - initial switch */
-	  	  /* used for BUTTONTYPE - member of case group */
+                  /* used for BUTTONTYPE - member of case group */
 } TWDIALOGBOX, *TWDIALOGPTR ;
 
 typedef struct {
@@ -38,7 +38,7 @@ typedef struct {
 /* build a dialog box and get info */
 extern TWDRETURNPTR TWdialog( P3(TWDIALOGPTR fieldp, char *name,
     INT (*user_function)() ) ) ;
-/* 
+/*
 Arguments:
     TWDIALOGPTR fieldp ;
     char *name ;
@@ -57,7 +57,7 @@ Function:
 
 #ifdef DEBUG
 extern TWDIALOGPTR TWread_dialog( P1(char *filename) ) ;
-/* 
+/*
 Arguments:
     char *filename ;
 Function:
