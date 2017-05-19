@@ -37,21 +37,21 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    timer.c                                       
+/* -----------------------------------------------------------------
+FILE:       timer.c
 DESCRIPTION:create a timer for a process.
 CONTENTS:   Ytimer_start()
-	    Ytimer_elapsed( time_elapsed )
-		INT *time_elapsed ;
-DATE:	    Oct 04, 1990 
-REVISIONS:  
-	    Apr 01, 1991 - added SYS5 (A/UX) support  (RAWeier)
+            Ytimer_elapsed( time_elapsed )
+                INT *time_elapsed ;
+DATE:       Oct 04, 1990
+REVISIONS:
+            Apr 01, 1991 - added SYS5 (A/UX) support  (RAWeier)
 ----------------------------------------------------------------- */
 #ifndef lint
 static char SccsId[] = "@(#) timer.c version 4.3 10/25/91" ;
 #endif
 
- 
+
 #include <yalecad/base.h>
 #include <sys/types.h>
 
@@ -86,12 +86,12 @@ VOID Ytimer_elapsed( INT *time_elapsed )
 #else /* SYS5 */
   struct timeb tp;
 #endif /* SYS5 */
-  
+
   INT time_offset ;
     if( base_timeS == 0 ){
-	/* start was not called */
-	*time_elapsed = 0 ;
-	return ;
+        /* start was not called */
+        *time_elapsed = 0 ;
+        return ;
     }
 
 #ifdef SYS5
@@ -113,5 +113,5 @@ VOID Ytimer_elapsed( INT *time_elapsed )
     time_offset -= milli_timeS ;
     /* return the answer */
     *time_elapsed = time_offset ;
-#endif /* SYS5 */   
+#endif /* SYS5 */
 } /* end Ytimer_elapsed */
