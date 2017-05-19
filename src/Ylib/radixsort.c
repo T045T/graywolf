@@ -131,12 +131,12 @@ static void shellsort(register blob **p, register int index, register int n,
        while ((ch = tr[*s1++]) == tr[*s2] && ch)
          ++s2;
        if (ch > tr[*s2])
-	{
+        {
          s1 = p[t2];
          p[t2] = p[t2 + incr];
          p[t2 + incr] = s1;
          t2 -= incr;
-	}
+        }
        else
          break;
       }
@@ -162,7 +162,7 @@ static void shellsort(register blob **p, register int index, register int n,
  *
  *	for (partition_cnt = 0; nelements > npartitions; ++partition_cnt)
  *		nelements =
- *		    (nelements - (npartitions + 1) * (nbuckets - 2)) / 2;
+ *                  (nelements - (npartitions + 1) * (nbuckets - 2)) / 2;
  *
  * The bound is:
  *
@@ -270,7 +270,7 @@ simultaneously equals the global maximum of them individually, so if all
 bounds can be achieved then
 
   t(n) = max_{m>=2} max { s(n - (P + 1)),
-			  s(floor((n - (P + 1)(m - 2))/2)) + m - 1 }.  (FC)
+                          s(floor((n - (P + 1)(m - 2))/2)) + m - 1 }.  (FC)
 
 This can be achieved if n - (P + 1) >= ceiling((n - (P + 1)(m - 2))/2)
 and, equivalently, P + 1 <= floor((n - (P + 1)(m - 2))/2), since in that
@@ -443,7 +443,7 @@ int Yradixsort5(blob **l1, register int n, unsigned int endchar, blob *tab,
     * Sum the number of characters into c, dividing the temp stack
     * into the right number of buckets for this bucket, this index.
     * c contains the cumulative total of keys before and included in
-    * this bucket, and will later be used as an index to the bucket. 
+    * this bucket, and will later be used as an index to the bucket.
     * c[NBUCKETS] contains the total number of elements, for determining
     * how many elements the last bucket contains. At the same time, we
     * find the largest bucket so it gets pushed first.
@@ -574,7 +574,7 @@ char *Yradix_pref_clone( char *buffer )
     len = strlen( buffer + 4 ) + 4 + 1 ;
     new_string = YMALLOC( len, char ) ;
     for( i = 0 ; i < len ; i++ ){
-	new_string[i] = buffer[i] ;
+        new_string[i] = buffer[i] ;
     }
     return( new_string ) ;
 
@@ -601,27 +601,27 @@ main()
     char *bufferptr ;
     char *sort_field ;
 
-    
+
     Yset_random_seed( Yrandom_seed() ) ;
     array = YMALLOC( NUM_ALLOC, INFOPTR ) ;
     for( i = 0 ; i < NUM_ALLOC ; i++ ){
-	aptr = array[i] = YMALLOC( 1, INFO ) ;
-	aptr->weight = Yacm_random() ;
-	/* store the original place in the prefix of the sort field */
-	/* Yradix_prefix returns back the new start of the string */
-	sort_field = Yradix_prefix( aptr->sort_weight, i ) ;
-	sprintf( sort_field, "%10d", aptr->weight ) ;
-	fprintf( stderr, "array[%d] = %d\n", i, aptr->weight ) ;
+        aptr = array[i] = YMALLOC( 1, INFO ) ;
+        aptr->weight = Yacm_random() ;
+        /* store the original place in the prefix of the sort field */
+        /* Yradix_prefix returns back the new start of the string */
+        sort_field = Yradix_prefix( aptr->sort_weight, i ) ;
+        sprintf( sort_field, "%10d", aptr->weight ) ;
+        fprintf( stderr, "array[%d] = %d\n", i, aptr->weight ) ;
     }
 
     Yradixsort_pref( array, NUM_ALLOC ) ;
 
     fprintf( stderr, "\nAfter the sort:\n" ) ;
     for( i = 0 ; i < NUM_ALLOC ; i++ ){
-	aptr = array[i] ;
-	num = Yradix_number( aptr->sort_weight ) ;
-	fprintf( stderr, "array[%d] = %10d (originally array[%d])\n", 
-	    i, aptr->weight, num ) ;
+        aptr = array[i] ;
+        num = Yradix_number( aptr->sort_weight ) ;
+        fprintf( stderr, "array[%d] = %10d (originally array[%d])\n",
+            i, aptr->weight, num ) ;
     }
 
     num = array[0]->weight ;

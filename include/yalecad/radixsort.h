@@ -26,4 +26,3 @@ extern char *Yradix_suffix( P1(char *buffer) ) ;
 extern char *Yradix_pref_clone( P1(char *buffer) ) ;
 
 #endif
-
