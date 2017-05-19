@@ -342,7 +342,7 @@ VOID Yplot_flush( char *gName )
         }
         if( i >= gfilenoS ){
             sprintf( YmsgG,
-                "couldn't find file %s name in opened file list\n" ) ;
+                     "couldn't find file %s name in opened file list\n", gName ) ;
             M(ERRMSG,"GRAPH", YmsgG ) ;
             return ;
         }
