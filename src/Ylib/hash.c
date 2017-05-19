@@ -60,6 +60,7 @@ static char SccsId[] = "@(#) hash.c version 3.11 12/15/91" ;
 #endif
 
 #include <stdio.h>
+#include <string.h>
 #include <yalecad/base.h>
 #include <yalecad/hash.h>
 #include <yalecad/debug.h>
@@ -145,14 +146,14 @@ char *Yhash_search(YHASHPTR hashtable, char *key, VOIDPTR data, INT operation )
     /*  FUNCTION hash_key */
     name = key ;
     for (shift=1 ;*name; name++){
-        hsum = hsum + *name<<shift;
+        hsum = (hsum + *name)<<shift;
         shift = (shift + 1) & 0x0007;
     }
 #endif
     hsum %= tablesize ;
 
     /* insert into table only if distinct number */
-    if( temptr = table[hsum] ){
+    if( (temptr = table[hsum]) ){
         /* list started at this hash */
         for(curPtr=temptr;curPtr;curPtr=curPtr->next ) {
             if( strcmp(curPtr->key, key ) == STRINGEQ ){
@@ -190,7 +191,7 @@ char *Yhash_search(YHASHPTR hashtable, char *key, VOIDPTR data, INT operation )
             curTable->key = (char *) Ystrclone( key ) ;
             curTable->next = NULL ;
             /* now fix thread which goes through hash table */
-            if( tempThread = hashtable->thread ){
+            if( (tempThread = hashtable->thread) ){
                 hashtable->thread = curTable ;
                 curTable->threadNext = tempThread ;
             } else {
@@ -240,14 +241,14 @@ char *Yhash_add(YHASHPTR hashtable, char *key, char *(*add_function)(),
     /*  FUNCTION hash_key */
     name = key ;
     for (shift=1 ;*name; name++){
-        hsum = hsum + *name<<shift;
+        hsum = (hsum + *name)<<shift;
         shift = (shift + 1) & 0x0007;
     }
 #endif
     hsum %= tablesize ;
 
     /* insert into table only if distinct number */
-    if( temptr = table[hsum] ){
+    if( (temptr = table[hsum]) ){
         /* list started at this hash */
         for(curPtr=temptr;curPtr;curPtr=curPtr->next ) {
             if( strcmp(curPtr->key, key ) == STRINGEQ ){
@@ -276,7 +277,7 @@ char *Yhash_add(YHASHPTR hashtable, char *key, char *(*add_function)(),
         curTable->key = (char *) Ystrclone( key ) ;
         curTable->next = NULL ;
         /* now fix thread which goes through hash table */
-        if( tempThread = hashtable->thread ){
+        if( (tempThread = hashtable->thread) ){
             hashtable->thread = curTable ;
             curTable->threadNext = tempThread ;
         } else {
