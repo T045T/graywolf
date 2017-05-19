@@ -39,34 +39,34 @@
 
 /****************************************************************************
  ****************************************************************************
- 
+
  File   : heap.c
  Author : Ted Stanion
  Date   : Tue May  1 00:06:55 1990
- 
+
  Abstract : Implements a heap structure or priority queue.  Each
  heap may have its own compare function.  It is recommended that
  you use the predefined functions heap_cmp_ptr, heap_cmp_num
  and strcmp, if your keys are pointers, numbers or strings.
  If you create a heap with no function specified, heap_cmp_num
  is assumed.
- 
+
  The following operations are defined:
  * create : creates an empty heap.
  * insert : insert an arbitrary key and data into the heap.
  * delete_min : delete and return the minimum heap element.
  * meld : returns the heap formed by combining two disjoint heaps.
- 
+
  This implementation is based on Chapter 3.3 of Tarjan's SIAM book,
  Data_Structures_and_Network_Algorithms.  We use a leftist heap
  in order to guarantee O(log n) time complexity.
- 
+
  Revisions :
  2 April 1991 -- Ted Stanion -- Hid HEAP_EL from user.
  June 1991    - Port to TimberWolf library.  R.A.Weier
- October 1991 - Make changes for Gnu gcc, a strict compiler.  R.A.Weier 
+ October 1991 - Make changes for Gnu gcc, a strict compiler.  R.A.Weier
  Futures : ;
- 
+
  ****************************************************************************
  ****************************************************************************/
 
@@ -77,15 +77,15 @@ static char Yheap_Id[] = "@(#) heap.c version 1.8 12/15/91";
 #endif
 
 /****************************************************************************
-  
+
   Structure : heap_el
   Author    : Ted Stanion
   Date      : Mon Apr 30 22:59:47 1990
-  
+
   Abstract : Structure for holding a heap element.  Points to the
   left and rite children of this element, and this elements key
   and data items.
-  
+
   *****************************************************************************/
 
 typedef struct heap_el {
@@ -95,9 +95,9 @@ typedef struct heap_el {
 } HEAP_EL_STRUCT, *HEAP_EL;
 
 /************************************************************************
- *  									*
+ *                                                                      *
  *  Access Macros							*
- *  									*
+ *                                                                      *
  ************************************************************************/
 #define get_data(e) ((e)->data)
 #define set_data(e,d) (e)->data = (d)
@@ -110,9 +110,9 @@ typedef struct heap_el {
 
 
 /************************************************************************
- *  									*
+ *                                                                      *
  *  Local Functions							*
- *  									*
+ *                                                                      *
  ************************************************************************/
 static VOID free_all_els(P1(HEAP_EL));
 static HEAP_EL meld(P3(HEAP_EL, HEAP_EL, INT (*cmp)()));
@@ -121,28 +121,28 @@ static YHEAPPTR allocate_heap();
 static HEAP_EL allocate_heap_el();
 static VOID free_heap(P1(YHEAPPTR));
 static VOID free_heap_el(P1(HEAP_EL));
-     
-     
+
+
 /************************************************************************
-*  									*
+*                                                                       *
 *  Local Variables							*
-*  									*
+*                                                                       *
  ************************************************************************/
 static long heaps_allocated = 0L;
 static long heap_els_allocated = 0L;
-     
-     
+
+
 /************************************************************************
-*  									*
+*                                                                       *
 *  Local Defines							*
-*  									*
+*                                                                       *
 ************************************************************************/
 #define GTR(fn,e1,e2)					\
 ((fn) == Yheap_cmp_num ? (get_data(e1) > get_data(e2)) : \
  (fn) == Yheap_cmp_ptr ? (get_data(e1) > get_data(e2)) : \
  (fn)(get_data(e1), get_data(e2)) > 0L)
-     
-     
+
+
 /***************************************************************************
 
  Function : heap_create
@@ -152,11 +152,11 @@ static long heap_els_allocated = 0L;
  Abstract : Returns a new heap structure.
 
 *****************************************************************************/
-     
+
      extern YHEAPPTR Yheap_init()
 {
   YHEAPPTR tmp;
-  
+
   tmp = allocate_heap();
   tmp->heap_cmp = Yheap_cmp_num;
   return tmp;
@@ -164,20 +164,20 @@ static long heap_els_allocated = 0L;
 
 
 /****************************************************************************
-  
+
   Function : heap_create_with_parms
   Author   : Ted Stanion
   Date     : Fri Sep 21 11:27:59 1990
-  
+
   Abstract : Creates a new heap with a user specified compare
   function.
-  
+
   *****************************************************************************/
 
 extern YHEAPPTR Yheap_init_with_parms(INT (*fn)())
 {
   YHEAPPTR tmp;
-  
+
   tmp = allocate_heap();
   tmp->heap_cmp = fn;
   return tmp;
@@ -185,14 +185,14 @@ extern YHEAPPTR Yheap_init_with_parms(INT (*fn)())
 
 
 /****************************************************************************
-  
+
   Function : heap_empty
   Author   : Ted Stanion
   Date     : Tue May  1 00:25:16 1990
-  
+
   Abstract : Removes all elements from a heap.  Note: this
-  function does not free the data or key items. 
-  
+  function does not free the data or key items.
+
   *****************************************************************************/
 
 extern VOID Yheap_empty(YHEAPPTR heap)
@@ -203,13 +203,13 @@ extern VOID Yheap_empty(YHEAPPTR heap)
 
 
 /****************************************************************************
-  
+
   Function : heap_free
   Author   : Ted Stanion
   Date     : Tue May  1 16:56:02 1990
-  
+
   Abstract : Frees up a heap and all of its elements.
-  
+
   *****************************************************************************/
 
 extern VOID Yheap_free(YHEAPPTR heap)
@@ -220,55 +220,55 @@ extern VOID Yheap_free(YHEAPPTR heap)
 
 
 /****************************************************************************
-  
+
   Function : heap_insert
   Author   : Ted Stanion
   Date     : Tue May  1 00:29:08 1990
-  
+
   Abstract : Inserts a data item associated with a key into the
   heap.
-  
+
  *****************************************************************************/
 
 extern VOID Yheap_insert(YHEAPPTR heap, VOIDPTR data)
 {
   HEAP_EL el;
-  
+
   /**********************************************************************
-   *  									*
+   *                                                                    *
    *  Create a new heap element.					*
-   *  									*
+   *                                                                    *
    **********************************************************************/
   el = allocate_heap_el();
   el->data = data;
   el->rank = 1;
-  
+
   /**********************************************************************
-   *  									*
+   *                                                                    *
    *  This new element is technically a heap by itself.  This allows	*
    *  us to call MELD to get the new heap.				*
-   *  									*
+   *                                                                    *
    **********************************************************************/
   heap->top = meld(el, heap->top, heap->heap_cmp);
 }   /*  heap_insert  */
 
 
 /****************************************************************************
-  
+
   Function : heap_delete_min
   Author   : Ted Stanion
   Date     : Tue May  1 17:06:59 1990
-  
+
   Abstract : Returns data associated with the heap element with
   the lowest valued key and deletes it from the heap.
-  
+
  *****************************************************************************/
 
 extern VOIDPTR Yheap_delete_min(YHEAPPTR heap)
 {
   HEAP_EL el;
   VOIDPTR rtn;
-  
+
   if ((el = heap->top)) {
     heap->top = meld(get_left(el), get_rite(el), heap->heap_cmp);
     rtn = get_data(el);
@@ -281,40 +281,40 @@ extern VOIDPTR Yheap_delete_min(YHEAPPTR heap)
 
 
 /****************************************************************************
-  
+
   Function : heap_meld
   Author   : Ted Stanion
   Date     : Tue May  1 17:38:14 1990
-  
+
   Abstract : Returns the heap formed by joining two disjoint heaps.
   This operation destroys h1 and h2 in the process.  This procedure
   ASSUMES that h1 and h2 have the same compare function.  The new
   heap is pointed to by h1.
-  
+
  *****************************************************************************/
 
 extern YHEAPPTR Yheap_meld(YHEAPPTR h1, YHEAPPTR h2)
 {
   if ((h1->heap_cmp) != (h2->heap_cmp)) {
     fprintf(stderr,
-	    "HEAP: melding heaps with different compare functions.\n");
+            "HEAP: melding heaps with different compare functions.\n");
     abort();
   } else {
     h1->top = meld(h1->top, h2->top, h1->heap_cmp);
   }  /* if (h1->heap_cmp ... */
-  
+
   return h1;
 }   /*  heap_meld  */
 
 
 /****************************************************************************
-  
+
   Function : free_all_els
   Author   : Ted Stanion
   Date     : Wed May  2 09:42:11 1990
-  
+
   Abstract : Recursively frees all elements rooted at el.
-  
+
  *****************************************************************************/
 
 static VOID free_all_els(HEAP_EL el)
@@ -328,14 +328,14 @@ static VOID free_all_els(HEAP_EL el)
 
 
 /****************************************************************************
-  
+
   Function : meld
   Author   : Ted Stanion
   Date     : Tue May  1 18:27:38 1990
-  
+
   Abstract : Performs meld operation on heaps rooted at E1 and E2
   using compare function FN.
-  
+
  *****************************************************************************/
 
 static HEAP_EL meld(HEAP_EL e1, HEAP_EL e2, INT(*fn)())
@@ -350,25 +350,25 @@ static HEAP_EL meld(HEAP_EL e1, HEAP_EL e2, INT(*fn)())
 
 
 /****************************************************************************
-  
+
   Function : mesh
   Author   : Ted Stanion
   Date     : Tue May  1 18:30:46 1990
-  
+
   Abstract : Performs actual melding process on two non-empty heaps.
-  
+
  *****************************************************************************/
 
 static HEAP_EL mesh(HEAP_EL e1, HEAP_EL e2, INT(*fn)())
 {
   HEAP_EL tmp;
-  
+
   if (GTR(fn, e1, e2)) {
     tmp = e1;
     e1 = e2;
     e2 = tmp;
   }
-  
+
   e1->rite = (get_rite(e1) == NIL(HEAP_EL)) ? e2 :
     mesh(get_rite(e1), e2, fn);
   if (get_rank(get_left(e1)) < get_rank(get_rite(e1))) {
@@ -377,19 +377,19 @@ static HEAP_EL mesh(HEAP_EL e1, HEAP_EL e2, INT(*fn)())
     e1->left = tmp;
   }  /* if (get_rank ... */
   e1->rank = get_rank(get_rite(e1)) + 1;
-  
+
   return e1;
 }   /*  mesh  */
 
 
 /****************************************************************************
-  
+
   Function : heap_cmp_num
   Author   : Ted Stanion
   Date     : Fri Sep 21 12:56:44 1990
-  
+
   Abstract : Compares two numbers.
-  
+
  *****************************************************************************/
 
 INT extern Yheap_cmp_num(INT x, INT y)
@@ -399,13 +399,13 @@ INT extern Yheap_cmp_num(INT x, INT y)
 
 
 /****************************************************************************
-  
+
   Function : heap_cmp_ptr
   Author   : Ted Stanion
   Date     : Fri Sep 21 12:56:44 1990
-  
+
   Abstract : Compares two numbers.
-  
+
  *****************************************************************************/
 
 INT extern Yheap_cmp_ptr(VOIDPTR x, VOIDPTR y)
@@ -415,61 +415,61 @@ INT extern Yheap_cmp_ptr(VOIDPTR x, VOIDPTR y)
 
 
 /****************************************************************************
-  
+
   Function : allocate_heap
   Author   : Ted Stanion
   Date     : Fri Apr 20 13:38:51 1990
-  
+
   Abstract : Returns a HEAP structure from the free list.  If the
   free list is empty, then more are allocated from memory.
-  
+
  *****************************************************************************/
 
 static YHEAPPTR allocate_heap()
 {
   YHEAPPTR tmp;
-  
+
   tmp = YCALLOC(1,YHEAP);
   heaps_allocated++;
-  
+
   return tmp;
 }   /*  allocate_heap  */
 
 
 /****************************************************************************
-  
+
   Function : allocate_heap_el
   Author   : Ted Stanion
   Date     : Fri Apr 20 13:38:51 1990
-  
+
   Abstract : Returns a HEAP_EL structure from the free list.  If the
   free list is empty, then more are allocated from memory.
-  
+
  *****************************************************************************/
 
 static HEAP_EL allocate_heap_el()
 {
   HEAP_EL tmp;
-  
+
   tmp = YCALLOC(1,HEAP_EL_STRUCT);
   tmp->data = (VOIDPTR)0;
   tmp->rank = -1;
   tmp->left = tmp->rite = NIL(HEAP_EL);
-  
+
   heap_els_allocated++;
-  
+
   return tmp;
 }   /*  allocate_heap_el  */
 
 
 /****************************************************************************
-  
+
   Function : free_heap
   Author   : Ted Stanion
   Date     : Tue May  1 19:16:16 1990
-  
+
   Abstract : Puts a HEAP structure back onto the free list.
-  
+
  *****************************************************************************/
 
 static VOID free_heap(YHEAPPTR heap)
@@ -480,13 +480,13 @@ static VOID free_heap(YHEAPPTR heap)
 
 
 /****************************************************************************
-  
+
   Function : free_heap_el
   Author   : Ted Stanion
   Date     : Tue May  1 19:17:44 1990
-  
+
   Abstract : Puts a HEAP_EL structure back onto the free list.
-  
+
  *****************************************************************************/
 
 static VOID free_heap_el(HEAP_EL el)
@@ -497,13 +497,13 @@ static VOID free_heap_el(HEAP_EL el)
 
 
 /****************************************************************************
-  
+
   Function : heap_check_mem
   Author   : Ted Stanion
   Date     : Wed May  2 17:09:22 1990
-  
+
   Abstract : Prints out status of heap memory.
-  
+
  *****************************************************************************/
 
 extern VOID Yheap_check_mem()
@@ -524,7 +524,7 @@ extern INT Yheap_verify(YHEAPPTR heap)
     fprintf(stderr,"tile memory corrupt\n");
     rc = FALSE;
   }
-  
+
   /* Future enhancements */
   /* we need a heap_suc here to implement a clean search of heap tree */
   /* OR create a recursive heal_el_verify */
