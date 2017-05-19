@@ -54,6 +54,9 @@ static char SccsId[] = "@(#) stats.c version 3.8 2/26/92" ;
 #endif
 
 #include	<yalecad/base.h>
+#include	<yalecad/timer.h>
+
+#include <unistd.h>
 
 #ifdef VMS
 #define AVOID
@@ -76,8 +79,7 @@ static char SccsId[] = "@(#) stats.c version 3.8 2/26/92" ;
 #endif  /* AVOID */
 
 /* print out the statistics of the program to the given file */
-void Yprint_stats( fout )
-FILE *fout ;
+void Yprint_stats( FILE *fout )
 {
 
 #ifndef AVOID
@@ -99,7 +101,6 @@ FILE *fout ;
     struct rusage	rusage	;
     struct rlimit 	rlp	;
     caddr_t		p	;
-    caddr_t		sbrk()	;
 
     /***********************************************************
     * Get the hostname
@@ -154,7 +155,7 @@ FILE *fout ;
     data = (rusage.ru_idrss + rusage.ru_isrss) / scale + 0.5 ;
     fprintf(fout, "Average resident text size       = %5dK\n", text) ;
     fprintf(fout, "Average resident data+stack size = %5dK\n", data) ;
-    fprintf(fout, "Maximum resident size            = %5dK\n", 
+    fprintf(fout, "Maximum resident size            = %5ldK\n", 
 	rusage.ru_maxrss/2) ;
     fprintf(fout, "Virtual memory size              = %5dK\n", vm_used) ;
     fprintf(fout, "Virtual memory limit             = %5dK (%dK)\n", 
@@ -167,15 +168,15 @@ FILE *fout ;
 	    YgetCurMemUse() ) ;
     } 
 
-    fprintf(fout, "\nMajor page faults = %d\n", rusage.ru_majflt) ;
-    fprintf(fout, "Minor page faults = %d\n", rusage.ru_minflt) ;
-    fprintf(fout, "Swaps = %d\n\n", rusage.ru_nswap) ;
+    fprintf(fout, "\nMajor page faults = %ld\n", rusage.ru_majflt) ;
+    fprintf(fout, "Minor page faults = %ld\n", rusage.ru_minflt) ;
+    fprintf(fout, "Swaps = %ld\n\n", rusage.ru_nswap) ;
 
-    fprintf(fout, "Input blocks = %d\n", rusage.ru_inblock) ;
-    fprintf(fout, "Output blocks = %d\n\n", rusage.ru_oublock) ;
+    fprintf(fout, "Input blocks = %ld\n", rusage.ru_inblock) ;
+    fprintf(fout, "Output blocks = %ld\n\n", rusage.ru_oublock) ;
 
-    fprintf(fout, "Context switch (voluntary) = %d\n", rusage.ru_nvcsw) ;
-    fprintf(fout, "Context switch (involuntary) = %d\n", rusage.ru_nivcsw) ;
+    fprintf(fout, "Context switch (voluntary) = %ld\n", rusage.ru_nvcsw) ;
+    fprintf(fout, "Context switch (involuntary) = %ld\n", rusage.ru_nivcsw) ;
 
 #else 
     fprintf(fout,"Usage statistics not available\n") ;
