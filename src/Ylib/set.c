@@ -77,8 +77,7 @@ static char SccsId[] = "@(#) set.c version 3.8 12/15/91" ;
 
 
 /* initialize set */
-YSETPTR Yset_init( lowerLimit, upperLimit ) 
-INT lowerLimit, upperLimit ;
+YSETPTR Yset_init( INT lowerLimit, INT upperLimit ) 
 {   
     INT i ;
     INT sizeSet ;
@@ -110,8 +109,7 @@ INT lowerLimit, upperLimit ;
     return( set ) ;
 } /* end Yset_init */
 
-Yset_free( set ) 
-YSETPTR set ;
+VOID Yset_free( YSETPR set ) 
 {   
     INT i ;
     INT sizeSet ;
@@ -127,9 +125,7 @@ YSETPTR set ;
 } /* end Yset_free */
 
 /* test whether a node is member of a set */
-BOOL Yset_member( set, node ) 
-YSETPTR set ;
-INT  node ;
+BOOL Yset_member( YSETPTR set, INT node ) 
 {
     if( node >= set->lowerLimit && node <= set->upperLimit ){
 	if( set->set[node]->member == set->in_set ){
@@ -145,9 +141,7 @@ INT  node ;
 
 /* add a node to the set */
 /* returns TRUE if this a new member of set FALSE if already a member */
-BOOL Yset_add( set, node ) 
-YSETPTR set ;
-INT  node ;
+BOOL Yset_add( YSETPTR set, INT node ) 
 {  
     YSETLISTPTR temp ;
 
@@ -180,9 +174,7 @@ INT  node ;
 } /* end Yset_add */
 
 /* delete a node from the set */
-Yset_delete( set, node )
-YSETPTR set ;
-INT node ;
+VOID Yset_delete( YSETPTR set, INT node )
 {
     YSETLISTPTR delptr ;
 
@@ -224,8 +216,7 @@ INT node ;
 } /* end Yset_delete */
 	
 /* To clear set we only need to update in_set number and to null list */
-Yset_empty( set ) 
-YSETPTR set ;
+VOID Yset_empty( YSETPTR set ) 
 {
     set->in_set++ ;
     set->list = NULL ;
@@ -234,8 +225,7 @@ YSETPTR set ;
 
 
 /* Set complementation */
-Yset_comp( set ) 
-YSETPTR set ;
+VOID Yset_comp( YSETPTR set ) 
 {
 
     INT i ;                       /* counter */
