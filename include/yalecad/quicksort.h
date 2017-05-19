@@ -1,7 +1,7 @@
-/* ----------------------------------------------------------------- 
-FILE:	    quicksort.h                                       
+/* -----------------------------------------------------------------
+FILE:       quicksort.h
 CONTENTS:   quicksort definitions.
-DATE:	    Tue Mar  3 16:01:25 EST 1992
+DATE:       Tue Mar  3 16:01:25 EST 1992
 ----------------------------------------------------------------- */
 #ifndef YQUICKSORT_H
 #define YQUICKSORT_H
