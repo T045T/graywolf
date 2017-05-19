@@ -37,27 +37,27 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    buster.c
-DESCRIPTION:This file contains the utility routine to break a 
-	    rectilinear cell up into tiles.
+/* -----------------------------------------------------------------
+FILE:       buster.c
+DESCRIPTION:This file contains the utility routine to break a
+            rectilinear cell up into tiles.
 CONTENTS:   YBUSTBOXPTR Ybuster()
-	    INT Ybuster_init() ;
-	    INT Ybuster_addpt( x, y ) ;
-	    void Ybuster_free() ;
-	    void Ybuster_clear() ;
-		INT x, y ;
-DATE:	    Aug  7, 1988 - rewrote to match new parser.
-REVISIONS:  May  1, 1990 - made sure we cannot match the 0 
-		record in the redundancy check for points.
-	    May 4, 1990  - moved to the library since it now occurs
-		in many files.
-	    Aug 23,1990 - added Ybuster_free, Ybuster_clear.
-	    Sat Dec 15 22:55:53 EST 1990 - added debug_verify
-		code to buster.
-	    Wed Apr 17 23:39:20 EDT 1991 - rewrote buster verify
-		for more extensive error checking.
-	    Thu Oct 17 11:08:18 EDT 1991 - added buster_chcek_rect.
+            INT Ybuster_init() ;
+            INT Ybuster_addpt( x, y ) ;
+            void Ybuster_free() ;
+            void Ybuster_clear() ;
+                INT x, y ;
+DATE:       Aug  7, 1988 - rewrote to match new parser.
+REVISIONS:  May  1, 1990 - made sure we cannot match the 0
+                record in the redundancy check for points.
+            May 4, 1990  - moved to the library since it now occurs
+                in many files.
+            Aug 23,1990 - added Ybuster_free, Ybuster_clear.
+            Sat Dec 15 22:55:53 EST 1990 - added debug_verify
+                code to buster.
+            Wed Apr 17 23:39:20 EDT 1991 - rewrote buster verify
+                for more extensive error checking.
+            Thu Oct 17 11:08:18 EDT 1991 - added buster_chcek_rect.
 ----------------------------------------------------------------- */
 #ifndef lint
 static char SccsId[] = "@(#) buster.c version 3.8 12/15/91" ;
@@ -94,60 +94,60 @@ YBUSTBOXPTR Ybuster()
     INT xmin , ymin , kmin , found ;
 
     if( cornerCountS <= 0 ){
-	return( NIL(YBUSTBOXPTR) ) ;
+        return( NIL(YBUSTBOXPTR) ) ;
     }
     D( "Ybuster/debug", Ybuster_verify( NULL ) ; ) ;
 
     /*  find Pk  */
     ymin = INT_MAX ;
     for( k = 1 ; k <= cornerCountS ; k++ ) {
-	if( ptS[k].y < ymin ) {
-	    ymin = ptS[k].y ;
-	}
+        if( ptS[k].y < ymin ) {
+            ymin = ptS[k].y ;
+        }
     }  /* we have the lowest y coordinate  */
     xmin = INT_MAX ;
     for( k = 1 ; k <=cornerCountS ; k++ ) {
-	if( ptS[k].y == ymin ) {
-	    if( ptS[k].x < xmin ) {
-		xmin = ptS[k].x ;
-		kmin = k ;
-	    }
-	}
+        if( ptS[k].y == ymin ) {
+            if( ptS[k].x < xmin ) {
+                xmin = ptS[k].x ;
+                kmin = k ;
+            }
+        }
     }  /*  we have the leftmost lowest corner  */
     Pk[0] = xmin ;
     Pk[1] = ymin ;
     xmin = INT_MAX ;
     for( k = 1 ; k <= cornerCountS ; k++ ) {
-	if( k == kmin ) {
-	    continue ;
-	}
-	if( ptS[k].y == ymin ) {
-	    if( ptS[k].x < xmin ) {
-		xmin = ptS[k].x ;
-	    }
-	}
+        if( k == kmin ) {
+            continue ;
+        }
+        if( ptS[k].y == ymin ) {
+            if( ptS[k].x < xmin ) {
+                xmin = ptS[k].x ;
+            }
+        }
     }   /*  we have the next leftmost lowest corner  */
     Pl[0] = xmin ;
     Pl[1] = ymin ;
     ymin = INT_MAX ;
     for( k = 1 ; k <= cornerCountS ; k++ ) {
-	if( ptS[k].y == Pk[1] ) {
-	    continue ;
-	}
-	if( ptS[k].y < ymin ) {
-	    ymin = ptS[k].y ;
-	}
+        if( ptS[k].y == Pk[1] ) {
+            continue ;
+        }
+        if( ptS[k].y < ymin ) {
+            ymin = ptS[k].y ;
+        }
     }  /* we have the next lowest y coordinate  */
     xmin = INT_MAX ;
     for( k = 1 ; k <= cornerCountS ; k++ ) {
-	if( ptS[k].y == ymin ) {
-	    if( ptS[k].x < Pk[0] || ptS[k].x > Pl[0] ) {
-		continue ;
-	    }
-	    if( ptS[k].x < xmin ) {
-		xmin = ptS[k].x ;
-	    }
-	}
+        if( ptS[k].y == ymin ) {
+            if( ptS[k].x < Pk[0] || ptS[k].x > Pl[0] ) {
+                continue ;
+            }
+            if( ptS[k].x < xmin ) {
+                xmin = ptS[k].x ;
+            }
+        }
     }  /*  we have the leftmost next lowest corner  */
     Pm[0] = xmin ;
     Pm[1] = ymin ;
@@ -165,57 +165,57 @@ YBUSTBOXPTR Ybuster()
     resultS[4].x = Pl[0] ;
     resultS[4].y = Pk[1] ;
 
-    /*  
+    /*
      *  Now weed out those elements of R which are in A and
      *  add those elements of R which are not in A.
      *  Note that index 1 and 4 are necessarily in A, and thus
      *  have to be removed from A.
      */
     for( k = 1 ; k <= cornerCountS ; k++ ) {
-	if( resultS[1].x == ptS[k].x && resultS[1].y == ptS[k].y ) {
-	    ptS[k].x = ptS[ cornerCountS ].x ;
-	    ptS[k].y = ptS[ cornerCountS-- ].y ;
-	    break ;
-	}
+        if( resultS[1].x == ptS[k].x && resultS[1].y == ptS[k].y ) {
+            ptS[k].x = ptS[ cornerCountS ].x ;
+            ptS[k].y = ptS[ cornerCountS-- ].y ;
+            break ;
+        }
     }
     for( k = 1 ; k <= cornerCountS ; k++ ) {
-	if( resultS[4].x == ptS[k].x && resultS[4].y == ptS[k].y ) {
-	    ptS[k].x = ptS[ cornerCountS ].x ;
-	    ptS[k].y = ptS[ cornerCountS-- ].y ;
-	    break ;
-	}
+        if( resultS[4].x == ptS[k].x && resultS[4].y == ptS[k].y ) {
+            ptS[k].x = ptS[ cornerCountS ].x ;
+            ptS[k].y = ptS[ cornerCountS-- ].y ;
+            break ;
+        }
     }
     found = 0 ;
     for( k = 1 ; k <= cornerCountS ; k++ ) {
-	if( resultS[2].x == ptS[k].x && resultS[2].y == ptS[k].y ) {
-	    ptS[k].x = ptS[ cornerCountS ].x ;
-	    ptS[k].y = ptS[ cornerCountS-- ].y ;
-	    found = 1 ;
-	    break ;
-	}
+        if( resultS[2].x == ptS[k].x && resultS[2].y == ptS[k].y ) {
+            ptS[k].x = ptS[ cornerCountS ].x ;
+            ptS[k].y = ptS[ cornerCountS-- ].y ;
+            found = 1 ;
+            break ;
+        }
     }
     if( found == 0 ) {
-	/*
-	 *  Add the thing to the list A
-	 */
-	ptS[ ++cornerCountS ].x = resultS[2].x ;
-	ptS[ cornerCountS ].y = resultS[2].y ;
+        /*
+         *  Add the thing to the list A
+         */
+        ptS[ ++cornerCountS ].x = resultS[2].x ;
+        ptS[ cornerCountS ].y = resultS[2].y ;
     }
     found = 0 ;
     for( k = 1 ; k <= cornerCountS ; k++ ) {
-	if( resultS[3].x == ptS[k].x && resultS[3].y == ptS[k].y ) {
-	    ptS[k].x = ptS[ cornerCountS ].x ;
-	    ptS[k].y = ptS[ cornerCountS-- ].y ;
-	    found = 1 ;
-	    break ;
-	}
+        if( resultS[3].x == ptS[k].x && resultS[3].y == ptS[k].y ) {
+            ptS[k].x = ptS[ cornerCountS ].x ;
+            ptS[k].y = ptS[ cornerCountS-- ].y ;
+            found = 1 ;
+            break ;
+        }
     }
     if( found == 0 ) {
-	/*
-	 *  Add the thing to the list A
-	 */
-	ptS[ ++cornerCountS ].x = resultS[3].x ;
-	ptS[ cornerCountS ].y = resultS[3].y ;
+        /*
+         *  Add the thing to the list A
+         */
+        ptS[ ++cornerCountS ].x = resultS[3].x ;
+        ptS[ cornerCountS ].y = resultS[3].y ;
     }
     return( resultS ) ;
 
@@ -225,13 +225,13 @@ YBUSTBOXPTR Ybuster()
 void Ybuster_addpt( INT xpos, INT ypos )
 {
     if( xpos == ptS[cornerCountS].x && ypos == ptS[cornerCountS].y ){
-	/* avoid redundant points */
-	return ;
+        /* avoid redundant points */
+        return ;
     }
     /* increase the space if necessary */
     if( ++cornerCountS >= ptAllocS ){
-	ptAllocS += EXPECTEDPTS ;
-	ptS = YREALLOC( ptS,  ptAllocS, YBUSTBOX ) ;
+        ptAllocS += EXPECTEDPTS ;
+        ptS = YREALLOC( ptS,  ptAllocS, YBUSTBOX ) ;
     }
     ptS[cornerCountS].x = xpos ;
     ptS[cornerCountS].y = ypos ;
@@ -242,9 +242,9 @@ void Ybuster_init()
 {
     /* allocate memory if needed */
     if(!(ptS)){
-	ptAllocS = EXPECTEDPTS ;
-	ptS = YMALLOC( ptAllocS, YBUSTBOX );
-	resultS = YMALLOC( 5, YBUSTBOX ) ;
+        ptAllocS = EXPECTEDPTS ;
+        ptS = YMALLOC( ptAllocS, YBUSTBOX );
+        resultS = YMALLOC( 5, YBUSTBOX ) ;
     }
     /* make sure we cannot match the 0 record in the redundancy */
     /* check above in add_arb_pt */
@@ -258,9 +258,9 @@ void Ybuster_free()
 {
     /* free allocate memory */
     if(ptS){
-	YFREE( ptS ) ;
-	YFREE( resultS ) ;
-	ptS = NULL ;
+        YFREE( ptS ) ;
+        YFREE( resultS ) ;
+        ptS = NULL ;
     }
 } /* end Ybuster_free */
 /* ***************************************************************** */
@@ -279,21 +279,21 @@ BOOL Ybuster_verify( char *user_string )
   user_messageS = user_string ;
 
   /* verify corner count */
-  
+
   if (cornerCountS < 4) {
     sprintf(YmsgG," %s : There must be at least 4 corners\n", user_messageS ) ;
     M(ERRMSG,"Ybuster_verify",YmsgG);
-    return(FALSE) ;  
+    return(FALSE) ;
   }
 
   if ( cornerCountS & 1) {
     sprintf(YmsgG," %s : There must be an even # of corners\n", user_messageS ) ;
     M(ERRMSG,"Ybuster_verify",YmsgG);
-    return(FALSE) ;  
+    return(FALSE) ;
   }
 
   /* check all points for consistency */
-  
+
   for (l=1; l < cornerCountS;l++) {
     if( Ybuster_check_rect( ptS[l].x, ptS[l].y, ptS[l+1].x, ptS[l+1].y )){
       return( FALSE ) ;
@@ -303,8 +303,8 @@ BOOL Ybuster_verify( char *user_string )
   if( Ybuster_check_rect( ptS[l].x,ptS[l].y, ptS[1].x, ptS[1].y ) ){
     return( FALSE ) ;
   }
-  
-  
+
+
   /* if we get to this point, everything is ok */
   return(TRUE);
 } /* end Ybuster_verify */
@@ -318,44 +318,44 @@ BOOL Ybuster_check_rect( INT xx1, INT yy1, INT xx2, INT yy2 )
     INT next_state ;           /* the next direction of the edge */
     static INT errorArrayL[6] =
     {
-	/* E   -    U   -    L   -    R   -    D  -     S   */
-	E_STATE, D_STATE, R_STATE, L_STATE, U_STATE, R_STATE
+        /* E   -    U   -    L   -    R   -    D  -     S   */
+        E_STATE, D_STATE, R_STATE, L_STATE, U_STATE, R_STATE
     } ;
 
     if( xx1 == xx2 && yy1 == yy2 ) {
-	M(ERRMSG,"Ybuster_verify","a zero length side was found ");
-	sprintf(YmsgG,"%s @(%d,%d)\n", user_messageS, xx1, yy1 );
-	M(ERRMSG,NULL,YmsgG);
-	return( TRUE ) ;
+        M(ERRMSG,"Ybuster_verify","a zero length side was found ");
+        sprintf(YmsgG,"%s @(%d,%d)\n", user_messageS, xx1, yy1 );
+        M(ERRMSG,NULL,YmsgG);
+        return( TRUE ) ;
     } else if( xx1 != xx2 && yy1 != yy2 ) {
-	M(ERRMSG,"Ybuster_verify","a non rectilinear side was found");
-	sprintf(YmsgG," %s @(%d,%d)\n", 
-	    user_messageS, xx1, yy1 );
-	M(ERRMSG,NULL,YmsgG);
-	return( TRUE ) ;
+        M(ERRMSG,"Ybuster_verify","a non rectilinear side was found");
+        sprintf(YmsgG," %s @(%d,%d)\n",
+            user_messageS, xx1, yy1 );
+        M(ERRMSG,NULL,YmsgG);
+        return( TRUE ) ;
     } else if( xx2 == xx1 ){
-	if( yy2 < yy1 ){
-	    next_state = D_STATE ;
-	} else {
-	    next_state = U_STATE ;
-	}
+        if( yy2 < yy1 ){
+            next_state = D_STATE ;
+        } else {
+            next_state = U_STATE ;
+        }
     } else if( yy2 == yy1 ){
-	if( xx2 < xx1 ){
-	    next_state = L_STATE ;
-	} else {
-	    next_state = R_STATE ;
-	}
+        if( xx2 < xx1 ){
+            next_state = L_STATE ;
+        } else {
+            next_state = R_STATE ;
+        }
     }
     /* check to see if this is an error by looking in error array */
     /* the first state has two bad states explicitly enum. the second */
     if( next_state == errorArrayL[cur_stateS] ||
-	(cur_stateS == S_STATE && next_state != U_STATE )){
-	sprintf( YmsgG,
-	"%s is not specified in a CW direction\n",
-	    user_messageS ) ;
-	M(ERRMSG,"Ybuster_check_rect", YmsgG ) ;
-	return( TRUE ) ;
-    } 
+        (cur_stateS == S_STATE && next_state != U_STATE )){
+        sprintf( YmsgG,
+        "%s is not specified in a CW direction\n",
+            user_messageS ) ;
+        M(ERRMSG,"Ybuster_check_rect", YmsgG ) ;
+        return( TRUE ) ;
+    }
     /* update state */
     cur_stateS = next_state ;
     return( FALSE ) ;
