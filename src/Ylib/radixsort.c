@@ -110,11 +110,8 @@ int __rsshell_increments[] = { 4, 1, 0, 0, 0, 0, 0, 0 };
  * see also Knuth Vol. 3, page 84. The increments are selected from
  * formula (8), page 95. Roughly O(N^3/2).
  */
-static void shellsort(p,index,n,tr)
-register blob **p;
-register blob *tr;
-register int index;
-register int n;
+static void shellsort(register blob **p, register int index, register int n,
+                      register blob *tr)
 {
  register blob ch;
  register blob *s1;
@@ -125,7 +122,7 @@ register int n;
  register int t2;
 
  incrp = __rsshell_increments;
- while (incr = *incrp++)
+ while ((incr = *incrp++))
    for (t1 = incr;t1 < n;++t1)
      for (t2 = t1 - incr;t2 >= 0;)
       {
@@ -360,12 +357,8 @@ that this is an advantage.'' Depressing. Here's what I wrote in response:
    an advantage.
 */
 
-int Yradixsort5(l1,n,endchar,tab,indexstart)
-blob **l1;
-register int n;
-unsigned int endchar; /* could use blob, but chars are unsafe with prototypes */
-blob *tab;
-int indexstart;
+int Yradixsort5(blob **l1, register int n, unsigned int endchar, blob *tab,
+                int indexstart)
 {
  register int i;
  register int index;
@@ -513,27 +506,22 @@ int indexstart;
  return 0;
 }
 
-int Yradixsort_pref(l1,n)
-blob **l1; register int n;
+int Yradixsort_pref(blob **l1, register int n)
 {
  return Yradixsort5(l1,n,EOS,NULL,RADIX_PREFIX);
 }
 
-int Yradixsort4(l1,n,endchar,tab)
-blob **l1; register int n; unsigned int endchar; blob *tab;
+int Yradixsort4(blob **l1, register int n, unsigned int endchar, blob *tab)
 {
  return Yradixsort5(l1,n,endchar,tab,0);
 }
 
-
-int Yradixsort(l1,n,tab,endchar)
-blob **l1; register int n; blob *tab; unsigned int endchar;
+int Yradixsort(blob **l1, register int n, blob *tab, unsigned int endchar)
 {
  return Yradixsort5(l1,n,endchar,tab,0);
 }
 
-int Yradixsort3(l1,n,endchar)
-blob **l1; register int n; unsigned int endchar; 
+int Yradixsort3(blob **l1, register int n, unsigned int endchar)
 {
  return Yradixsort5(l1,n,endchar,(blob *) 0,0);
 }
@@ -546,9 +534,7 @@ but this is (heavily) modified.
 */
 
 /* build a prefix for the string.  returns where to add to the string */
-char *Yradix_prefix( buffer, num )
-char *buffer ;
-INT num ;
+char *Yradix_prefix( char *buffer, INT num )
 {
     buffer[0] = (char) ((num >> 24) & 0x000000FF) ;
     buffer[1] = (char) ((num >> 16) & 0x000000FF) ;
@@ -559,8 +545,7 @@ INT num ;
 } /* end Yradix_prefix() */
 
 /* given a prefix string returns the number (prefix) at the start */
-INT Yradix_number( buffer )
-char *buffer ;
+INT Yradix_number( char *buffer )
 {
     unsigned int num ;
     unsigned int temp ;
@@ -576,14 +561,12 @@ char *buffer ;
     return( num ) ;
 } /* end INT Yradix_number() */
 
-char *Yradix_suffix( buffer )
-char *buffer ;
+char *Yradix_suffix( char *buffer )
 {
     return( buffer+4 ) ;
 } /* end Yradix_suffix() */
 
-char *Yradix_pref_clone( buffer )
-char *buffer ;
+char *Yradix_pref_clone( char *buffer )
 {
     INT i, len ;
     char *new_string ;
