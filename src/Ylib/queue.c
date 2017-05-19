@@ -63,9 +63,7 @@ static char SccsId[] = "@(#) queue.c (Yale) version 3.4 12/15/91" ;
 #include <yalecad/queue.h>
 
 /* initialize queue */
-YinitQueue( queue, node ) 
-YQUEUE *queue ;
-char *node ;
+VOID YinitQueue( YQUEUE *queue, char *node ) 
 {   
     YQUEUEPTR temp ; 
     queue->top_of_queue = temp = YMALLOC( 1, YQUEUEBOX ) ; 
@@ -75,13 +73,12 @@ char *node ;
 } /* end YinitQueue */
 
 /* top queue return the element at top of the queue */
-char *YtopQueue( queue ) 
-YQUEUE *queue ;
+char *YtopQueue( YQUEUE *queue ) 
 {
     YQUEUEPTR temp ; 
     char *data ; 
 
-    if( temp = queue->top_of_queue ){
+    if( (temp = queue->top_of_queue) ){
 	data = temp->data ;
 	queue->top_of_queue = temp->next ; 
 	YFREE( temp ) ;  
@@ -92,9 +89,7 @@ YQUEUE *queue ;
 } /* end YtopQueue */
 
 /* add a vertex to the end of the queue */
-Yadd2Queue( queue, node ) 
-YQUEUE *queue ;
-char *node ;
+VOID Yadd2Queue( YQUEUE *queue, char *node ) 
 {  
     if( queue->top_of_queue ){ 
 	queue->bot_of_queue->next= YMALLOC( 1, YQUEUEBOX ) ;
@@ -107,20 +102,18 @@ char *node ;
 } /* end Yadd2Queue */
 
 /* check status of the queue */
-YQUEUEPTR YqueueNotEmpty( queue ) 
-YQUEUE *queue ;
+YQUEUEPTR YqueueNotEmpty( YQUEUE *queue ) 
 {  
     return( queue->top_of_queue ) ;
 }
 
 /* debug function to dump the contents of the queue */
-YdumpQueue( queue ) 
-YQUEUE *queue ;
+VOID YdumpQueue( YQUEUE *queue ) 
 {
     YQUEUEPTR temp ; 
 
     fprintf( stderr,"Queue:" ) ;
-    if( temp = queue->top_of_queue ){
+    if( (temp = queue->top_of_queue) ){
 	for( ;temp; temp=temp->next ){
 #if SIZEOF_VOID_P == 64
 	    fprintf( stderr,"%ld ", (INT)temp->data ) ;
