@@ -145,8 +145,7 @@ YLIST Ylist_create()
 
 **************************************************************************/
 
-YLIST Ylist_create_with_parms(comp)
-INT (*comp)();
+YLIST Ylist_create_with_parms(INT (*comp)())
 {
   YLIST list = allocate_list();
 
@@ -165,9 +164,7 @@ INT (*comp)();
 
 *****************************************************************************/
 
-VOID Ylist_enqueue(list, data)
-     YLIST list;
-     VOIDPTR data;
+VOID Ylist_enqueue(YLIST list, VOIDPTR data)
 {
   YLIST_EL el;
 
@@ -194,9 +191,7 @@ VOID Ylist_enqueue(list, data)
 
 *****************************************************************************/
 
-VOID Ylist_push(list, data)
-     YLIST list;
-     VOIDPTR data;
+VOID Ylist_push(YLIST list, VOIDPTR data)
 {
   YLIST_EL el;
 
@@ -224,10 +219,7 @@ VOID Ylist_push(list, data)
 
 **************************************************************************/
 
-VOID Ylist_insert_after(list, item, data)
-     YLIST list;
-     YLIST_EL item;
-     VOIDPTR data;
+VOID Ylist_insert_after(YLIST list, YLIST_EL item, VOIDPTR data)
 {
   YLIST_EL el, tmp;
 
@@ -260,10 +252,7 @@ VOID Ylist_insert_after(list, item, data)
 
 **************************************************************************/
 
-VOID Ylist_insert_before(list, item, data)
-     YLIST list;
-     YLIST_EL item;
-     VOIDPTR data;
+VOID Ylist_insert_before(YLIST list, YLIST_EL item, VOIDPTR data)
 {
   YLIST_EL el, tmp;
 
@@ -296,9 +285,7 @@ VOID Ylist_insert_before(list, item, data)
 
 **************************************************************************/
 
-VOID Ylist_insert_in_order(list, data)
-     YLIST list;
-     VOIDPTR data;
+VOID Ylist_insert_in_order(YLIST list, VOIDPTR data)
 {
   YLIST_EL el;
   INT tmp;
@@ -325,8 +312,7 @@ VOID Ylist_insert_in_order(list, data)
 
 *****************************************************************************/
 
-VOIDPTR Ylist_dequeue(list)
-     YLIST list;
+VOIDPTR Ylist_dequeue(YLIST list)
 {
   YLIST_EL el;
   VOIDPTR data;
@@ -362,8 +348,7 @@ VOIDPTR Ylist_dequeue(list)
 
 *****************************************************************************/
 
-VOIDPTR Ylist_pop(list)
-YLIST list;
+VOIDPTR Ylist_pop(YLIST list)
 {
   YLIST_EL el;
   VOIDPTR data;
@@ -398,10 +383,7 @@ YLIST list;
 
 **************************************************************************/
 
-VOID Ylist_delete(list, el, user_delete)
-     YLIST list;
-     YLIST_EL el;
-     INT (*user_delete)();
+VOID Ylist_delete(YLIST list, YLIST_EL el, INT (*user_delete)())
 {
   if (el->prev)
     el->prev->next = el->next;
@@ -433,10 +415,7 @@ VOID Ylist_delete(list, el, user_delete)
 
 **************************************************************************/
 
-BOOL Ylist_find_and_delete(list, data, user_delete )
-     YLIST list;
-     VOIDPTR data;
-     INT (*user_delete)();
+BOOL Ylist_find_and_delete(YLIST list, VOIDPTR data, INT (*user_delete)() )
 {
   YLIST_EL el;
   BOOL found_it = FALSE;
@@ -468,8 +447,7 @@ BOOL Ylist_find_and_delete(list, data, user_delete )
 
 **************************************************************************/
 
-YLIST Ylist_sort(list)
-     YLIST list;
+YLIST Ylist_sort(YLIST list)
 {
   if (list->size > 20) {
     list = quicksort(list);
@@ -491,8 +469,7 @@ YLIST Ylist_sort(list)
 
 **************************************************************************/
 
-static YLIST insort(list)
-     YLIST list;
+static YLIST insort(YLIST list)
 {
   YLIST nu_list = Ylist_create_with_parms(list->comp);
   VOIDPTR data;
@@ -517,8 +494,7 @@ static YLIST insort(list)
 
 **************************************************************************/
 
-static YLIST quicksort(list)
-     YLIST list;
+static YLIST quicksort(YLIST list)
 {
   YLIST before, after;
   VOIDPTR pivot, tmp;
@@ -565,9 +541,7 @@ static YLIST quicksort(list)
 
 **************************************************************************/
 
-VOID Ylist_append( l1, l2)
-     YLIST l1;
-     YLIST l2;
+VOID Ylist_append( YLIST l1, YLIST l2)
 {
   l1->size = l1->size + l2->size;
   l1->last->next = l2->first;
@@ -589,8 +563,7 @@ VOID Ylist_append( l1, l2)
 
 *****************************************************************************/
 
-VOID Ylist_clear(list)
-     YLIST list;
+VOID Ylist_clear(YLIST list)
 {
   YLIST_EL el, el1;
 
@@ -614,8 +587,7 @@ VOID Ylist_clear(list)
 
 *****************************************************************************/
 
-VOID Ylist_free(list)
-     YLIST list;
+VOID Ylist_free(YLIST list)
 {
   Ylist_clear(list);
   free_list(list);
@@ -707,8 +679,7 @@ static YLIST_EL allocate_list_el()
 
 *****************************************************************************/
 
-static VOID free_list(list)
-     YLIST list;
+static VOID free_list(YLIST list)
 {
   list->next = free_listS;
   free_listS = list;
@@ -726,8 +697,7 @@ static VOID free_list(list)
 
 *****************************************************************************/
 
-static VOID free_list_el(el)
-     YLIST_EL el;
+static VOID free_list_el(YLIST_EL el)
 {
   el->next = free_list_elS;
   free_list_elS = el;
@@ -745,9 +715,7 @@ static VOID free_list_el(el)
 
 **************************************************************************/
 
-static INT def_comp(d1, d2)
-     VOIDPTR d1;
-     VOIDPTR d2;
+static INT def_comp(VOIDPTR d1, VOIDPTR d2)
 {
   return ( (INT) d1 - (INT) d2 ) ;
 }   /*  def_comp  */
@@ -765,8 +733,8 @@ static INT def_comp(d1, d2)
 
 VOID Ylist_check_mem()
 {
-  printf("\tlists_allocated = %d\n", lists_allocatedS);
-  printf("\tlist_els_allocated = %d\n", list_els_allocatedS);
+  printf("\tlists_allocated = %ld\n", lists_allocatedS);
+  printf("\tlist_els_allocated = %ld\n", list_els_allocatedS);
 }   /*  Ylist_check_mem  */
 
 
@@ -792,9 +760,7 @@ static VOID ph1();
 
 *****************************************************************************/
 
-INT main(argc, argv)
-     INT argc;
-     char *argv[];
+INT main(int argc, char **argv)
 {
   char c;
   INT data;
@@ -857,8 +823,7 @@ INT main(argc, argv)
 
 *****************************************************************************/
 
-static VOID Yprint_list(list)
-     YLIST list;
+static VOID Yprint_list(YLIST list)
 {
   YLIST_EL el;
 
