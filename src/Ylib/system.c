@@ -49,16 +49,13 @@ static char SccsId[] = "@(#) system.c version 3.4 8/28/90" ;
 
 #include <yalecad/file.h>
 #include <yalecad/message.h>
+#include <yalecad/program.h>
 
-INT Ysystem( program, abortFlag, exec_statement, abort_func )
-char *program ;
-BOOL abortFlag ;
-char *exec_statement ;
-INT  (*abort_func)() ;
+INT Ysystem( char *program, BOOL abortFlag, char *exec_statement, INT (abort_func)() )
 {
     INT status ;        /* return status from program */
 
-    if( status = system( exec_statement ) ){
+    if( (status = system( exec_statement )) ){
 	/* get status from exit routine */
 	status = (status & 0x0000FF00) >> 8 ;/* return code in 2nd byte */
 	/* now determine the program */
@@ -77,29 +74,25 @@ INT  (*abort_func)() ;
     return( 0 ) ;
 } /* end Ysystem */
 
-YcopyFile( sourcefile, destfile )
-char *sourcefile, *destfile ;
+VOID YcopyFile( char *sourcefile, char *destfile )
 {
     sprintf( YmsgG, "/bin/cp %s %s", sourcefile, destfile ) ;
     Ysystem( "Ylib/YcopyFile", ABORT, YmsgG, NULL ) ;
 } /* end Ycopyfile */
 
-YmoveFile( sourcefile, destfile )
-char *sourcefile, *destfile ;
+VOID YmoveFile( char *sourcefile, char *destfile )
 {
     sprintf( YmsgG, "/bin/mv %s %s", sourcefile, destfile ) ;
     Ysystem( "Ylib/YmoveFile", ABORT, YmsgG, NULL ) ;
 } /* end Ycopyfile */
 
-Yrm_files( files )
-char *files ;
+VOID Yrm_files( char *files )
 {
     sprintf( YmsgG, "/bin/rm -rf %s", files ) ;
     Ysystem( "Ylib/Yrm_files", NOABORT, YmsgG, NULL ) ;
 } /* end Ycopyfile */
 
-char *Ygetenv( env_var )
-char *env_var ;
+char *Ygetenv( char *env_var )
 {
     char *getenv() ;
 
