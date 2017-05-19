@@ -141,26 +141,25 @@ static INT          numwinS ;        /* number of window in dialog box */
 static TWDRETURNPTR dataS ;          /* return data array */
 static TWDIALOGPTR  fieldS ;         /* the current dialog array */
 
+extern char *YcurTime(INT *time_in_sec);
+
 /* function definitions */
-static INT world2pix_x() ;
-static INT world2pix_y() ;
-static INT world2fonty() ;
+static INT world2pix_x(INT x) ;
+static INT world2pix_y(INT y) ;
+static INT world2fonty(INT y) ;
 static INT pixlen() ;
-static set_stipple_font( P2(BOOL stippleOn, INT font_change ) ) ;
-static debug_dialog( P1( TWDIALOGPTR fieldp ) ) ;
-static check_cases( P3( TWDIALOGPTR fieldp, INT select, 
+static VOID set_stipple_font( P2(BOOL stippleOn, INT font_change ) ) ;
+static VOID debug_dialog( P1( TWDIALOGPTR fieldp ) ) ;
+static VOID check_cases( P3( TWDIALOGPTR fieldp, INT select, 
     			INT (*user_function)() )) ;
-static draw_fields( P1(TWDIALOGPTR fieldp) ) ;
-static TWfreeWindows() ;
-static find_font_boundary() ;
-static edit_field( P4( INT field, Window win, XEvent event,
+static VOID draw_fields( P1(TWDIALOGPTR fieldp) ) ;
+static VOID TWfreeWindows() ;
+static VOID find_font_boundary() ;
+static VOID edit_field( P4( INT field, Window win, XEvent event,
 		    INT (*user_function)() ) ) ;
 
 /* build a dialog box and get info */
-TWDRETURNPTR TWdialog( fieldp, dialogname, user_function )
-TWDIALOGPTR fieldp ;
-char *dialogname ;
-INT (*user_function)() ;
+TWDRETURNPTR TWdialog( TWDIALOGPTR fieldp, char *dialogname, INT (*user_function)() )
 {
     UNSIGNED_INT white, black ;
     INT i ;               /* counter */
@@ -217,7 +216,7 @@ INT (*user_function)() ;
 
     sprintf( resource, "geometry_%s", dialogname ) ;
     D( "dialog", fprintf( stderr, "resource:%s\n", resource ) ) ;
-    if( winstr = XGetDefault( dpyS, GRAPHICS, resource )){
+    if( (winstr = XGetDefault( dpyS, GRAPHICS, resource )) ){
 	m = XParseGeometry( winstr,&xdS,&ydS,&widthd,&heightd) ;
 	if( m & XNegative ){
 	    xdS += screenwidth ;
@@ -241,7 +240,7 @@ INT (*user_function)() ;
     D( "dialog", fprintf( stderr, "font resource:%s\n", resource ) ) ;
     /* set font and get font info */
     font_loaded = FALSE ;
-    if(font = XGetDefault( dpyS, GRAPHICS, resource )){
+    if( (font = XGetDefault( dpyS, GRAPHICS, resource )) ){
 	if( strcmp( font, infoS->fontname ) != STRINGEQ ){
 	    fontinfoS = TWgetfont( font, &fontS ) ;
 	    font_loaded = TRUE ;
@@ -522,9 +521,7 @@ INT (*user_function)() ;
 
 } /* end TWdialog */
 
-static set_stipple_font( stippleOn, font_change )
-BOOL stippleOn ;
-INT font_change ;
+static VOID set_stipple_font( BOOL stippleOn, INT font_change )
 {
     INT i ;        /* counter */
 
@@ -544,7 +541,7 @@ INT font_change ;
 	    for( i=0; i <= infoS->numColors; i++ ){
 		XSetFont( dpyS, contextArrayS[i], fontS ) ;
 	    }
-	} else if( font_change = REVERT_FONT ){
+	} else if( font_change == REVERT_FONT ){
 	    for( i=0; i <= infoS->numColors; i++ ){
 		XSetFont( dpyS, contextArrayS[i], infoS->fontinfo->fid ) ;
 	    }
@@ -553,10 +550,7 @@ INT font_change ;
 } /* end set_stipple_font */
 
 /* check the case fields and set all member of group to false */
-static check_cases( fieldp, select, user_function )
-TWDIALOGPTR fieldp ;
-INT select ;
-INT (*user_function)() ;
+static VOID check_cases( TWDIALOGPTR fieldp, INT select, INT (*user_function)() )
 {
     INT i ;               /* counter */
     INT group ;           /* case group */
@@ -585,8 +579,7 @@ INT (*user_function)() ;
 
 } /* end check_cases */
 
-static draw_fields( fieldp )
-TWDIALOGPTR fieldp ;
+static VOID draw_fields( TWDIALOGPTR fieldp )
 {
     INT i ;               /* counter */
     TWDIALOGPTR fptr ;    /* current dialog field */
@@ -632,7 +625,7 @@ TWDIALOGPTR fieldp ;
 } /* end draw_fields */
 
 
-static TWfreeWindows()
+static VOID TWfreeWindows()
 {
     INT i, j ;              /* counters */
 
@@ -645,7 +638,7 @@ static TWfreeWindows()
 
 } /* end TWfreeWindows */
 
-static find_font_boundary() 
+static VOID find_font_boundary() 
 {
     fwidthS = fontinfoS->max_bounds.rbearing - 
 	fontinfoS->min_bounds.lbearing ;
@@ -656,33 +649,28 @@ static find_font_boundary()
 
 /* tranforms the world coordinate character column format */
 /* to pixel coordinates */
-static INT world2pix_x( x )
+static INT world2pix_x( INT x )
 {
     return( x * fwidthS ) ;
 } /* end world2pix_x */
 
-static INT world2pix_y( y )
+static INT world2pix_y( INT y )
 {
     return( y * fheightS ) ;
 } /* end world2pix_y */
 
-static INT world2fonty( y )
+static INT world2fonty( INT y )
 {
     return( (++y) * fheightS - fontinfoS->max_bounds.descent ) ;
 } /* end world2pix_y */
 	
 /* change length of string to pixel length */
-static INT pixlen( length )
-INT length ;
+static INT pixlen( INT length )
 {
     return( fwidthS * length ) ;
 } /* end pixlen */
 
-static edit_field( field, win, event, user_function )
-INT field ;
-Window win ;
-XEvent event ;       /* describes the button event */
-INT (*user_function)() ;
+static VOID edit_field( INT field, Window win, XEvent event, INT (*user_function)() )
 {
     TWDIALOGPTR fptr;    /* current field of dialog */
     TWDRETURNPTR dptr;   /* return field of dialog */
@@ -786,8 +774,7 @@ INT (*user_function)() ;
 
 #ifdef DEBUG
 
-TWDIALOGPTR TWread_dialog( filename )
-char *filename ;
+TWDIALOGPTR TWread_dialog( char *filename )
 {
 
 #define KEYWORD       "numfields"
@@ -954,8 +941,7 @@ char *filename ;
 
 } /* end TWread_dialog */
 
-static debug_dialog( fieldp )
-TWDIALOGPTR fieldp ;
+static VOID debug_dialog( TWDIALOGPTR fieldp )
 {
     INT i ;                   /* counter */
     INT count ;               /* number of fields */
