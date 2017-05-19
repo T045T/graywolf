@@ -37,93 +37,93 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    okmalloc.c                                       
-DESCRIPTION:This file contains memory management routines. 
-	    User should always call safe_malloc, safe_free, etc.
-	    A conditional compile allows the choice between this
-	    memory manager and system.  Using the memory manager
-	    helps make the environment similar on all machines.
-CONTENTS:   
-	    ++++++++++++ HEAP MANAGEMENT ROUTINES ++++++++++++++
-	    static status_t  heapDispose (ptr)
-		char_p ptr;
-	    static status_t  allocateRegion (min_size)
-		INT min_size;
-	    static status_t  heapInit (initial_size)
-		INT initial_size;
-	    static status_t  heapNew (ptr, req_size)
-		char_p  *ptr;
-		INT   req_size;
-	    +++++++++ END HEAP MANAGEMENT ROUTINES ++++++++++++ 
-	      USER  CALLS FOR C RUN TIME LIBRARY 
-	    VOID Ysafe_free(ptr)
-		char *ptr;
-	    VOID Ysafe_cfree(ptr)
-		char *ptr;
-	    char *Ysafe_malloc(bytes)
-		long bytes;
-	    char *Ysafe_calloc(num_entries, bytes)
-		long num_entries;
-		long bytes;
-	    char *Ysafe_realloc(ptr, bytes)
-		char *ptr;
-		long bytes;
-	    INT YgetCurMemUse()
-	    INT YcheckMemObj(ptr)
-		char *ptr ;
-	    INT Yinit_memsize(memsize)
-		INT memsize ;
-	    INT YgetListSize(ptr, offsetPtr)
-		char *ptr ;     
-		char *offsetPtr ;
-	    YdebugMemory( flag )
-		BOOL flag ;
-	    Ypmemerror( s )
-		char *s ;
-	    YcheckDebug( where )
-		INT where ; 
-	    char *Yvector_alloc( lo, hi, size )
-		INT size, lo, hi ;
-	    char *Yvector_calloc( lo, hi, size )
-		INT size, lo, hi ;
-	    char *Yvector_realloc( array_orig, lo, hi, size )
-	    VOIDPTR array_orig ;
-		INT size, lo, hi ;
-	    VOID Yvector_free( array, lo, size )
-		VOIDPTR array ;
-		INT lo, size ;
-DATE:	    Feb  2, 1988 
+/* -----------------------------------------------------------------
+FILE:       okmalloc.c
+DESCRIPTION:This file contains memory management routines.
+            User should always call safe_malloc, safe_free, etc.
+            A conditional compile allows the choice between this
+            memory manager and system.  Using the memory manager
+            helps make the environment similar on all machines.
+CONTENTS:
+            ++++++++++++ HEAP MANAGEMENT ROUTINES ++++++++++++++
+            static status_t  heapDispose (ptr)
+                char_p ptr;
+            static status_t  allocateRegion (min_size)
+                INT min_size;
+            static status_t  heapInit (initial_size)
+                INT initial_size;
+            static status_t  heapNew (ptr, req_size)
+                char_p  *ptr;
+                INT   req_size;
+            +++++++++ END HEAP MANAGEMENT ROUTINES ++++++++++++
+              USER  CALLS FOR C RUN TIME LIBRARY
+            VOID Ysafe_free(ptr)
+                char *ptr;
+            VOID Ysafe_cfree(ptr)
+                char *ptr;
+            char *Ysafe_malloc(bytes)
+                long bytes;
+            char *Ysafe_calloc(num_entries, bytes)
+                long num_entries;
+                long bytes;
+            char *Ysafe_realloc(ptr, bytes)
+                char *ptr;
+                long bytes;
+            INT YgetCurMemUse()
+            INT YcheckMemObj(ptr)
+                char *ptr ;
+            INT Yinit_memsize(memsize)
+                INT memsize ;
+            INT YgetListSize(ptr, offsetPtr)
+                char *ptr ;
+                char *offsetPtr ;
+            YdebugMemory( flag )
+                BOOL flag ;
+            Ypmemerror( s )
+                char *s ;
+            YcheckDebug( where )
+                INT where ;
+            char *Yvector_alloc( lo, hi, size )
+                INT size, lo, hi ;
+            char *Yvector_calloc( lo, hi, size )
+                INT size, lo, hi ;
+            char *Yvector_realloc( array_orig, lo, hi, size )
+            VOIDPTR array_orig ;
+                INT size, lo, hi ;
+            VOID Yvector_free( array, lo, size )
+                VOIDPTR array ;
+                INT lo, size ;
+DATE:       Feb  2, 1988
 REVISIONS:  Sep 25, 1988 - converted to common utility.
-	    Feb 22, 1989 - added new memory check for debugger.
-		    made local function calls static - hide from linker.
-	    Apr 18, 1989 - added Yinit_memsize for init memory size.
-	    May  3, 1989 - added Y prefixes.
-	    Sep 16, 1989 - all debug directed to stderr.
-	    Dec 21, 1989 - now initialize freed memory to -1 to
-		catch more bugs.
-	    Jan 31, 1990 - corrected arg reversal in calloc call.
-	    Feb  4, 1990 - fixed bug in initializing freed memory.
-		Also renamed static variables.
-	    Tue Oct 23 03:33:19 EDT 1990 - fixed for prototypes in
-		base.h.
-	    Tue Jan 15 02:06:35 EST 1991 - added vector allocation
-		routines.
-	    Thu Jan 24 20:19:46 PST 1991 - added more vector routines.
-	    Thu Jan 31 15:42:52 EST 1991 - added char * cast to 
-		voidptr use in vector routines.
-	    Fri Feb 15 15:37:16 EST 1991 - added call to message
-		system so that silent mode will work.
-	    Sat May 11 22:53:49 EDT 1991 - added a conditional compile
-		for HPUX.
-	    Sat Dec 14 14:33:10 EST 1991 - added YgetMaxMemUse()
-	    Sun Dec 15 02:30:59 EST 1991 - added the MEM_DEBUG conditional
-		compile.  We added extra arguments to the alloc routines
-		so that we could pass the line that the memory was
-		created.  We now can dump all the allocated memory by
-		calling Ydump_mem().
-	    Tue Jan  7 18:03:31 EST 1992 - fixed memory manager
-		on the MAC.
+            Feb 22, 1989 - added new memory check for debugger.
+                    made local function calls static - hide from linker.
+            Apr 18, 1989 - added Yinit_memsize for init memory size.
+            May  3, 1989 - added Y prefixes.
+            Sep 16, 1989 - all debug directed to stderr.
+            Dec 21, 1989 - now initialize freed memory to -1 to
+                catch more bugs.
+            Jan 31, 1990 - corrected arg reversal in calloc call.
+            Feb  4, 1990 - fixed bug in initializing freed memory.
+                Also renamed static variables.
+            Tue Oct 23 03:33:19 EDT 1990 - fixed for prototypes in
+                base.h.
+            Tue Jan 15 02:06:35 EST 1991 - added vector allocation
+                routines.
+            Thu Jan 24 20:19:46 PST 1991 - added more vector routines.
+            Thu Jan 31 15:42:52 EST 1991 - added char * cast to
+                voidptr use in vector routines.
+            Fri Feb 15 15:37:16 EST 1991 - added call to message
+                system so that silent mode will work.
+            Sat May 11 22:53:49 EDT 1991 - added a conditional compile
+                for HPUX.
+            Sat Dec 14 14:33:10 EST 1991 - added YgetMaxMemUse()
+            Sun Dec 15 02:30:59 EST 1991 - added the MEM_DEBUG conditional
+                compile.  We added extra arguments to the alloc routines
+                so that we could pass the line that the memory was
+                created.  We now can dump all the allocated memory by
+                calling Ydump_mem().
+            Tue Jan  7 18:03:31 EST 1992 - fixed memory manager
+                on the MAC.
 ----------------------------------------------------------------- */
 #ifndef lint
 static char SccsId[] = "@(#) okmalloc.c (Yale) version 3.24 3/6/92" ;
@@ -133,8 +133,8 @@ static char SccsId[] = "@(#) okmalloc.c (Yale) version 3.24 3/6/92" ;
 #include	<unistd.h>
 #include	<signal.h>
 #include	<errno.h>
-#include 	<yalecad/base.h>
-#include 	<yalecad/message.h>
+#include        <yalecad/base.h>
+#include        <yalecad/message.h>
 
 #ifdef HPUX
 #undef		NBPG
@@ -149,14 +149,14 @@ static char SccsId[] = "@(#) okmalloc.c (Yale) version 3.24 3/6/92" ;
 #define  heap_ok          0
 
 #ifdef MEM_DEBUG
-#include        	<yalecad/file.h>    
+#include                <yalecad/file.h>
 /* -----------------------------------------------------------------
-   These two unusual definitions MEM_DEBUG1 and MEM_DEBUG2 add 
+   These two unusual definitions MEM_DEBUG1 and MEM_DEBUG2 add
    arguments to memory user routines so that we can pass the file
    and line number from the preprocessor.
 ----------------------------------------------------------------- */
 #define MEM_DEBUG_EXTRA_ARG_DEFS	, char *file, int line
-#define MEM_DEBUG_EXTRA_ARGS    	, file, line
+#define MEM_DEBUG_EXTRA_ARGS            , file, line
 #define ALLOC_NAME_SIZE 40
 #else
 #define MEM_DEBUG_EXTRA_ARG_DEFS
@@ -183,8 +183,8 @@ static char SccsId[] = "@(#) okmalloc.c (Yale) version 3.24 3/6/92" ;
 #define  mp_block_cnt      256
 #define  region_mask       0xFFFF8000
 #define  region_overhead   8
-#define  DFL_REGION_SIZE   (4095 * 1024) 
-#define  expected_size     (256  * 1024) 
+#define  DFL_REGION_SIZE   (4095 * 1024)
+#define  expected_size     (256  * 1024)
 #define  waste_allowed     28
 #define  FOREVER           1
 
@@ -274,13 +274,13 @@ static status_t  heapDispose (char_p ptr)
      st.all = heap_bad_block;
      return (st);
    } else if( debugFlagS ) {
-	/* set the old memory to -1 */	
-	headPtr = (block_p) ((INT) ptr - sizeof(header_t));
-	/* find number of words; - 2 accounts for header and trailer */
-	l = ABS( headPtr->head.size ) / sizeof(long) - 2 ;
-	for(i=(long *) ptr;l>0;i++, l--){
-	    *i=(long)-1;
-	}
+        /* set the old memory to -1 */
+        headPtr = (block_p) ((INT) ptr - sizeof(header_t));
+        /* find number of words; - 2 accounts for header and trailer */
+        l = ABS( headPtr->head.size ) / sizeof(long) - 2 ;
+        for(i=(long *) ptr;l>0;i++, l--){
+            *i=(long)-1;
+        }
    }
 
    headPtr->head.size *= -1;
@@ -316,17 +316,17 @@ static status_t  heapDispose (char_p ptr)
 
 #ifdef MEM_DEBUG
     {
-	MEMOBJPTR mem_p ;
-	/* this is brain dead for now */
-	for( mem_p = name_listS->next; mem_p != name_listS; mem_p = mem_p->next ){
-	    if( mem_p->ptr_p == ptr ){
-		/* delete this from memory */
-		mem_p->prev->next = mem_p->next ;
-		mem_p->next->prev = mem_p->prev ;
-		heapDispose( mem_p ) ;
-		break ;
-	    }
-	}
+        MEMOBJPTR mem_p ;
+        /* this is brain dead for now */
+        for( mem_p = name_listS->next; mem_p != name_listS; mem_p = mem_p->next ){
+            if( mem_p->ptr_p == ptr ){
+                /* delete this from memory */
+                mem_p->prev->next = mem_p->next ;
+                mem_p->next->prev = mem_p->prev ;
+                heapDispose( mem_p ) ;
+                break ;
+            }
+        }
     }
 #endif /* end MEM_DEBUG */
 
@@ -356,35 +356,35 @@ typedef  INT   *tag_p;
    pageSize = NBPG ;
 #endif /* SYS5 */
    if( min_size < expected_size ){
-	min_size = expected_size ;
-   } 
+        min_size = expected_size ;
+   }
    allocation = min_size + 2*sizeof(INT);
    allocation += pageSize - (allocation % pageSize) ;
    totalAllocationS += allocation ;
    head = (block_p) sbrk(0) ;
    sprintf( YmsgG, "Alternate MEMORY MANagement system invoked - allocation:%d bytes\n", allocation ) ;
    M( MSG, NULL, YmsgG ) ;
-   if( debugFlagS ){ 
+   if( debugFlagS ){
        fprintf( stderr, "Memory debug switch on\n") ;
        fprintf( stderr, "old starting memory address:%0x Page size = %d\n",
-	    head,pageSize) ;
-   } 
-   head = (block_p) sbrk(allocation) ; 
-   if( debugFlagS ){ 
+            head,pageSize) ;
+   }
+   head = (block_p) sbrk(allocation) ;
+   if( debugFlagS ){
        fprintf( stderr,
            "new starting memory address:%0x with allocation:%d bytes\n",
             head, allocation) ;
        if( !( heapNotStartedS) ){
-	   fprintf( stderr,
-	   "current memory request = %d bytes approx. %d pages\n",
-	       min_size,min_size/pageSize) ;
-	   fprintf( stderr,
-	   "total user memory allocated = %d bytes approx. %d pages\n",
-	        inUseS,inUseS/pageSize) ;
+           fprintf( stderr,
+           "current memory request = %d bytes approx. %d pages\n",
+               min_size,min_size/pageSize) ;
+           fprintf( stderr,
+           "total user memory allocated = %d bytes approx. %d pages\n",
+                inUseS,inUseS/pageSize) ;
        }
        fprintf( stderr,
        "new memory space = %d pages of %d bytes\n",
-	    totalAllocationS / pageSize, pageSize) ;
+            totalAllocationS / pageSize, pageSize) ;
        fprintf( stderr,"total current allocation = %d\n\n",totalAllocationS ) ;
    }
    /* head = (block_p) malloc(allocation) */ ;
@@ -392,13 +392,13 @@ typedef  INT   *tag_p;
        st.all = heap_no_mem ;
        return( st ) ;
    }
-   if( debugFlagS ){ 
+   if( debugFlagS ){
        /* initialize all bytes of memory to 1 to catch bugs */
        memory = (INT *) head ;
        for( i=0;i<allocation/4;i++){
-	    memory[i] = -1 ;
+            memory[i] = -1 ;
        }
-   } 
+   }
 
    inUseS += allocation - 2*sizeof(INT) ;
    tail = (trailer_p) ((INT) head + allocation - sizeof(INT));
@@ -448,8 +448,8 @@ static status_t  heapInit (INT initial_size)
    zoneS.cnt_blks = 0 ;
    zoneS.max_blks = 0 ;
 #ifdef MEM_DEBUG
-   name_listS->next = name_listS ; 
-   name_listS->prev = name_listS ; 
+   name_listS->next = name_listS ;
+   name_listS->prev = name_listS ;
 #endif /* MEM_DEBUG */
 
    if (initial_size > 0) {
@@ -495,9 +495,9 @@ static status_t  heapNew (char_p *ptr, INT req_size MEM_DEBUG_EXTRA_ARG_DEFS )
          zoneS.alloc_rover = check->case_of_two.zero_case.link;
          if (excess < waste_allowed) {
             check->case_of_two.zero_case.back->case_of_two.zero_case.link =
-	        check->case_of_two.zero_case.link;
+                check->case_of_two.zero_case.link;
             check->case_of_two.zero_case.link->case_of_two.zero_case.back =
-		check->case_of_two.zero_case.back;
+                check->case_of_two.zero_case.back;
             block_size = check->head.size;
          } else {
             check->head.size = excess;
@@ -510,41 +510,41 @@ static status_t  heapNew (char_p *ptr, INT req_size MEM_DEBUG_EXTRA_ARG_DEFS )
          trailer->size = -block_size;
          *ptr = (char_p) &(check->case_of_two.data);
 #ifdef MEM_DEBUG
-	 {  
-	    INT len ;
-	    char alloc_name[BUFSIZ] ;
-	    MEMOBJPTR name_data ;
-	    if( file ){
-		sprintf( alloc_name, "%s:%d", file, line ) ;
-		len = strlen( alloc_name ) ;
-		if( len < ALLOC_NAME_SIZE ){
-		    /* allocate space for record info but don't put in tree */
-		    statuS = heapNew (&name_data, sizeof(MEMOBJ), NULL, 0 ) ;
-		    if (statuS.all!=heap_ok){
-		       errno = statuS.all ;	
-		       kill(getpid(),SIGUSR1);
-		    }
-		    strcpy( name_data->name, alloc_name ) ;
-		    name_data->ptr_p = *ptr ;
-		    name_data->next = name_listS->next ;
-		    name_listS->next->prev = name_data ;
-		    name_listS->next = name_data ;
-		    name_data->prev = name_listS ;
-		} else {
-		    fprintf( stderr,
-			"Alloc name:%s too long to store\n",alloc_name ) ;
-		}
-	    }
-	 }
+         {
+            INT len ;
+            char alloc_name[BUFSIZ] ;
+            MEMOBJPTR name_data ;
+            if( file ){
+                sprintf( alloc_name, "%s:%d", file, line ) ;
+                len = strlen( alloc_name ) ;
+                if( len < ALLOC_NAME_SIZE ){
+                    /* allocate space for record info but don't put in tree */
+                    statuS = heapNew (&name_data, sizeof(MEMOBJ), NULL, 0 ) ;
+                    if (statuS.all!=heap_ok){
+                       errno = statuS.all ;
+                       kill(getpid(),SIGUSR1);
+                    }
+                    strcpy( name_data->name, alloc_name ) ;
+                    name_data->ptr_p = *ptr ;
+                    name_data->next = name_listS->next ;
+                    name_listS->next->prev = name_data ;
+                    name_listS->next = name_data ;
+                    name_data->prev = name_listS ;
+                } else {
+                    fprintf( stderr,
+                        "Alloc name:%s too long to store\n",alloc_name ) ;
+                }
+            }
+         }
 #endif /* MEM_DEBUG */
-	 inUseS += block_size ;
-	 if( inUseS > max_usedS ) max_usedS = inUseS ;
+         inUseS += block_size ;
+         if( inUseS > max_usedS ) max_usedS = inUseS ;
          st.all = heap_ok;
          return (st);
       }
       if (check == zoneS.alloc_rover) {
          st = allocateRegion (block_size);
-	 if( inUseS > max_usedS ) max_usedS = inUseS ;
+         if( inUseS > max_usedS ) max_usedS = inUseS ;
          if (st.all != heap_ok)
             return (st);
          check = zoneS.alloc_rover;
@@ -567,9 +567,9 @@ VOID Ydump_mem()
     fp = TWOPEN( filename, "w", ABORT ) ;
     fprintf( fp, "Address:amount_allocated file:line_number\n" ) ;
     for( mem_p = name_listS->next; mem_p != name_listS; mem_p = mem_p->next ){
-	size = YcheckMemObj(mem_p->ptr_p) ;
-	fprintf( fp, "%x:%d %s\n", mem_p->ptr_p, size, mem_p->name ) ;
-	sum_allocated += size ;
+        size = YcheckMemObj(mem_p->ptr_p) ;
+        fprintf( fp, "%x:%d %s\n", mem_p->ptr_p, size, mem_p->name ) ;
+        sum_allocated += size ;
     }
     fprintf( fp, "-----------------------------------------------------------\n");
     fprintf( fp, "Total allocation:%d\n", sum_allocated ) ;
@@ -588,30 +588,30 @@ VOID Ydump_mem()
 VOID Ysafe_free(VOIDPTR ptr MEM_DEBUG_EXTRA_ARG_DEFS)
 {
     if( !( ptr ) ){
-	fprintf( stderr, 
-	    "WARNING[safe_free]:pointer = nil.  Ignoring safe_free.\n") ;
-	return ;
-    } 
+        fprintf( stderr,
+            "WARNING[safe_free]:pointer = nil.  Ignoring safe_free.\n") ;
+        return ;
+    }
 
     statuS = heapDispose (ptr);
     if (statuS.all != heap_ok){
-	errno = statuS.all ;	
-	kill(getpid(),SIGUSR1);
+        errno = statuS.all ;
+        kill(getpid(),SIGUSR1);
     }
 }
 
 VOID Ysafe_cfree(VOIDPTR ptr MEM_DEBUG_EXTRA_ARG_DEFS )
 {
     if( !( ptr ) ){
-	fprintf(stderr,
-	"WARNING[safe_cfree]:pointer = nil.  Ignoring safe_cfree.\n") ;
-	return ;
-    } 
+        fprintf(stderr,
+        "WARNING[safe_cfree]:pointer = nil.  Ignoring safe_cfree.\n") ;
+        return ;
+    }
 
     statuS = heapDispose (ptr);
     if (statuS.all!=heap_ok){
-	errno = statuS.all ;	
-	kill(getpid(),SIGUSR1);
+        errno = statuS.all ;
+        kill(getpid(),SIGUSR1);
     }
 }
 
@@ -625,7 +625,7 @@ char *Ysafe_malloc(INT bytes MEM_DEBUG_EXTRA_ARG_DEFS )
    }
    statuS = heapNew (&ptr, bytes MEM_DEBUG_EXTRA_ARGS );
    if (statuS.all!=heap_ok){
-       errno = statuS.all ;	
+       errno = statuS.all ;
        kill(getpid(),SIGUSR1);
    }
    return(ptr);
@@ -643,7 +643,7 @@ char *Ysafe_calloc(INT num_entries, INT bytes MEM_DEBUG_EXTRA_ARG_DEFS )
    }
    statuS = heapNew (&ptr, k MEM_DEBUG_EXTRA_ARGS );
    if (statuS.all!=heap_ok){
-       errno = statuS.all ;	
+       errno = statuS.all ;
        kill(getpid(),SIGUSR1);
    }
    l = (k+3)>>2;
@@ -668,7 +668,7 @@ char *Ysafe_realloc(VOIDPTR ptr, INT bytes MEM_DEBUG_EXTRA_ARG_DEFS )
    /* get current size of ptr */
    headPtr = (block_p) ((INT) ptr - sizeof(header_t));
    tail = (trailer_p) ( ((INT)headPtr) - headPtr->head.size
-	   - sizeof(trailer_t));
+           - sizeof(trailer_t));
    if ((headPtr->head.size > 0) || (headPtr->head.size != tail->size)) {
        errno = heap_bad_block ;
        kill(getpid(),SIGUSR1);
@@ -677,7 +677,7 @@ char *Ysafe_realloc(VOIDPTR ptr, INT bytes MEM_DEBUG_EXTRA_ARG_DEFS )
    oldSize = - (headPtr->head.size) ;
    if( oldSize < bytes ){
       bytes = oldSize ;
-   }	
+   }
 
    for (i=0; i<bytes; i++){
        ptr2[i] = ((char *) ptr)[i];
@@ -718,7 +718,7 @@ char *ptr ;
    /* get current size of ptr */
    headPtr = (block_p) ((INT) ptr - sizeof(header_t));
    tail = (trailer_p) ( ((INT)headPtr) - headPtr->head.size
-	   - sizeof(trailer_t));
+           - sizeof(trailer_t));
    if ((headPtr->head.size > 0) || (headPtr->head.size != tail->size)) {
       return(-1) ;
    }
@@ -732,10 +732,10 @@ VOIDPTR where ; /* must be integer to work in dbx */
     INT size ;
 
     if( (size = YcheckMemObj( (char *) where )) == -1 ){
-	fprintf( stderr, "Memory has been damaged\n" ) ;
-	return( 0 ) ;
+        fprintf( stderr, "Memory has been damaged\n" ) ;
+        return( 0 ) ;
     } else {
-	return( size ) ;
+        return( size ) ;
     }
 } /* end checkDebug */
 
@@ -748,10 +748,10 @@ char *offsetPtr ;  /* pointer to "next" field within structure */
 {
    block_p            headPtr;
    trailer_p          tail;
-   INT		      recordCount = 0 ;
-   INT		      memInUse = 0 ;
-   INT		      offset ;
-   INT		      limit ;    /* max number of records */
+   INT                recordCount = 0 ;
+   INT                memInUse = 0 ;
+   INT                offset ;
+   INT                limit ;    /* max number of records */
    INT                *intPtr ;
    INT                temp ;
 
@@ -770,26 +770,26 @@ char *offsetPtr ;  /* pointer to "next" field within structure */
    if( headPtr->head.size ){
        limit =  - totalAllocationS / headPtr->head.size ;
    } else {
-      return(-1) ;	
+      return(-1) ;
    }
 
    while( ptr ) {   /* perform check while pointer is not null */
-       	
+
        headPtr = (block_p) ((INT) ptr - sizeof(header_t));
        tail = (trailer_p) ( ((INT)headPtr) - headPtr->head.size
              - sizeof(trailer_t));
        if ((headPtr->head.size > 0) || (headPtr->head.size != tail->size)) {
-	    if( debugFlagS ){
-	       fprintf( stderr, "ERROR[getListSize]:record has corrupted data\n") ;
+            if( debugFlagS ){
+               fprintf( stderr, "ERROR[getListSize]:record has corrupted data\n") ;
             }
             return(-1) ;
        }
        memInUse += - headPtr->head.size ;
        /* check for circular linked list */
        if( recordCount > limit) {
-	  fprintf( stderr, "Detected a circular linked list\n") ;
+          fprintf( stderr, "Detected a circular linked list\n") ;
           return(-1) ;
-       }	
+       }
 
        /* update pointer */
        /* calculate addresss of next field */
@@ -818,7 +818,7 @@ BOOL flag ;
   *--------------------------------------------------------------
 */
 
-#else 
+#else
 
 /*
   *--------------------------------------------------------------
@@ -922,7 +922,7 @@ INT flag ;
 }
 
 INT YcheckDebug( where )
-VOIDPTR where ; 
+VOIDPTR where ;
 {
     return ( INT_MAX ) ;
 } /* end checkDebug */
@@ -949,24 +949,24 @@ char *s ;
 {
     /* first print user message if available */
     if( s ){
-	fprintf( stderr, "%s:", s ) ;
+        fprintf( stderr, "%s:", s ) ;
     }
     switch(errno){
-	case heap_ok:
-	   fprintf(stderr,
-	   "Memory ok - Problem in memory management logic.\n" ) ;
-	   break; 
-	case heap_bad_block:
-	   fprintf(stderr,
-	   "Memory block was found to be corrupted.\n" ) ;
-	   break; 
-	case heap_no_mem:
-	   fprintf(stderr,
-	   "No memory available to allocate.\n" ) ;
-	   break; 
-	default:
-	   fprintf(stderr,
-	   "Error = %0x Unrecognized error code.\n",errno ) ;
+        case heap_ok:
+           fprintf(stderr,
+           "Memory ok - Problem in memory management logic.\n" ) ;
+           break;
+        case heap_bad_block:
+           fprintf(stderr,
+           "Memory block was found to be corrupted.\n" ) ;
+           break;
+        case heap_no_mem:
+           fprintf(stderr,
+           "No memory available to allocate.\n" ) ;
+           break;
+        default:
+           fprintf(stderr,
+           "Error = %0x Unrecognized error code.\n",errno ) ;
     }
 } /* end Ypmemerror */
 
@@ -978,7 +978,7 @@ char *Yvector_alloc( INT lo, INT hi, INT size MEM_DEBUG_EXTRA_ARG_DEFS )
 
     array_return = (char *) Ysafe_malloc((unsigned) (hi-lo+1)*size MEM_DEBUG_EXTRA_ARGS ) ;
     if( array_return ){
-	return( array_return - size * lo ) ;
+        return( array_return - size * lo ) ;
     }
     return( NIL(char *) ) ;
 
@@ -991,7 +991,7 @@ char *Yvector_calloc( INT lo, INT hi, INT size MEM_DEBUG_EXTRA_ARG_DEFS )
 
     array_return = (char *) Ysafe_calloc((unsigned) (hi-lo+1),size MEM_DEBUG_EXTRA_ARGS ) ;
     if( array_return ){
-	return( array_return - size * lo ) ;
+        return( array_return - size * lo ) ;
     }
     return( NIL(char *) ) ;
 
@@ -1004,10 +1004,10 @@ char *Yvector_realloc( VOIDPTR array_orig, INT lo, INT hi, INT size MEM_DEBUG_EX
     char *array_return ;       /* the new offset */
 
     adj_array = ((char *) array_orig) + lo * size ;
-    array_return = (char *) 
-	Ysafe_realloc( adj_array, (unsigned) (hi-lo+1)*size MEM_DEBUG_EXTRA_ARGS ) ;
+    array_return = (char *)
+        Ysafe_realloc( adj_array, (unsigned) (hi-lo+1)*size MEM_DEBUG_EXTRA_ARGS ) ;
     if( array_return ){
-	return( array_return - size * lo ) ;
+        return( array_return - size * lo ) ;
     }
     return( NIL(char *) ) ;
 
@@ -1019,7 +1019,7 @@ VOID Yvector_free( VOIDPTR array, INT lo, INT size MEM_DEBUG_EXTRA_ARG_DEFS )
 } /* end Yvector_free */
 
 /* ************************* TEST ROUTINES ******************************** */
-#ifdef TEST 
+#ifdef TEST
 
 typedef struct {
     INT bogus_dude ;
@@ -1056,8 +1056,7 @@ main()
     Ydump_mem() ;
 
     exit(0) ;
-    
+
 }/* end main() */
 
 #endif /* TEST */
-

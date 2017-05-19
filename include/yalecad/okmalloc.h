@@ -1,8 +1,8 @@
-/* ----------------------------------------------------------------- 
-FILE:	    okmalloc.h                                       
+/* -----------------------------------------------------------------
+FILE:       okmalloc.h
 CONTENTS:   macro definitions for memory manager.
-DATE:	    Tue Mar  3 16:05:51 EST 1992
-REVISIONS:  
+DATE:       Tue Mar  3 16:05:51 EST 1992
+REVISIONS:
 ----------------------------------------------------------------- */
 #ifndef YOKMALLOC_H
 #define YOKMALLOC_H
@@ -14,7 +14,7 @@ static char Yokmalloc_HId[] = "@(#) okmalloc.h version 1.1 3/5/92" ;
 /* memory definitions - for portability and ease of use */
 #ifndef MEM_DEBUG
 
-#define NIL( type )		     (type) NULL
+#define NIL( type )                  (type) NULL
 #define YMALLOC(n, els)              (els *) Ysafe_malloc((n)*sizeof(els))
 #define YCALLOC(n, els)              (els *) Ysafe_calloc(n, sizeof(els))
 #define YREALLOC(ar,n,els)           (els *) Ysafe_realloc(ar,(n)*sizeof(els))
@@ -38,7 +38,7 @@ extern VOID Yvector_free( P3( VOIDPTR array, INT lo, INT size ) ) ;
 
 #else /* MEM_DEBUG - memory debug functions */
 
-#define NIL( type )		     (type) NULL
+#define NIL( type )                  (type) NULL
 #define YMALLOC(n, els) \
     (els *) Ysafe_malloc((n)*sizeof(els),__FILE__,__LINE__)
 #define YCALLOC(n, els) \
