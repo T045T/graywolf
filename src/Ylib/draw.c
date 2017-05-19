@@ -232,7 +232,7 @@ static VOID drawWArb() ;
 static VOID drawDLine() ;
 static VOID drawWLine() ;
 static VOID initcolors( P2(char **desiredColorArray,INT  numC ) ) ;
-static closeFrame(P1(void)) ;
+static VOID closeFrame(P1(void)) ;
 static VOID set_viewing_transformation() ;
 extern VOID TW3Dperspective( P5(DOUBLE x, DOUBLE y, DOUBLE z, 
     DOUBLE *pX, DOUBLE *pY ) ) ;
@@ -333,8 +333,7 @@ BOOL TWcheckServer()
     return( TRUE ) ;
 } /* end TWcheckServer */
 
-TWsetMode( mode ) 
-INT mode ;
+VOID TWsetMode( INT mode ) 
 {
     if( dumpOnlyS && mode != TWWRITEONLY ){
 	D( "TWsetMode",
@@ -372,14 +371,8 @@ INT mode ;
 } /* end TWsetMode */
 
 /* start a new window system */
-BOOL TWinitGraphics(argc,argv,numC,colors,dumpOnly,menu,refresh_func)
-INT argc;
-char *argv[];
-char **colors ;
-BOOL dumpOnly ;
-INT  numC ;
-TWMENUPTR menu ;
-INT (*refresh_func)() ;
+BOOL TWinitGraphics(INT argc, char **argv, INT numC, char **colors,
+                    BOOL dumpOnly, TWMENUPTR menu, INT (*refresh_func)())
 {
     parasiteS = FALSE ;
 
@@ -389,29 +382,16 @@ INT (*refresh_func)() ;
 } /* end TWinitGraphics */
 
 /* TWinitParasite takes over windows that were already opened */
-BOOL TWinitParasite(argc,argv,numC,colors,dumpOnly,menu,refresh_func,w)
-INT argc;
-char *argv[];
-INT  numC ;
-char **colors ;
-BOOL dumpOnly ;
-TWMENUPTR menu ;
-INT (*refresh_func)() ;
-INT w ;
+BOOL TWinitParasite(INT argc, char **argv, INT numC, char **colors,
+                    BOOL dumpOnly, TWMENUPTR menu, INT(*refresh_func)(), INT w)
 {
     parasiteS = TRUE ;
     backS = (Window) w ;
     return(TWinit(argc,argv,numC,colors,dumpOnly,menu,refresh_func));
 } /* end TWinitParasite */
 
-static BOOL TWinit(argc,argv,numC,desiredColors,dumpOnly,menu,refresh_func)
-INT argc;
-char *argv[];
-INT  numC ;
-char **desiredColors ;
-BOOL dumpOnly ;
-TWMENUPTR menu ;
-INT (*refresh_func)() ;
+static BOOL TWinit(INT argc, char **argv, INT numC, char **desiredColors,
+                   BOOL dumpOnly, TWMENUPTR menu, INT(*refresh_func)())
 {
 
     XSetWindowAttributes attr;
@@ -473,7 +453,7 @@ INT (*refresh_func)() ;
 	/* we are done for the dump_graphics mode */
 	initS = TRUE ;
 	TWsetMode( TWWRITEONLY ) ;  /* always enable both modes */
-	return ;
+	return initS;
     } else {
 	/* OTHERWISE INITIALIZE BOTH MODES */
 	TWsetMode( TWWRITENDRAW ) ;  /* always enable both modes */
@@ -731,9 +711,7 @@ TWINFOPTR TWgetDrawInfo()
 } /* end TWgetDrawInfo */
 
 
-TWsetDrawInfo( winheight, winwidth, pixmap ) 
-INT winheight, winwidth ;
-Pixmap pixmap ;
+VOID TWsetDrawInfo( INT winheight, INT winwidth, Pixmap pixmap ) 
 {
     infoBoxS.winwidth = winwidthS = winwidth ;
     infoBoxS.winheight = winheightS = winheight ;
@@ -743,7 +721,7 @@ Pixmap pixmap ;
 
 } /* end TWsetDrawInfo */
 
-TWforceRedraw()
+VOID TWforceRedraw()
 {
     XEvent event ;          /* describes configuration event */
 
@@ -757,7 +735,7 @@ TWforceRedraw()
     XSendEvent( dpyS, drawS, TRUE, ExposureMask, &event ) ;
 } /* end TWforceRedraw */
 
-TWcloseGraphics()
+VOID TWcloseGraphics()
 {
 
     if(!(initS )){
@@ -780,7 +758,7 @@ TWcloseGraphics()
 
 /***********  BEGIN STRICT GRAPHICS ROUTINES ************* */
 /* perform a zoom in main graphics window */
-TWzoom()
+VOID TWzoom()
 {
     INT x1, y1 ; /* first point of user zoom */
     INT x2, y2 ; /* second point of user zoom */
@@ -831,7 +809,7 @@ TWzoom()
 }
 
 /* returns to full screen after zoom */
-TWfullView()
+VOID TWfullView()
 {
     if( fullViewS ){
 	return ;
@@ -846,8 +824,7 @@ TWfullView()
 } /* end TWfullScreen */
 
 /* set the window area for bar */
-TWsetwindow( left, bottom, right, top ) 
-INT left, bottom, right, top ;
+VOID TWsetwindow( INT left, INT bottom, INT right, INT top ) 
 {
     INT xspan, yspan ; /* span of data */
     DOUBLE xscaleF, yscaleF ;  /* scale data to window span */
@@ -911,8 +888,7 @@ INT left, bottom, right, top ;
 
 } /* end TWsetwindow */
 
-static VOID set_clip_window( left, right, bottom, top ) 
-INT left, right, bottom, top ;
+static VOID set_clip_window( INT left, INT right, INT bottom, INT top ) 
 {
     INT xspan, yspan ;
 
@@ -931,7 +907,7 @@ INT left, right, bottom, top ;
     }
 } /* end set_clip_window() */ 
 
-TWtranslate()
+VOID TWtranslate()
 {
     INT x1, y1 ;
     INT last_xoff, last_yoff ;
@@ -970,7 +946,7 @@ TWtranslate()
 
 /* copy pixmap to screen and flush screen output buffer */
 /* flush screen output buffer */
-TWflushFrame()
+VOID TWflushFrame()
 {
     if( modeS == TWWRITEONLY ){
 	return ;
@@ -980,7 +956,7 @@ TWflushFrame()
 } /* end TWflushFrame */
 
 /* process everything in buffer */
-TWsync()
+VOID TWsync()
 {
     if( modeS == TWWRITEONLY ){
 	return ;
@@ -989,9 +965,7 @@ TWsync()
     XSync( dpyS, 0 ) ;
 } /* end TWsync */
 
-static VOID initcolors( desiredColorArray, numC )
-char **desiredColorArray ;
-INT  numC ;
+static VOID initcolors( char **desiredColorArray, INT numC )
 {
     unsigned long backgrd;
     unsigned long foregrd;
@@ -1189,9 +1163,7 @@ INT  numC ;
     
 } /* end initcolor */
 
-TWcolorXOR( color, exorFlag )
-INT color ;
-BOOL exorFlag ;
+VOID TWcolorXOR( INT color, BOOL exorFlag )
 {
     /* check to make sure color is valid */
     if( color <= 0 || color > numColorS ){
@@ -1212,7 +1184,7 @@ BOOL exorFlag ;
 
 
 /* start a new slate */
-static startDFrame()
+static VOID startDFrame()
 {
     XClearWindow( dpyS, drawS ) ;
     if( reverseS ){
@@ -1226,11 +1198,11 @@ static startDFrame()
     XFlush( dpyS ) ;
 } /* end startDFrame */
 
-static VOID drawDLine(ref,x1,y1,x2,y2,color,label)
+static VOID drawDLine(
+  INT ref,
+  register INT x1, register INT y1, register INT x2, register INT y2,
+  INT color, char *label)
 /* draw a one pixel tall line segment from x1,y1 to x2,y2 */
-INT	ref, color ;
-register INT	x1,y1,x2,y2 ;
-char	*label ;
 {	
 
     /* check to make sure color is valid */
@@ -1279,13 +1251,13 @@ char	*label ;
     }
 } /* end drawDLine */
 
-static VOID drawDRect(ref,x1,y1,x2,y2,color,label)
+static VOID drawDRect(
+  INT ref,
+  register INT x1, register INT y1, register INT x2, register INT y2,
+  INT color, char *label)
 /* draw a rectangle whose diagonals are (x1,y1) and (x2,y2) */
 /* 	if the specified color is default or invalid, use default color */
 /* A border will be draw around the cell if specified black (default). */
-INT	ref, color ;
-register INT	x1,y1,x2,y2 ;
-char	*label ;
 {	
     UNSIGNED_INT width, height ;
     INT len ;
@@ -1355,7 +1327,7 @@ char	*label ;
     }
 } /* end drawDCell */
 
-TWarb_init()
+VOID TWarb_init()
 {
     /* allocate memory if needed */
     if(!(ptS)){
@@ -1381,8 +1353,7 @@ TWarb_init()
 } /* end TWarb_init */
 /* ***************************************************************** */
 
-TWarb_addpt( xpos, ypos )
-INT xpos, ypos ;
+VOID TWarb_addpt( INT xpos, INT ypos )
 {
 
     if( modeS == TWWRITEONLY || modeS == TWWRITENDRAW ){
@@ -1418,9 +1389,7 @@ INT xpos, ypos ;
 /* ***************************************************************** */
 
 
-static VOID drawDArb( ref, color, label )
-INT	ref, color ;
-char	*label ;
+static VOID drawDArb( INT ref, INT color, char *label )
 {
     INT    i ;           /* counter */
     INT    len ;         /* length of string if given */
@@ -1511,8 +1480,7 @@ char	*label ;
     }
 } /* end drawDArb */
 
-TWarb_fill( flag )
-BOOL flag ;
+VOID TWarb_fill( BOOL flag )
 {
     fillArbS = flag ;
 } /* end TWarb_fill */
@@ -1522,8 +1490,7 @@ BOOL TWget_arb_fill()
     return( fillArbS ) ;
 } /* end TWget_arb_fill */
 
-TWrect_fill( flag )
-BOOL flag ;
+VOID TWrect_fill( BOOL flag )
 {
     rect_fillS = flag ;
 } /* end TWrect_fill */
@@ -1533,9 +1500,9 @@ BOOL TWget_rect_fill()
     return( rect_fillS ) ;
 } /* end TWget_rect_fill */
 
-TWhighLightRect( x1,y1,x2,y2 )
+VOID TWhighLightRect(register INT x1, register INT y1,
+                     register INT x2, register INT y2 )
 /* draw a rectangle whose diagonals are (x1,y1) and (x2,y2) */
-register INT	x1,y1,x2,y2 ;
 {	
     UNSIGNED_INT width, height ;
 
@@ -1559,8 +1526,8 @@ register INT	x1,y1,x2,y2 ;
 	x1,y2,width,height ) ;
 } /* end TWhighLightRect */
 
-TWmoveRect( x1, y1, x2, y2, ptx, pty )
-INT *x1, *y1, *x2, *y2, ptx, pty ;
+VOID TWmoveRect( INT *x1, INT *y1, INT *x2, INT *y2,
+                 INT ptx, INT pty )
 /* x1, y1, x2, y2 are all user data absolute coordinates */
 /* ptx and pty are the value of the pointer from TWgetPt */
 {
@@ -1648,9 +1615,7 @@ INT *x1, *y1, *x2, *y2, ptx, pty ;
 	
 } /* end TWmoveRect */
 
-XFontStruct *TWgetfont( fname, font )
-char *fname ;
-Font *font ;
+XFontStruct *TWgetfont( char *fname, Font *font )
 {
     XFontStruct *fontinfo ;
 
@@ -1665,8 +1630,7 @@ Font *font ;
     return( fontinfo ) ;
 } /* end TWgetfont */
 
-_TW3DdrawAxis( drawNotErase )
-BOOL drawNotErase ;
+VOID _TW3DdrawAxis( BOOL drawNotErase )
 {
     INT xspan, yspan, zspan ;
     INT c ;      /* string color */
@@ -1837,10 +1801,8 @@ static VOID set_viewing_transformation()
 /*------------------
   Perform a 3D transformation.  
   ------------------*/
-VOID TW3Dperspective(x, y, z, pX, pY)
-DOUBLE    x, y, z;
-DOUBLE    *pX, *pY;
-     
+VOID TW3Dperspective(DOUBLE x, DOUBLE y, DOUBLE z,
+                     DOUBLE *pX, DOUBLE *pY)
 {
   DOUBLE x_eye, y_eye, z_eye;
   
@@ -1889,10 +1851,10 @@ VOID TW3Dnormal_view()
 /*-------------------------
     Draws a 3 dimensional cube.
   -------------------------*/
-INT TW3DdrawCube(ref_num, x1, y1, z1, x2, y2, z2, color, label)
-INT ref_num, x1, y1, z1, x2, y2, z2 ;
-INT color;
-char *label;
+INT TW3DdrawCube(INT ref_num,
+                 INT x1, INT y1, INT z1,
+                 INT x2, INT y2, INT z2,
+                 INT color, char *label)
 {
     /* try it as a solid */
     /* side face 1 */
@@ -1959,9 +1921,7 @@ char *label;
 } /* end TW3DdrawCube */
 
 /* returns string size in user coordinate system */
-TWstringSize( string, width, height )
-char *string ;
-INT *width, *height ;
+VOID TWstringSize( char *string, INT *width, INT *height )
 {
     INT len ;        /* length of string in characters */
     INT pix_width ;  /* width of string in pixels */
@@ -1975,9 +1935,7 @@ INT *width, *height ;
 
 }
 
-TWdrawString( x, y, color, label )
-INT x, y, color ;
-char *label ;
+VOID TWdrawString( INT x, INT y, INT color, char *label )
 {
     if( color <= 0 || color > numColorS ){
 	if( initS ){ /* graphics are available */
@@ -2026,7 +1984,7 @@ static  INT  numPinS = 0 ;  /* pin counter */
 static  INT  numCharS = 0 ; /* symbol table counter */
 
 
-TWstartFrame()
+VOID TWstartFrame()
 {
     char filename[LRECL] ;
     char dummy[5] ;
@@ -2088,7 +2046,7 @@ TWstartFrame()
 } /* end startNewFrame */
 
 /* write size of data at end of files and close them if frames are open */
-static closeFrame()
+static VOID closeFrame()
 {
     char dummy[5] ;
     UNSIGNED_INT nitems ;
@@ -2130,8 +2088,7 @@ static closeFrame()
 
 } /* closeFrame */
 
-TWsetFrame( number )
-INT number ;
+VOID TWsetFrame( INT number )
 {
     char fileName[LRECL] ;
 
@@ -2158,10 +2115,10 @@ INT number ;
 /*   THE SPECIALIZED ROUTINES */
 /* *********  GENERIC WRITE ROUTINES **************  */
 /* draw a one pixel tall line segment from x1,y1 to x2,y2 */
-static VOID drawWLine( ref_num,x1,y1,x2,y2,color,label)
-INT     ref_num ; /* reference number */
-INT	x1,y1,x2,y2,color ;
-char	*label;
+static VOID drawWLine( INT ref_num,
+                       INT x1, INT y1,
+                       INT x2, INT y2,
+                       INT color, char *label)
 {	
     DATABOX record ;
     UNSIGNED_INT nitems ;
@@ -2215,10 +2172,10 @@ char	*label;
 
 /* draw a rectangle whose diagonals are (x1,y1) and (x2,y2) */
 /* 	if the specified color is default or invalid, use default color */
-static VOID drawWRect( ref_num, x1,y1,x2,y2,color,label)
-INT     ref_num ; /* reference number */
-INT	x1,y1,x2,y2, color;
-char	*label;
+static VOID drawWRect(INT ref_num,
+                      INT x1, INT y1,
+                      INT x2, INT y2,
+                      INT color, char *label)
 {
     DATABOX record ;
     UNSIGNED_INT nitems ;
@@ -2269,9 +2226,7 @@ char	*label;
 
 } /* end drawWRect */
 
-static VOID drawWArb( ref, color, label )
-INT	ref, color ;
-char	*label ;
+static VOID drawWArb( INT ref, INT color, char *label )
 {
     YBUSTBOXPTR bustptr ;
 
