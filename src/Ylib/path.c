@@ -57,6 +57,7 @@ static char SccsId[] = "@(#) path.c version 3.8 10/23/90" ;
 #include <unistd.h>
 #include <string.h>
 #include <yalecad/base.h>
+#include <yalecad/file.h>
 #include <yalecad/string.h>
 
 #undef  LRECL
@@ -65,9 +66,8 @@ static char SccsId[] = "@(#) path.c version 3.8 10/23/90" ;
 static char *getpath ();
 
 /* it is up to user to free memory */
-char *Yfixpath(given_path, fileNotDir ) /* fix a path to get rid of .. */
-char *given_path;
-BOOL fileNotDir; /* tells whether path is file or directory */
+char *Yfixpath(char *given_path, /* fix a path to get rid of .. */
+               BOOL fileNotDir ) /* tells whether path is file or directory */
 {
 
     INT  i ;                  /* token counter */
@@ -164,8 +164,7 @@ BOOL fileNotDir; /* tells whether path is file or directory */
 struct passwd *getpwnam();
 char *getlogin();
 
-static char *getpath(user)     /* get path of home directory */
-register char *user;
+static char *getpath(register char *user)     /* get path of home directory */
 {
         register char *who;
         struct passwd *pass;
@@ -175,7 +174,7 @@ register char *user;
         } else {
 	    who = user;
 	}
-        if (pass = getpwnam(who)){
+        if ((pass = getpwnam(who))){
 	    return(pass->pw_dir);
         } else {
 	    return(user);
