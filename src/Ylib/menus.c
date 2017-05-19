@@ -1645,7 +1645,7 @@ TWMENUPTR TWread_menus( char *filename )
     item = -1 ;
     line = 0 ;
     rewind( fp ) ;
-    while( bufferptr=fgets(buffer,LRECL,fp )){
+    while( (bufferptr=fgets(buffer,LRECL,fp )) ){
 	/* parse file */
 	line++ ;
 	/* skip comments */
