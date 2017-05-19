@@ -60,6 +60,7 @@ static char SccsId[] = "@(#) edcolors.c (Yale) version 1.8 12/15/91" ;
 
 #include <yalecad/base.h>
 #include <yalecad/dialog.h>
+#include <yalecad/draw.h>
 #include <yalecad/colors.h>
 #include <yalecad/draw.h>
 #include <yalecad/string.h>
@@ -135,7 +136,7 @@ VOID TWtoggleColors()
 
     /* initialization complete */
 
-    if( answer = TWdialog( fieldS, "colors", NULL ) ){
+    if( (answer = TWdialog( fieldS, "colors", NULL )) ){
 	if( answer[3].bool ){
 	    TWarb_fill( TRUE ) ;
 	} else {
