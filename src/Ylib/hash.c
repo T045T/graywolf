@@ -76,8 +76,7 @@ static INT tablesize ;
 static YTABLEPTR *table ;
 
 
-YHASHPTR Yhash_table_create( numentries )
-INT numentries ;
+YHASHPTR Yhash_table_create( INT numentries )
 {
     YHASHPTR  hashtable ;
     INT Yhash_table_size() ;
@@ -91,15 +90,12 @@ INT numentries ;
     return(hashtable) ;
 } /* end Yhash_create */
 
-INT Yhash_table_get( hashtable )
-YHASHPTR  hashtable ;
+INT Yhash_table_get( YHASHPTR hashtable )
 {
     return(hashtable->size) ;
 }
 
-Yhash_table_delete(hashtable, userdelete )
-YHASHPTR  hashtable ;
-INT  (*userdelete)() ;
+VOID Yhash_table_delete(YHASHPTR hashtable, INT (*userdelete)() )
 {
     INT i ;
     YTABLEPTR hptr , zapptr ;
@@ -123,11 +119,7 @@ INT  (*userdelete)() ;
 }
 
 /* returns true if conflict occured */
-char *Yhash_search(hashtable, key, data, operation )
-YHASHPTR  hashtable ;
-char *key ;
-VOIDPTR data ;
-INT operation ;
+char *Yhash_search(YHASHPTR hashtable, char *key, VOIDPTR data, INT operation )
 {
 
 #ifdef HASHFUNC1
@@ -221,11 +213,8 @@ INT operation ;
    hash add will not add it to the hash table but will notify the
    user by setting new flag to false.
 */
-char *Yhash_add( hashtable, key, add_function, new_flag ) 
-YHASHPTR  hashtable ;
-char *key ;
-char *(*add_function)() ;
-BOOL *new_flag ;
+char *Yhash_add(YHASHPTR hashtable, char *key, char *(*add_function)(),
+                BOOL *new_flag ) 
 {
 
 #ifdef HASHFUNC1
@@ -301,8 +290,7 @@ BOOL *new_flag ;
 
 } /* end hash_add */
 
-INT Yhash_set_size(hashtable)
-YHASHPTR  hashtable ;
+INT Yhash_set_size(YHASHPTR hashtable)
 {
     INT count = 0 ;
     YTABLEPTR thread ;
@@ -314,8 +302,7 @@ YHASHPTR  hashtable ;
 }
 
 /*---------------------------- hash_table_size -------------------------*/
-INT Yhash_table_size( minEntries )
-INT minEntries;
+INT Yhash_table_size( INT minEntries )
 {
   INT   i;
   BOOL  isPrime;
