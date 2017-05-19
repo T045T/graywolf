@@ -1,14 +1,14 @@
-/* ----------------------------------------------------------------- 
-FILE:	    readpar.h                                       
+/* -----------------------------------------------------------------
+FILE:       readpar.h
 DESCRIPTION:The include file for reading TimberWolf parameter files.
-CONTENTS:   
-DATE:	    Oct 25, 1990 
-REVISIONS:  Sat Jan 26 12:36:04 PST 1991 - added genrows GENR to 
-		list of programs.
-	    Sat Feb 23 00:46:29 EST 1991 - added TOMUS program and
-		added wildcarding argument to Yreadpar_next.
-	    Thu Apr 18 00:53:01 EDT 1991 - added design rule
-		parameter extraction routines.
+CONTENTS:
+DATE:       Oct 25, 1990
+REVISIONS:  Sat Jan 26 12:36:04 PST 1991 - added genrows GENR to
+                list of programs.
+            Sat Feb 23 00:46:29 EST 1991 - added TOMUS program and
+                added wildcarding argument to Yreadpar_next.
+            Thu Apr 18 00:53:01 EDT 1991 - added design rule
+                parameter extraction routines.
 ----------------------------------------------------------------- */
 #ifndef YREADPAR_H
 #define YREADPAR_H
@@ -39,49 +39,49 @@ typedef YTREEPTR YPARPTR ;
 typedef YTREEBOX YPARBOX ;
 
 extern VOID Yreadpar_init( P4(char *design_name, INT  program,
-				INT  filter, BOOL abortFlag ) ) ;
+                                INT  filter, BOOL abortFlag ) ) ;
 /* ******************* READPAR ROUTINES ****************** */
-/* 
+/*
 Function:
     Initializes the readpar mechanism.  This must be call before any
     other readpar functions.  Restrictions: only one parameter file
-    may be read at a time.  Design_name is the name of the design. 
-    Program is one of the listed program id's at the top of this 
+    may be read at a time.  Design_name is the name of the design.
+    Program is one of the listed program id's at the top of this
     file.  The filter is used to screen out other programs. There
     are two ways of initializing the parameter files.  In the
     first case program = USER, and filter is one of the programs
     such as SGGR.  The second way is to specify program =
     filter = program such as SGGR.  If abort flag is set true, the
     routine will exit program if file is not found.  If abort flag is
-    set false, it will ignore any subsequent readpar commands 
+    set false, it will ignore any subsequent readpar commands
     relating to this file.
 */
 
 extern char **Yreadpar_next( P5(char **lineptr,INT *line,
     INT *numtokens,BOOL *onNotOff,BOOL *wildcard)) ;
-/* 
+/*
 Function:
     Reads a parameter one line at a time ignoring comments. Returns
     only parameters which pertain to the given program.  Nothing
     is stored in memory.  Lineptr is the contents of the current
-    line, line is the current line number. Numtokens is the 
+    line, line is the current line number. Numtokens is the
     number of tokens returned and onNotOff tells the state of
     the variable.   Wildcard returns whether this line is
-    a wildcard.  Wildcard should not generate error messages 
+    a wildcard.  Wildcard should not generate error messages
     in the programs readpar file.
 */
 
 extern YPARPTR Yreadpar_file();
-/* 
+/*
 Function:
-    Reads the an entire parameter file and stores the data in memory 
+    Reads the an entire parameter file and stores the data in memory
     to be accessed randomly using Yreadpar_lookup.  Returns a
     par_object to be used with Yreadpar_lookup.
 */
 
 extern char **Yreadpar_lookup( P4(YPARPTR par_object, char *param,
-			    INT program, INT *numtokens )) ;
-/* 
+                            INT program, INT *numtokens )) ;
+/*
 Function:
     Given a par object, and a program id, look up the given parameter.
     If the parameter is found it will return a token buffer similar
