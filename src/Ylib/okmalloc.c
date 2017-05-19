@@ -844,6 +844,8 @@ BOOL flag ;
   *--------------------------------------------------------------
 */
 
+#include <stdlib.h>
+
 /* use standard calls to malloc, calloc, etc */
 
 char *Ysafe_malloc(size)
@@ -901,7 +903,8 @@ VOIDPTR ptr;
 VOID Ysafe_cfree(ptr)
 VOIDPTR ptr;
 {
-    cfree(ptr);
+    // cfree is deprecated!
+    free(ptr);
     return;
 }
 
