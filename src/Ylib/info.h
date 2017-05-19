@@ -1,17 +1,17 @@
-/* ----------------------------------------------------------------- 
+/* -----------------------------------------------------------------
 "@(#) info.h (Yale) version 3.10 1/30/92"
-FILE:	    info.h                                       
+FILE:       info.h
 DESCRIPTION:include file for graphics screen routines
 CONTENTS:   typedefs, and external routines for TWinfo record.
-DATE:	    Mar 21, 1989 - original coding moved from draw.h
+DATE:       Mar 21, 1989 - original coding moved from draw.h
 REVISIONS:  Sep 23, 1989 - added color fields for TWtoggleColor()
-	    Oct 12, 1990 - modified structure to accommodate 4
-		draw windows.
-	    Dec  7, 1990 - added stipple switch to information.
-	    Mon Jan  7 18:17:44 CST 1991 - made SAFE_WAIT_TIME
-		user programmable for slow machines.
-	    Thu Mar  7 01:23:40 EST 1991 - added refresh function
-		so that dialog box works correctly.
+            Oct 12, 1990 - modified structure to accommodate 4
+                draw windows.
+            Dec  7, 1990 - added stipple switch to information.
+            Mon Jan  7 18:17:44 CST 1991 - made SAFE_WAIT_TIME
+                user programmable for slow machines.
+            Thu Mar  7 01:23:40 EST 1991 - added refresh function
+                so that dialog box works correctly.
 ----------------------------------------------------------------- */
 #ifndef INFO_H
 #define INFO_H
@@ -22,9 +22,9 @@ REVISIONS:  Sep 23, 1989 - added color fields for TWtoggleColor()
 #define MENUHEIGHT      20            /* give menu extra pixels in width */
 
 #ifdef YDRAW_VARS
-#define EXTERN 
+#define EXTERN
 #else
-#define EXTERN extern 
+#define EXTERN extern
 #endif
 
 typedef struct {
