@@ -1,9 +1,9 @@
-/* ----------------------------------------------------------------- 
+/* -----------------------------------------------------------------
 "@(#) queue.h version 1.4 10/9/90"
-FILE:	    queue.h                                       
+FILE:       queue.h
 DESCRIPTION:Insert file for queue library routines.
-DATE:	    Mar 16, 1989 
-REVISIONS:  
+DATE:       Mar 16, 1989
+REVISIONS:
 ----------------------------------------------------------------- */
 #ifndef QUEUE_H
 #define QUEUE_H
@@ -23,7 +23,7 @@ typedef struct {
 
 /* *********** FIFO routines *************** */
 extern VOID YinitQueue( P2(YQUEUE *queue, char *node ) ) ;
-/* 
+/*
 Arguments:
     YQUEUE *queue ;
     char *node ;
@@ -33,7 +33,7 @@ Function:
 */
 
 extern char *YtopQueue( P1(YQUEUE *queue ) ) ;
-/* 
+/*
 Arguments:
     YQUEUE *queue ;
 Function:
@@ -41,7 +41,7 @@ Function:
 */
 
 extern VOID Yadd2Queue( P2(YQUEUE *queue, char *node ) ) ;
-/* 
+/*
 Arguments:
     YQUEUE *queue ;
     char *node ;
@@ -51,7 +51,7 @@ Function:
 
 /* check status of the queue */
 extern YQUEUEPTR YqueueNotEmpty( P1(YQUEUE *queue ) ) ;
-/* 
+/*
 Arguments:
     YQUEUE *queue ;
 Function:
@@ -60,7 +60,7 @@ Function:
 
 /* debug function to dump the contents of the queue */
 extern VOID YdumpQueue( P1(YQUEUE *queue ) ) ;
-/* 
+/*
 Arguments:
     YQUEUE *queue ;
 Function:
