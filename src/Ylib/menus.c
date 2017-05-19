@@ -134,6 +134,7 @@ static char SccsId[] = "@(#) menus.c (Yale) version 3.36 2/26/92" ;
 #ifndef NOGRAPHICS 
 
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -147,6 +148,8 @@ static char SccsId[] = "@(#) menus.c (Yale) version 3.36 2/26/92" ;
 #include <yalecad/debug.h>
 #include <yalecad/draw.h>
 #include <yalecad/colors.h>
+#include <yalecad/time.h>
+#include <yalecad/timer.h>
 #include "info.h"
 
 #define DEFAULT_TIMEOUT      10 * 1000       /* 10 seconds to timeout on message window */
@@ -305,19 +308,19 @@ Window TWgetWindowId( Display *dpy, Window backwindow )
     /* there on creation of those windows during normal case */
     XGetWindowProperty(dpy, backS, menuAtom, 0L, 200L, False,
 	XA_STRING, &actual, &junk1, &junk2, &length, &prop);
-    if( !(menuS = atoi( prop ))){
+    if( !(menuS = atoi((char*) prop))){
 	M( ERRMSG,"TWinitMenus","Could not find menu property\n" ) ;
 	return( FALSE ) ;
     }
     XGetWindowProperty(dpy, backS, messageAtom, 0, 200, False,
 	XA_STRING, &actual, &junk1, &junk2, &length, &prop);
-    if( !(messageS = atoi( prop ))){
+    if( !(messageS = atoi((char*) prop))){
 	M( ERRMSG,"TWinitMenus","Could not find message property\n") ;
 	return( FALSE ) ;
     }
     XGetWindowProperty(dpy, backS, drawAtom, 0, 200, False,
 	XA_STRING, &actual, &junk1, &junk2, &length, &prop);
-    if( !(drawS = atoi( prop ))){
+    if( !(drawS = atoi((char*) prop))){
 	M( ERRMSG,"TWinitMenus","Could not find draw property\n") ;
 	return( FALSE ) ;
     }
@@ -380,13 +383,13 @@ BOOL TWinitMenuWindow( TWMENUPTR menu_fields )
 
 	/* store the windowIds of the two window so that a parasite */
 	/* can find its way later */
-	sprintf( windowIdString, "%d", drawS ) ; /* store as a string */
+	sprintf( windowIdString, "%lu", drawS ) ; /* store as a string */
 	XChangeProperty( dpyS, backS, drawAtom, XA_STRING, 8, PropModeAppend,
 	    (unsigned char *) windowIdString, strlen(windowIdString) ) ;
-	sprintf( windowIdString, "%d", menuS ) ; /* store as a string */
+	sprintf( windowIdString, "%lu", menuS ) ; /* store as a string */
 	XChangeProperty( dpyS, backS, menuAtom, XA_STRING, 8, PropModeAppend,
 	    (unsigned char *) windowIdString, strlen(windowIdString) ) ;
-	sprintf( windowIdString, "%d", messageS ) ;/* store as a string */
+	sprintf( windowIdString, "%lu", messageS ) ;/* store as a string */
 	XChangeProperty( dpyS, backS, messageAtom, XA_STRING, 8, 
 	    PropModeAppend, (unsigned char *) windowIdString, 
 	    strlen(windowIdString) ) ;
@@ -410,7 +413,7 @@ BOOL TWinitMenuWindow( TWMENUPTR menu_fields )
         three_button_mouseS = FALSE ;
     }
 
-    if( reply = XGetDefault( dpyS, GRAPHICS, "message_timeout" )){
+    if( (reply = XGetDefault( dpyS, GRAPHICS, "message_timeout") )){
 	/* time is in milliseconds */
 	message_timeoutS = atoi( reply ) * 1000 ;
     } else {
@@ -714,7 +717,7 @@ INT TWcheckMouse()
     /* it take too much time*/
     Ytimer_elapsed( &cur_time ) ;
     if( cur_time - last_timeL > 10000 ){
-	sleep( (UNSIGNED_INT) 1 ) ;
+        sleep( (UNSIGNED_INT) 1 ) ;
     }
 
     /* always set window lights on in this routine */
@@ -1246,7 +1249,7 @@ BOOL TWgetPt2( INT *x, INT *y )
     press = FALSE ;
     while(!(press )){
 	/* check for user input from keyboard */
-	if( press=XCheckTypedWindowEvent(dpyS,messageS,KeyPress,&event)){
+        if( (press=XCheckTypedWindowEvent(dpyS,messageS,KeyPress,&event)) ){
 	    /* we have an event from the keyboard */
 	    /* put event back on queue  and call TWgetString */
 	    XPutBackEvent( dpyS, &event ) ;
@@ -1270,8 +1273,8 @@ BOOL TWgetPt2( INT *x, INT *y )
 	    } /* end keyboard processing loop */
 	    
          /* other wise - check mouse */
-	} else if( press = XCheckTypedWindowEvent( dpyS,drawS,
-		ButtonPress,&event ) ){
+	} else if( (press = XCheckTypedWindowEvent( dpyS,drawS,
+                                                    ButtonPress,&event )) ){
 	    /* we have an event from the pointer */
 	    /* put event back on queue  and call TWgetPt */
 	    XPutBackEvent( dpyS, &event ) ;
@@ -1600,7 +1603,7 @@ TWMENUPTR TWread_menus( char *filename )
     line = 0 ;
     item = 0 ;
     fp = TWOPEN( filename, "r", ABORT ) ;
-    while( bufferptr=fgets(buffer,LRECL,fp )){
+    while( (bufferptr=fgets(buffer,LRECL,fp )) ){
 	/* parse file */
 	line ++ ; /* increment line number */
 	/* skip comments */
