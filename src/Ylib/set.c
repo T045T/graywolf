@@ -152,7 +152,7 @@ BOOL Yset_add( YSETPTR set, INT node )
         set->set[node]->member = set->in_set ;
         set->cardinality++ ;
         /* connect the doubly linked list */
-        if( temp = set->list ){
+        if( (temp = set->list) ){
             /* hook to old list */
             set->list = set->set[node] ;
             set->list->next = temp ;
