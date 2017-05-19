@@ -37,17 +37,17 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    path.c                                       
+/* -----------------------------------------------------------------
+FILE:       path.c
 DESCRIPTION:routine for correctly resolving pathnames on system
-		especially ~ and ../ in names.
+                especially ~ and ../ in names.
 CONTENTS:   char *Yfixpath(pathname, fileNotDir )
-		char *pathname;
-		BOOL fileNotDir;
-DATE:	    Jan 25, 1989 - major rewrite of version 1.0
+                char *pathname;
+                BOOL fileNotDir;
+DATE:       Jan 25, 1989 - major rewrite of version 1.0
 REVISIONS:  Sep 15, 1989 - replaced which with my own version.
-	    Oct 20, 1990 - pathname should be bufsize since
-		users path may be very long.
+            Oct 20, 1990 - pathname should be bufsize since
+                users path may be very long.
 ----------------------------------------------------------------- */
 #ifndef lint
 static char SccsId[] = "@(#) path.c version 3.8 10/23/90" ;
@@ -90,44 +90,44 @@ char *Yfixpath(char *given_path, /* fix a path to get rid of .. */
 
     switch( pathname[0] ){
     case '~':
-	/* look for ~/ construct */
-	if( pathname[1] == '/' ){
-	    /* use login as user */
-	    user = NULL ;
-	    /* skip over ~/ */
-	    rest = pathname + 2 ;
-	} else {
-	    /* get user from string */
-	    user = strtok( pathname," ~//,\n" ) ;
-	    /* skip over ~ */
-	    rest = strtok( NULL," ~\n" ) ;
-	}
-	/* call get path to get user path */
-	strcpy( temp, getpath(user) );
-	/* copy the rest of the string to result */
-	strcat( temp, "/" ) ;
-	strcat( temp, rest ) ;
-	result = Ystrclone( temp ) ;
-	break ;
+        /* look for ~/ construct */
+        if( pathname[1] == '/' ){
+            /* use login as user */
+            user = NULL ;
+            /* skip over ~/ */
+            rest = pathname + 2 ;
+        } else {
+            /* get user from string */
+            user = strtok( pathname," ~//,\n" ) ;
+            /* skip over ~ */
+            rest = strtok( NULL," ~\n" ) ;
+        }
+        /* call get path to get user path */
+        strcpy( temp, getpath(user) );
+        /* copy the rest of the string to result */
+        strcat( temp, "/" ) ;
+        strcat( temp, rest ) ;
+        result = Ystrclone( temp ) ;
+        break ;
     case '.':
-	result =  Yrelpath( cur_dir, pathname ) ;
-	break ;
+        result =  Yrelpath( cur_dir, pathname ) ;
+        break ;
     default:
-	/* no work to be done */
-	result = pathname ;
-	break ;
+        /* no work to be done */
+        result = pathname ;
+        break ;
     } /* end switch */
 
     if( fileNotDir ){
-	if( YfileExists( result ) ){
-	    /* we are done */
-	    return(result);
-	} /* otherwise continue below */
+        if( YfileExists( result ) ){
+            /* we are done */
+            return(result);
+        } /* otherwise continue below */
     } else { /* a directory */
-	if( YdirectoryExists( result ) ){
-	    /* we are done */
-	    return(result);
-	} /* otherwise continue below */
+        if( YdirectoryExists( result ) ){
+            /* we are done */
+            return(result);
+        } /* otherwise continue below */
     }
 
     /* now that that has failed try looking in user's path */
@@ -139,20 +139,20 @@ char *Yfixpath(char *given_path, /* fix a path to get rid of .. */
 
     usrpath = getenv( "PATH" ) ;
     /* make copy for destructive Ystrparser */
-    strcpy( pathname, usrpath ) ; 
+    strcpy( pathname, usrpath ) ;
 
     tokens = Ystrparser( pathname, ":\t\n", &numtokens );
     for( i = 0; i < numtokens; i++ ){
-	/* use directory to look for file */
-	strcpy( cur_dir, tokens[i] ) ;
-	strcat( cur_dir, "/" ) ;
-	strcat( cur_dir, temp ) ;
+        /* use directory to look for file */
+        strcpy( cur_dir, tokens[i] ) ;
+        strcat( cur_dir, "/" ) ;
+        strcat( cur_dir, temp ) ;
 
-	/* check to see if file exist with this pathname */
-	if( YfileExists( cur_dir ) ){
-	    result = Ystrclone( cur_dir ) ;
-	    return( result ) ;
-	}
+        /* check to see if file exist with this pathname */
+        if( YfileExists( cur_dir ) ){
+            result = Ystrclone( cur_dir ) ;
+            return( result ) ;
+        }
     }
 
     /* at this point we didn't find anything in user's path */
@@ -170,18 +170,18 @@ static char *getpath(register char *user)     /* get path of home directory */
         struct passwd *pass;
 
         if( !(user) || *(user) == '/'){
-	    who = getlogin();
+            who = getlogin();
         } else {
-	    who = user;
-	}
+            who = user;
+        }
         if ((pass = getpwnam(who))){
-	    return(pass->pw_dir);
+            return(pass->pw_dir);
         } else {
-	    return(user);
-	}
+            return(user);
+        }
 }
 
-#ifdef TEST 
+#ifdef TEST
 
 /* include date.o object for link */
 main( argc , argv )
@@ -190,12 +190,12 @@ char *argv[] ;
 {
     char *Yfixpath() ; /* fix a path to get rid of .. */
     if( argc == 2 ){
-	fprintf( stderr, "given file:%s\n", argv[1] ) ;
-	fprintf( stderr, "resolved pathname:%s\n", 
-	    Yfixpath(argv[1],TRUE) ) ;
+        fprintf( stderr, "given file:%s\n", argv[1] ) ;
+        fprintf( stderr, "resolved pathname:%s\n",
+            Yfixpath(argv[1],TRUE) ) ;
     } else {
-	fprintf( stderr, "Error[syntax]: a.out pathName\n" ) ;
-	exit(1) ;
+        fprintf( stderr, "Error[syntax]: a.out pathName\n" ) ;
+        exit(1) ;
     }
     exit(0) ;
 }
