@@ -1,13 +1,13 @@
-/* ----------------------------------------------------------------- 
+/* -----------------------------------------------------------------
 "@(#) hash.h version 1.7 9/22/91"
-FILE:	    hash.h                                       
+FILE:       hash.h
 DESCRIPTION:Insert file for threaded hash routines.
-CONTENTS:   
-DATE:	    Jul 17, 1988 
+CONTENTS:
+DATE:       Jul 17, 1988
 REVISIONS:  Nov  6, 1988 - added user delete function to delTable.
-	    Jan 18, 1989 - added DELETE operation to hash_search.
-	    Apr 27, 1989 - added Y prefix.
-	    Thu Apr 18 00:52:26 EDT 1991 - renamed functions.
+            Jan 18, 1989 - added DELETE operation to hash_search.
+            Apr 27, 1989 - added Y prefix.
+            Thu Apr 18 00:52:26 EDT 1991 - renamed functions.
 ----------------------------------------------------------------- */
 #ifndef HASH_H
 #define HASH_H
@@ -41,27 +41,27 @@ Function:
 extern INT Yhash_table_get( P1( YHASHPTR  hashtable ) ) ;
 /*
 Function:
-    Returns the current size of hash table set by Yhash_table_create 
+    Returns the current size of hash table set by Yhash_table_create
 */
 
 extern char *Yhash_search( P4(YHASHPTR  hashtable, char *key, VOIDPTR data,
-	INT operation ) ) ;
+        INT operation ) ) ;
 /*
 Function:
     Hash table search routine.  Given a hashtable and a key, perform
     the following operations:
-	ENTER:if key is in table it, returns a pointer to the item.
-	      if key is not in table, add it to the table. returns NULL.
-	FIND:if key is in table, it returns a pointer to the item.
-	      if key is not in the table, it returns NULL.
-	DELETE:if key is in table, it returns -1
-	       if key is not in table, it return NULL.
-	Memory is not freed in the delete case, but marked dirty.
+        ENTER:if key is in table it, returns a pointer to the item.
+              if key is not in table, add it to the table. returns NULL.
+        FIND:if key is in table, it returns a pointer to the item.
+              if key is not in the table, it returns NULL.
+        DELETE:if key is in table, it returns -1
+               if key is not in table, it return NULL.
+        Memory is not freed in the delete case, but marked dirty.
     Data is a pointer to the information to be store with the given key.
 */
-		
+
 extern char *Yhash_add( P4( YHASHPTR  hashtable, char *key,
-	char *(*add_function)(), BOOL *new_flag ) ) ;
+        char *(*add_function)(), BOOL *new_flag ) ) ;
 /*
 Function:
     Hash table search convenience routine. It avoids two calls to hash_search
@@ -71,7 +71,7 @@ Function:
     hash add will not add it to the hash table but will notify the
     user by setting new flag to false.  The add_function is used
     to associate the information with the key.  It should return a
-    pointer to the memory where the information is stored.  This 
+    pointer to the memory where the information is stored.  This
     function always returns a pointer to the data.
 */
 
@@ -80,7 +80,7 @@ extern VOID Yhash_table_delete( P2(YHASHPTR  hashtable,INT (*userdelete)() ) ) ;
 /*
 Function:
     Frees the memory associated with a hash table. The user
-    make supply a function which deletes the memory associated 
+    make supply a function which deletes the memory associated
     with the data field.  This function must have the data
     pointer supplied by the hash add routines as an argument,ie.
     Yhash_table_delete( my_hash_table, my_free_func ) ;
@@ -99,7 +99,7 @@ Function:
     One may enumerate the hash table by writing the following loop.
     TABLEPTR ptr ;
     for( ptr = mytable->thread; ptr ; ptr= ptr->threadNext ){
-	...
+        ...
     }
 */
 #endif /* HASH_H */

@@ -37,23 +37,23 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    hash.c                                       
-DESCRIPTION:This file contains the routines for building and 
-	    maintaining a hash table.
-CONTENTS:   
-DATE:	    Jul  7, 1988 
+/* -----------------------------------------------------------------
+FILE:       hash.c
+DESCRIPTION:This file contains the routines for building and
+            maintaining a hash table.
+CONTENTS:
+DATE:       Jul  7, 1988
 REVISIONS:  Nov  6, 1988 - added user defined hash delete function.
-	    Jan 18, 1989 - added delete operation albeit inefficient
-		to hash_search routine.
-	    Apr 27, 1989 - changed to Y prefix.
-	    Apr 29, 1990 - added message.h
-	    Aug  3, 1990 - added hash_add as a convenience function.
-	    Oct  8, 1990 - made consistent with prototypes.
-	    Dec  8, 1990 - fixed Yhash_table_size.
-	    Fri Jan 18 18:38:36 PST 1991 - fixed to run on AIX.
-	    Thu Apr 18 00:40:49 EDT 1991 - renamed functions for
-		consistency.
+            Jan 18, 1989 - added delete operation albeit inefficient
+                to hash_search routine.
+            Apr 27, 1989 - changed to Y prefix.
+            Apr 29, 1990 - added message.h
+            Aug  3, 1990 - added hash_add as a convenience function.
+            Oct  8, 1990 - made consistent with prototypes.
+            Dec  8, 1990 - fixed Yhash_table_size.
+            Fri Jan 18 18:38:36 PST 1991 - fixed to run on AIX.
+            Thu Apr 18 00:40:49 EDT 1991 - renamed functions for
+                consistency.
 ----------------------------------------------------------------- */
 #ifndef lint
 static char SccsId[] = "@(#) hash.c version 3.11 12/15/91" ;
@@ -103,15 +103,15 @@ VOID Yhash_table_delete(YHASHPTR hashtable, INT (*userdelete)() )
     table = hashtable->hash_table ;
     tablesize = hashtable->size ;
     for( i = 0 ; i < tablesize ; i++ ) {
-	for( hptr=table[i];hptr; ){
-	    zapptr = hptr ;
-	    hptr = hptr->next ;
-	    /* execute user define delete function if requested */
-	    if( userdelete ){
-		(*userdelete)(zapptr->data) ;
-	    }
-	    YFREE( zapptr ) ;
-	}
+        for( hptr=table[i];hptr; ){
+            zapptr = hptr ;
+            hptr = hptr->next ;
+            /* execute user define delete function if requested */
+            if( userdelete ){
+                (*userdelete)(zapptr->data) ;
+            }
+            YFREE( zapptr ) ;
+        }
     }
     YFREE( table ) ;
     YFREE( hashtable ) ;
@@ -124,7 +124,7 @@ char *Yhash_search(YHASHPTR hashtable, char *key, VOIDPTR data, INT operation )
 
 #ifdef HASHFUNC1
     INT     i ,
-	    len ;
+            len ;
 #else
     INT     shift ;
     char    *name ;
@@ -139,70 +139,70 @@ char *Yhash_search(YHASHPTR hashtable, char *key, VOIDPTR data, INT operation )
 #ifdef HASHFUNC1
     len = strlen(key) ;
     for( i = 0 ;i < len; i++ ) {
-	hsum += ( UNSIGNED_INT ) key[i] ;
+        hsum += ( UNSIGNED_INT ) key[i] ;
     }
 #else
     /*  FUNCTION hash_key */
     name = key ;
     for (shift=1 ;*name; name++){
-	hsum = hsum + *name<<shift;
-	shift = (shift + 1) & 0x0007;
+        hsum = hsum + *name<<shift;
+        shift = (shift + 1) & 0x0007;
     }
 #endif
     hsum %= tablesize ;
 
     /* insert into table only if distinct number */
     if( temptr = table[hsum] ){
-	/* list started at this hash */
-	for(curPtr=temptr;curPtr;curPtr=curPtr->next ) {
-	    if( strcmp(curPtr->key, key ) == STRINGEQ ){
-		if( operation == DELETE ){
-		    /* delete item in table by making data NULL */
-		    /* this is only a quick fix and should be */
-		    /* modified in the future to remove the space */
-		    curPtr->data = NULL ;
-		    /* operation a success so return -1 */
-		    return( (char *) -1 ) ;
-		} else {
-		    /* operation find or enter - return item */
-		    return( curPtr->data ) ;
-		}
-	    }
-	}
-	if( operation == ENTER ){
-	    /* now save data */
-	    table[hsum] = curTable = YMALLOC( 1, YTABLEBOX ) ;
-	    curTable->data = (char *) data ;
-	    curTable->key = (char *) Ystrclone( key ) ;
-	    curTable->next = temptr ;
-	    /* now fix thread which goes through hash table */
-	    tempThread = hashtable->thread ;
-	    hashtable->thread = curTable ;
-	    curTable->threadNext = tempThread ;
-	}
+        /* list started at this hash */
+        for(curPtr=temptr;curPtr;curPtr=curPtr->next ) {
+            if( strcmp(curPtr->key, key ) == STRINGEQ ){
+                if( operation == DELETE ){
+                    /* delete item in table by making data NULL */
+                    /* this is only a quick fix and should be */
+                    /* modified in the future to remove the space */
+                    curPtr->data = NULL ;
+                    /* operation a success so return -1 */
+                    return( (char *) -1 ) ;
+                } else {
+                    /* operation find or enter - return item */
+                    return( curPtr->data ) ;
+                }
+            }
+        }
+        if( operation == ENTER ){
+            /* now save data */
+            table[hsum] = curTable = YMALLOC( 1, YTABLEBOX ) ;
+            curTable->data = (char *) data ;
+            curTable->key = (char *) Ystrclone( key ) ;
+            curTable->next = temptr ;
+            /* now fix thread which goes through hash table */
+            tempThread = hashtable->thread ;
+            hashtable->thread = curTable ;
+            curTable->threadNext = tempThread ;
+        }
 
     } else {
-	/* no list started at this hash */
-	if( operation == ENTER ){ 
-	    /* enter into the table on an enter command */
-	    curTable = table[hsum] = YMALLOC( 1, YTABLEBOX ) ;
-	    curTable->data = (char *) data ;
-	    curTable->key = (char *) Ystrclone( key ) ;
-	    curTable->next = NULL ;
-	    /* now fix thread which goes through hash table */
-	    if( tempThread = hashtable->thread ){
-		hashtable->thread = curTable ;
-		curTable->threadNext = tempThread ;
-	    } else {
-		/* first entry into hash table */
-		hashtable->thread = curTable ;
-		curTable->threadNext = NULL ;
-	    } /* thread fixed */
+        /* no list started at this hash */
+        if( operation == ENTER ){
+            /* enter into the table on an enter command */
+            curTable = table[hsum] = YMALLOC( 1, YTABLEBOX ) ;
+            curTable->data = (char *) data ;
+            curTable->key = (char *) Ystrclone( key ) ;
+            curTable->next = NULL ;
+            /* now fix thread which goes through hash table */
+            if( tempThread = hashtable->thread ){
+                hashtable->thread = curTable ;
+                curTable->threadNext = tempThread ;
+            } else {
+                /* first entry into hash table */
+                hashtable->thread = curTable ;
+                curTable->threadNext = NULL ;
+            } /* thread fixed */
 
-	} else {
-	    /* cant find anything on a find operation */
-	    return( NULL ) ;
-	}
+        } else {
+            /* cant find anything on a find operation */
+            return( NULL ) ;
+        }
     }
     return( NULL ) ; /* no conflict on a enter */
 
@@ -214,12 +214,12 @@ char *Yhash_search(YHASHPTR hashtable, char *key, VOIDPTR data, INT operation )
    user by setting new flag to false.
 */
 char *Yhash_add(YHASHPTR hashtable, char *key, char *(*add_function)(),
-                BOOL *new_flag ) 
+                BOOL *new_flag )
 {
 
 #ifdef HASHFUNC1
     INT     i ,
-	    len ;
+            len ;
 #else
     INT     shift ;
     char    *name ;
@@ -234,56 +234,56 @@ char *Yhash_add(YHASHPTR hashtable, char *key, char *(*add_function)(),
 #ifdef HASHFUNC1
     len = strlen(key) ;
     for( i = 0 ;i < len; i++ ) {
-	hsum += ( UNSIGNED_INT ) key[i] ;
+        hsum += ( UNSIGNED_INT ) key[i] ;
     }
 #else
     /*  FUNCTION hash_key */
     name = key ;
     for (shift=1 ;*name; name++){
-	hsum = hsum + *name<<shift;
-	shift = (shift + 1) & 0x0007;
+        hsum = hsum + *name<<shift;
+        shift = (shift + 1) & 0x0007;
     }
 #endif
     hsum %= tablesize ;
 
     /* insert into table only if distinct number */
     if( temptr = table[hsum] ){
-	/* list started at this hash */
-	for(curPtr=temptr;curPtr;curPtr=curPtr->next ) {
-	    if( strcmp(curPtr->key, key ) == STRINGEQ ){
-		/* item is currently in the table set */
-		/* new flag to false */
-		*new_flag = FALSE ;
-		return( curPtr->data ) ;
-	    }
-	}
-	/* otherwise add to the table */
-	/* now save data */
-	table[hsum] = curTable = YMALLOC( 1, YTABLEBOX ) ;
-	curTable->data = (*add_function)() ;
-	curTable->key = (char *) Ystrclone( key ) ;
-	curTable->next = temptr ;
-	/* now fix thread which goes through hash table */
-	tempThread = hashtable->thread ;
-	hashtable->thread = curTable ;
-	curTable->threadNext = tempThread ;
+        /* list started at this hash */
+        for(curPtr=temptr;curPtr;curPtr=curPtr->next ) {
+            if( strcmp(curPtr->key, key ) == STRINGEQ ){
+                /* item is currently in the table set */
+                /* new flag to false */
+                *new_flag = FALSE ;
+                return( curPtr->data ) ;
+            }
+        }
+        /* otherwise add to the table */
+        /* now save data */
+        table[hsum] = curTable = YMALLOC( 1, YTABLEBOX ) ;
+        curTable->data = (*add_function)() ;
+        curTable->key = (char *) Ystrclone( key ) ;
+        curTable->next = temptr ;
+        /* now fix thread which goes through hash table */
+        tempThread = hashtable->thread ;
+        hashtable->thread = curTable ;
+        curTable->threadNext = tempThread ;
 
     } else {
-	/* no list started at this hash */
-	/* enter into the table on an enter command */
-	curTable = table[hsum] = YMALLOC( 1, YTABLEBOX ) ;
-	curTable->data = (*add_function)() ;
-	curTable->key = (char *) Ystrclone( key ) ;
-	curTable->next = NULL ;
-	/* now fix thread which goes through hash table */
-	if( tempThread = hashtable->thread ){
-	    hashtable->thread = curTable ;
-	    curTable->threadNext = tempThread ;
-	} else {
-	    /* first entry into hash table */
-	    hashtable->thread = curTable ;
-	    curTable->threadNext = NULL ;
-	} /* thread fixed */
+        /* no list started at this hash */
+        /* enter into the table on an enter command */
+        curTable = table[hsum] = YMALLOC( 1, YTABLEBOX ) ;
+        curTable->data = (*add_function)() ;
+        curTable->key = (char *) Ystrclone( key ) ;
+        curTable->next = NULL ;
+        /* now fix thread which goes through hash table */
+        if( tempThread = hashtable->thread ){
+            hashtable->thread = curTable ;
+            curTable->threadNext = tempThread ;
+        } else {
+            /* first entry into hash table */
+            hashtable->thread = curTable ;
+            curTable->threadNext = NULL ;
+        } /* thread fixed */
     }
     *new_flag = TRUE ;
     return( curTable->data ) ; /* no conflict on a enter */
@@ -296,7 +296,7 @@ INT Yhash_set_size(YHASHPTR hashtable)
     YTABLEPTR thread ;
 
     for( thread = hashtable->thread;thread;thread=thread->threadNext ){
-	count++;
+        count++;
     }
     return(count) ;
 }
@@ -331,29 +331,29 @@ INT Yhash_table_size( INT minEntries )
                1163,1171,1181,1187,1193,1201,1213,1217,1223,1229 };
 
     if (minEntries <= MINPRIMESIZE){
-	return(MINPRIMESIZE);
+        return(MINPRIMESIZE);
     } else {
-	testPrime = minEntries;
-	/* test to see if even */
-	if ((testPrime % 2) == 0){
-	    testPrime = testPrime + 1;
-	}
-	do {
-	    testPrime = testPrime + 2;
-	    isPrime = TRUE;
-	    for (i=0;i < PRIMECOUNT;i++){
-		prime = primes[i];
-		if (testPrime < prime*prime){
-		    break;
-		}
-		if ((testPrime % prime) == 0){
-		    isPrime = FALSE;
-		    break;
-		}
-	    }
-	} while (!(isPrime));
+        testPrime = minEntries;
+        /* test to see if even */
+        if ((testPrime % 2) == 0){
+            testPrime = testPrime + 1;
+        }
+        do {
+            testPrime = testPrime + 2;
+            isPrime = TRUE;
+            for (i=0;i < PRIMECOUNT;i++){
+                prime = primes[i];
+                if (testPrime < prime*prime){
+                    break;
+                }
+                if ((testPrime % prime) == 0){
+                    isPrime = FALSE;
+                    break;
+                }
+            }
+        } while (!(isPrime));
 
-	return(testPrime);
+        return(testPrime);
     }
 
 }  /*  FUNCTION Yhash_table_size */
