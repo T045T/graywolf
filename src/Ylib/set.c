@@ -90,7 +90,7 @@ YSETPTR Yset_init( INT lowerLimit, INT upperLimit )
     /* make sure set limits are correct */
     if( lowerLimit > upperLimit ){
         M( ERRMSG, "Yset_init", "Set limits are in error\n" ) ;
-        return ;
+        return NULL;
     }
     sizeSet = upperLimit - lowerLimit + 1 ;
     set->set = YMALLOC( sizeSet, YSETLISTPTR ) ;
@@ -109,7 +109,7 @@ YSETPTR Yset_init( INT lowerLimit, INT upperLimit )
     return( set ) ;
 } /* end Yset_init */
 
-VOID Yset_free( YSETPR set )
+VOID Yset_free( YSETPTR set )
 {
     INT i ;
     INT sizeSet ;
