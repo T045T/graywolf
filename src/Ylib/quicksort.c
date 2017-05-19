@@ -52,18 +52,14 @@ static  INT	mthresh;		/* MTHRESHold in chars */
 static  INT	(*compare_fun)();	/* comparison function */
 
 
-static qst();
+static VOID qst();
 
 
 #define         compar(a,b)  (  (*compare_fun)(a,b) )
 #define		THRESH		4	/* threshold for insertion */
 #define		MTHRESH		6	/* threshold for median */
 
-VOID Yquicksort(base, n, size, compare )
-	char	*base;
-	INT	n;
-	INT	size;
-	INT     (*compare)() ;
+VOID Yquicksort(char *base, INT n, INT size, INT (*compare)() )
 {
 
 	register char c, *i, *j, *lo, *hi;
@@ -138,8 +134,7 @@ VOID Yquicksort(base, n, size, compare )
  * (And there are only three places where this is done).
  */
 
-static qst(base, max)
-	char *base, *max;
+static VOID qst(char *base, char *max)
 {
 	register char c, *i, *j, *jj;
 	register INT ii;
