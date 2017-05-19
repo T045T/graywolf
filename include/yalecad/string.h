@@ -39,19 +39,19 @@ Function:
     Very often used string functions that are defined by system.
     See man pages for details.
 */
-#ifndef __GNUC__
-extern char *strcat( P2( char *str1, char *str2 ) ) ; 
-extern char *strncat( P3( char *str1, char *str2, INT n ) ) ; 
-extern char *strcpy( P2( char *str1, char *str2 ) ) ; 
-extern char *strncpy( P3( char *str1, char *str2, INT n) ) ; 
-extern char *strtok( P2( char *str, char *delimiters ) ) ; 
-extern char *strchr(  P2( char *str, char c ) ) ; 
-extern char *strrchr( P2( char *str, char c ) ) ; 
-extern char *index( P2( char *str, char c ) ) ; 
-extern char *rindex( P2( char *str, char c ) ) ; 
-extern unsigned int  strlen( P1( char *str) ) ; 
-extern INT  strcmp( P2( char *str1, char *str2 ) ) ; 
-extern INT  strncmp( P3( char *str1, char *str2, INT n ) ) ; 
-#endif  /* __GNUCC__ */
+// #ifndef __GNUC__
+// extern char *strcat( P2( char *str1, char *str2 ) ) ; 
+// extern char *strncat( P3( char *str1, char *str2, INT n ) ) ; 
+// extern char *strcpy( P2( char *str1, char *str2 ) ) ; 
+// extern char *strncpy( P3( char *str1, char *str2, INT n) ) ; 
+// extern char *strtok( P2( char *str, char *delimiters ) ) ; 
+// extern char *strchr(  P2( char *str, char c ) ) ; 
+// extern char *strrchr( P2( char *str, char c ) ) ; 
+// extern char *index( P2( char *str, char c ) ) ; 
+// extern char *rindex( P2( char *str, char c ) ) ; 
+// extern unsigned int  strlen( P1( char *str) ) ; 
+// extern INT  strcmp( P2( char *str1, char *str2 ) ) ; 
+// extern INT  strncmp( P3( char *str1, char *str2, INT n ) ) ; 
+// #endif  /* __GNUCC__ */
 
 #endif  /* YSTRING_H */
