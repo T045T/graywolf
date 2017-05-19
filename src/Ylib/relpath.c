@@ -37,13 +37,13 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    relpath.c                                       
-DESCRIPTION:Calculate the path of a file relative to a given known 
+/* -----------------------------------------------------------------
+FILE:       relpath.c
+DESCRIPTION:Calculate the path of a file relative to a given known
     file.  You can access any file in that directory and below.
 CONTENTS:  char *Yrelpath( known_path, rel_path )
-		char *known_path, *rel_path ;
-DATE:	    Apr 18, 1989 
+                char *known_path, *rel_path ;
+DATE:       Apr 18, 1989
 REVISIONS:  May  8, 1989 - updated to handle ../../ constructs.
 ----------------------------------------------------------------- */
 #ifndef lint
@@ -68,43 +68,43 @@ char *known_path, *rel_path ; /* known path and relative path to it */
 
     /* look for ./ constructs */
     up = 0 ;
-    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-       First look for ./  or directory local files.  That is if 
-       known path is   :/twolf6/bills/tw/pgms/test 
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       First look for ./  or directory local files.  That is if
+       known path is   :/twolf6/bills/tw/pgms/test
        and rel_path    :./src
        result should be:/twolf6/bills/tw/pgms/test/src
     - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     if( strncmp( rel_path,"./", 2 ) == STRINGEQ ){
-	/* back up the directory tree */
-	/* update rel_path by skipping over ./ */
-	rel_path += 2 ;
+        /* back up the directory tree */
+        /* update rel_path by skipping over ./ */
+        rel_path += 2 ;
     }
-    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-       Next look for ../ or higher directory files.  That is if 
-       known path is   :/twolf6/bills/tw/pgms/test 
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       Next look for ../ or higher directory files.  That is if
+       known path is   :/twolf6/bills/tw/pgms/test
        and rel_path    :../src
        result should be:/twolf6/bills/tw/pgms/src
     - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     /* now look for multiple ../../ skip over leading .  */
     while( strncmp( rel_path,"../", 3 ) == STRINGEQ ){
-	up++ ; /* back up the directory tree */
-	/* update rel_path by skipping over ../ */
-	rel_path += 3 ;
+        up++ ; /* back up the directory tree */
+        /* update rel_path by skipping over ../ */
+        rel_path += 3 ;
     }
     /* now find matching slashes in known path */
     /* find last backslash */
-    for(  ; up > 0 ; up-- ){ 
+    for(  ; up > 0 ; up-- ){
         if( (ptr = strrchr( known_fpath, '/' )) ){
-	    *ptr = EOS ;
-	} else {
-	    return( NULL ) ; /* problem */
-	}
+            *ptr = EOS ;
+        } else {
+            return( NULL ) ; /* problem */
+        }
     }
     if( strlen(known_fpath) != 0 ){
-	strcat( known_fpath, "/" ) ;
-	strcat( known_fpath, rel_path ) ;
-	result = (char *) Ystrclone(known_fpath);
-	return( result ) ;
+        strcat( known_fpath, "/" ) ;
+        strcat( known_fpath, rel_path ) ;
+        result = (char *) Ystrclone(known_fpath);
+        return( result ) ;
     }
     return( NULL ) ;
 
