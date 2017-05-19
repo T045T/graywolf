@@ -54,16 +54,14 @@ static char SccsId[] = "@(#) project.c (Yale) version 1.1 11/20/91" ;
 static INT xspaceS = 0 ;
 static INT yspaceS = 0 ;
 
-Yproject_space( xspace, yspace )
-INT xspace, yspace ;
+VOID Yproject_space( INT xspace, INT yspace )
 {
     xspaceS = xspace ;
     yspaceS = yspace ;
 } /* end Yproject_space() */
 
 /* function returns whether one cell projects onto another */
-INT YprojectX( tile1_left, tile1_right, tile2_left, tile2_right )
-INT tile1_left, tile1_right, tile2_left, tile2_right ;
+INT YprojectX( INT tile1_left, INT tile1_right, INT tile2_left, INT tile2_right )
 {
     /* -----------------------------------------------------
        First check case 2nd tile larger than first 
@@ -99,8 +97,7 @@ INT tile1_left, tile1_right, tile2_left, tile2_right ;
 } /* end YprojectX */
 
 /* function returns whether one cell projects onto another */
-INT YprojectY( tile1_bot, tile1_top, tile2_bot, tile2_top )
-INT tile1_bot, tile1_top, tile2_bot, tile2_top ;
+INT YprojectY( INT tile1_bot, INT tile1_top, INT tile2_bot, INT tile2_top )
 {
     /* -----------------------------------------------------
        First check to see if 2nd tile larger than first 
