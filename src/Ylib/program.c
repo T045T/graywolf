@@ -84,18 +84,16 @@ static char progDate[LRECL];
    ----------------------------------------------------------------- */
 char *YinitProgram(char *name, char *version, VOID (*introTextFunction)())
 {
-  char    *date ,
-  *getCompileDate() ;
 
   Ytimer_start() ;   /* start the elapsed timer */
   sprintf(programName,"%s",name);
   sprintf(progVersion,"%s",version);
 
-  if ( (date = getCompileDate()) ){
-    sprintf(progDate,"%s",date);
-  } else {
+#ifdef __DATE__
+    sprintf(progDate, __DATE__);
+#else
     sprintf(progDate,"unknown") ;
-  }
+#endif
   sprintf( YmsgG, "%s version:%s date:%s",
           programName,progVersion,progDate) ;
 
@@ -145,7 +143,9 @@ void YexitPgm(INT status)
     }
     M(MSG,NULL,message) ;
     /* now write debug file if desired */
+#ifdef DEBUG
     YdebugWrite() ;
+#endif
     Ymessage_close();	/* Added by Tim, 5/4/11 */
     exit(status) ;
 

@@ -1,6 +1,6 @@
 
 
-add_executable(graywolf autoflow.c findflow.c graphics.c io.c main.c program.c readobjects.c ${CMAKE_SOURCE_DIR}/src/date/date.c)
+add_executable(graywolf autoflow.c findflow.c graphics.c io.c main.c program.c readobjects.c)
 
 target_link_libraries(graywolf ${CMAKE_BINARY_DIR}/src/Ylib/libycadgraywolf.so)
 target_link_libraries(graywolf X11)
