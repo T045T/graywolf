@@ -37,12 +37,12 @@
  *
  */
 
-/*----------------------------------------------------------------- 
-FILE:	    project.c                                       
+/*-----------------------------------------------------------------
+FILE:       project.c
 DESCRIPTION:Overlap and projection of rectangles.
-CONTENTS:   
-DATE:	    Tue Oct 29 15:02:21 EST 1991
-REVISIONS:  
+CONTENTS:
+DATE:       Tue Oct 29 15:02:21 EST 1991
+REVISIONS:
  ----------------------------------------------------------------- */
 #ifndef lint
 static char SccsId[] = "@(#) project.c (Yale) version 1.1 11/20/91" ;
@@ -64,35 +64,35 @@ VOID Yproject_space( INT xspace, INT yspace )
 INT YprojectX( INT tile1_left, INT tile1_right, INT tile2_left, INT tile2_right )
 {
     /* -----------------------------------------------------
-       First check case 2nd tile larger than first 
-	complete overlap
+       First check case 2nd tile larger than first
+        complete overlap
     */
     if( tile2_left <= tile1_left && tile1_right <= tile2_right ){
-	return( OVERLAP1 ) ;
+        return( OVERLAP1 ) ;
 
     /* -----------------------------------------------------
-       Check if an edge of tile two is encompassed by tile 1 
+       Check if an edge of tile two is encompassed by tile 1
        Second check left edge of tile2 :
-	tile1_left <= tile2_left < tile1_right + xspaceS
+        tile1_left <= tile2_left < tile1_right + xspaceS
     */
     } else if( tile1_left<=tile2_left&&tile2_left<tile1_right+xspaceS ){
-	return( OVERLAP2 ) ;
+        return( OVERLAP2 ) ;
     /* -----------------------------------------------------
        Third check right edge of tile2 :
-	tile1_left - xspaceS < tile2_right < tile1_right 
+        tile1_left - xspaceS < tile2_right < tile1_right
     */
     } else if( tile1_left-xspaceS<tile2_right&&tile2_right<=tile1_right){
-	return( OVERLAP3 ) ;
+        return( OVERLAP3 ) ;
 
     /* -----------------------------------------------------
        Fourth case tiles touching.
     */
-    } else if( tile2_left == tile1_right + xspaceS || 
-	       tile1_left - xspaceS == tile2_right ){
-	return( TOUCH ) ;
+    } else if( tile2_left == tile1_right + xspaceS ||
+               tile1_left - xspaceS == tile2_right ){
+        return( TOUCH ) ;
 
     } else {
-	return( NOTOUCH ) ;
+        return( NOTOUCH ) ;
     }
 } /* end YprojectX */
 
@@ -100,34 +100,34 @@ INT YprojectX( INT tile1_left, INT tile1_right, INT tile2_left, INT tile2_right 
 INT YprojectY( INT tile1_bot, INT tile1_top, INT tile2_bot, INT tile2_top )
 {
     /* -----------------------------------------------------
-       First check to see if 2nd tile larger than first 
+       First check to see if 2nd tile larger than first
     */
     if( tile2_bot <= tile1_bot && tile1_top <= tile2_top ){
-	return( OVERLAP1 ) ;
+        return( OVERLAP1 ) ;
 
     /* -----------------------------------------------------
-       Check if an edge of tile two is encompassed by tile 1 
+       Check if an edge of tile two is encompassed by tile 1
        Second check bottom edge of tile2 :
-	tile1_bot <= tile2_bot < tile1_top 
+        tile1_bot <= tile2_bot < tile1_top
     */
     } else if( tile1_bot <= tile2_bot && tile2_bot < tile1_top+yspaceS){
 
-	return( OVERLAP2 ) ;
+        return( OVERLAP2 ) ;
     /* -----------------------------------------------------
        Third check top edge of tile2 :
-	tile1_bot < tile2_top <= tile1_top 
+        tile1_bot < tile2_top <= tile1_top
     */
     } else if( tile1_bot-yspaceS < tile2_top && tile2_top <= tile1_top ){
-	return( OVERLAP3 ) ;
+        return( OVERLAP3 ) ;
 
     /* -----------------------------------------------------
        Fourth case tiles touching.
     */
-    } else if( tile2_bot == tile1_top + yspaceS || 
-	       tile1_bot - yspaceS == tile2_top ){
-	return( TOUCH ) ;
+    } else if( tile2_bot == tile1_top + yspaceS ||
+               tile1_bot - yspaceS == tile2_top ){
+        return( TOUCH ) ;
 
     } else {
-	return( NOTOUCH ) ; /* no touch or overlap */ 
+        return( NOTOUCH ) ; /* no touch or overlap */
     }
 }/* end YprojectY */

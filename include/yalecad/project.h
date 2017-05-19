@@ -1,9 +1,9 @@
-/* ----------------------------------------------------------------- 
-FILE:	    project.h                                       
+/* -----------------------------------------------------------------
+FILE:       project.h
 CONTENTS:   definitions for projection package.
-DATE:	    Tue Oct 29 15:05:57 EST 1991
+DATE:       Tue Oct 29 15:05:57 EST 1991
 REVISIONS:  Thu Mar  5 03:41:11 EST 1992 - added very useful
-		macro function Yproject_intersect.
+                macro function Yproject_intersect.
 ----------------------------------------------------------------- */
 #ifndef YPROJECT_H
 #define YPROJECT_H
@@ -27,8 +27,8 @@ static char Yproject_HId[] = "@(#) project.h version 1.2 3/5/92" ;
 extern VOID Yproject_space( P2(INT xspace, INT yspace ) ) ;
 
 extern INT YprojectX( P4( INT tile1_left, INT tile1_right,
-		          INT tile2_left, INT  tile2_right ) ) ;
-extern INT YprojectY( P4( INT tile1_bot, INT tile1_top, 
-			  INT tile2_bot, INT tile2_top ) ) ;
+                          INT tile2_left, INT  tile2_right ) ) ;
+extern INT YprojectY( P4( INT tile1_bot, INT tile1_top,
+                          INT tile2_bot, INT tile2_top ) ) ;
 
 #endif /* YPROJECT_H */
