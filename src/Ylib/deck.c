@@ -92,9 +92,7 @@ YDECK *Ydeck_init( )
 /*-------------------------------------*/
 /* add a vertex to the top of the deck */
 /*-------------------------------------*/
-VOID Ydeck_push( deckPtr, data ) 
-     YDECK *deckPtr ;
-     VOIDPTR data ;
+VOID Ydeck_push( YDECK *deckPtr, VOIDPTR data ) 
 {
   YCARDPTR cardPtr;
   
@@ -119,9 +117,7 @@ VOID Ydeck_push( deckPtr, data )
 /*----------------------------------------*/
 /* add a vertex to the bottom of the deck */
 /*----------------------------------------*/
-VOID Ydeck_enqueue( deckPtr, data ) 
-     YDECK *deckPtr ;
-     VOIDPTR data ;
+VOID Ydeck_enqueue( YDECK *deckPtr, VOIDPTR data ) 
 {
   YCARDPTR cardPtr;
   
@@ -146,8 +142,7 @@ VOID Ydeck_enqueue( deckPtr, data )
 /*------------------------------*/
 /* remove card from top of deck */
 /*------------------------------*/
-VOIDPTR Ydeck_pop(deckPtr)
-     YDECK *deckPtr;
+VOIDPTR Ydeck_pop(YDECK *deckPtr)
 {
   YCARDPTR cardPtr;
   VOIDPTR data;
@@ -174,8 +169,7 @@ VOIDPTR Ydeck_pop(deckPtr)
 /*---------------------------------*/
 /* remove card from bottom of deck */
 /*---------------------------------*/
-VOIDPTR Ydeck_dequeue(deckPtr)
-     YDECK *deckPtr;
+VOIDPTR Ydeck_dequeue(YDECK *deckPtr)
 {
   YCARDPTR cardPtr;
   VOIDPTR data;
@@ -203,8 +197,7 @@ VOIDPTR Ydeck_dequeue(deckPtr)
 /*--------------------------*/
 /* check status of the deck */
 /*--------------------------*/
-INT Ydeck_notEmpty( deckPtr ) 
-     YDECK *deckPtr ;
+INT Ydeck_notEmpty( YDECK *deckPtr ) 
 {  
   return( deckPtr->size ) ;
 }
@@ -212,9 +205,7 @@ INT Ydeck_notEmpty( deckPtr )
 /*--------------------------------*/
 /* remove all cards from the deck */
 /*--------------------------------*/
-VOID Ydeck_empty(deckPtr,userDelete)
-     VOID (*userDelete)();
-     YDECK *deckPtr;
+VOID Ydeck_empty(YDECK *deckPtr, VOID(*userDelete)())
 {
   VOIDPTR deckData;
 
@@ -233,9 +224,7 @@ VOID Ydeck_empty(deckPtr,userDelete)
 /*-----------------------------------------*/
 /* free the deck and all cards it contains */
 /*-----------------------------------------*/
-VOID Ydeck_free(deckPtr,userDelete)
-     YDECK *deckPtr;
-     VOID (*userDelete)();
+VOID Ydeck_free(YDECK *deckPtr, VOID (*userDelete)())
 {
   Ydeck_empty(deckPtr,userDelete);
   YFREE(deckPtr);
@@ -244,9 +233,7 @@ VOID Ydeck_free(deckPtr,userDelete)
 /*-------------------------------------------------*/
 /* debug function to dump the contents of the deck */
 /*-------------------------------------------------*/
-VOID Ydeck_dump( deckPtr, userPrint ) 
-     YDECK *deckPtr ;
-     VOID (*userPrint)();
+VOID Ydeck_dump( YDECK *deckPtr, VOID (*userPrint)() ) 
 {
   
   fprintf( stderr,"%d cards\n",deckPtr->size);
@@ -282,8 +269,7 @@ YCARD *Ydeck_sentinel()
 /*-----------------------
   exercise deck pointer 
  ------------------------*/
-  int Ydeck_verify(deck)
-  YDECK *deck;
+int Ydeck_verify(YDECK *deck)
 {
   static char routineNameS[LRECL] = "Ydeck_verify";
   YCARDPTR saveCurrent;
