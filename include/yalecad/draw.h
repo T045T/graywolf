@@ -481,7 +481,7 @@ Function:
     Draws a line in 3 dimensions.
 */
 
-extern INT TW3DdrawCube( P9(INT ref_num, INT x1, INT y1, INT z1,
+extern VOID TW3DdrawCube( P9(INT ref_num, INT x1, INT y1, INT z1,
     INT x2, INT y2, INT z2, INT color, char *label ) ) ;
 /*
 Function:
