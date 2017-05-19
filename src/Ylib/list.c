@@ -37,36 +37,36 @@
  *
  */
 
-/* ----------------------------------------------------------------- 
-FILE:	    list.c                                       
+/* -----------------------------------------------------------------
+FILE:       list.c
 DESCRIPTION:Provides a generalized method for handling linked lists.
-	    Currently the only access routines make the list act like a
-	    generalized queue.  Push and pop functions make it act like a
-	    LIFO queue or stack.  Enqueue and pop make it act like a FIFO.
-	    A dequeue function is added for completeness.
-CONTENTS:   
-DATE:	    Dec  9, 1989 
+            Currently the only access routines make the list act like a
+            generalized queue.  Push and pop functions make it act like a
+            LIFO queue or stack.  Enqueue and pop make it act like a FIFO.
+            A dequeue function is added for completeness.
+CONTENTS:
+DATE:       Dec  9, 1989
 REVISIONS:  Oct  9, 1990 - rename routines for easier use.
-	    Thu Apr 19 22:29:18 1990 - revisions from Ted.
-	    15 OCT 1990 -- Ted Stanion -- LIST_DELETE() function added.
+            Thu Apr 19 22:29:18 1990 - revisions from Ted.
+            15 OCT 1990 -- Ted Stanion -- LIST_DELETE() function added.
 
-	    31 JAN 1991 -- Ted Stanion -- Added capability to have sorted
-	    lists.  New functions:
-		    Ylist_create_with_parms();
-		    Ylist_insert_before();
-		    Ylist_insert_after();
-		    Ylist_insert_in_order();
-		    Ylist_sort();
-	    New macros;
-		    Ylist_for_all_safe() {
-		    } Ylist_for_all_end;
+            31 JAN 1991 -- Ted Stanion -- Added capability to have sorted
+            lists.  New functions:
+                    Ylist_create_with_parms();
+                    Ylist_insert_before();
+                    Ylist_insert_after();
+                    Ylist_insert_in_order();
+                    Ylist_sort();
+            New macros;
+                    Ylist_for_all_safe() {
+                    } Ylist_for_all_end;
 
-	    18 MAR 1991 -- Ted Stanion -- Added function LIST_APPEND().
+            18 MAR 1991 -- Ted Stanion -- Added function LIST_APPEND().
 
-	    28 OCT 1991 -- Ted Stanion -- Added function LIST_FIND_AND_DELETE().
-	    Made LIST_SORT into a quicksort for greater than 20 elements.
-	    LIST_SORT returns a new list. (Old undiscovered bug.)
-	    Sun Nov  3 12:54:08 EST 1991 - added to library.
+            28 OCT 1991 -- Ted Stanion -- Added function LIST_FIND_AND_DELETE().
+            Made LIST_SORT into a quicksort for greater than 20 elements.
+            LIST_SORT returns a new list. (Old undiscovered bug.)
+            Sun Nov  3 12:54:08 EST 1991 - added to library.
             12/09/91 - cleanup for non-ANSI compilers  -R.A.Weier
 ----------------------------------------------------------------- */
 #ifndef lint
@@ -76,9 +76,9 @@ static char SccsId[] = "@(#) list.c Yale Version 1.9 12/9/91" ;
 #include <yalecad/list.h>
 
 /************************************************************************
- *  									*
+ *                                                                      *
  *  Internal Functions							*
- *  									*
+ *                                                                      *
  ************************************************************************/
 static YLIST insort(P1(YLIST list));
 static YLIST quicksort(P1(YLIST list));
@@ -90,9 +90,9 @@ static INT def_comp(P2(VOIDPTR, VOIDPTR));
 
 
 /************************************************************************
- *  									*
+ *                                                                      *
  *  Internal Variables							*
- *  									*
+ *                                                                      *
  ************************************************************************/
 static YLIST free_listS = NIL(YLIST);
 static YLIST_EL free_list_elS = NIL(YLIST_EL);
@@ -100,25 +100,25 @@ static long lists_allocatedS = 0L;
 static long list_els_allocatedS = 0L;
 
 /************************************************************************
- *  									*
+ *                                                                      *
  *  Internal Macros							*
- *  									*
+ *                                                                      *
  ************************************************************************/
 
 #define COMP(l, d, e)				\
-  ((l)->comp == def_comp ? (d) < (e) : 		\
+  ((l)->comp == def_comp ? (d) < (e) :          \
    (l)->comp((d), (e)) > 0L)
 
 #define EQ(l, d, e) ((COMP((l),(d),(e)) == 0) ? TRUE : FALSE)
-		    
+
 
 /****************************************************************************
 
-	Function : Ylist_create
-	Author   : Ted Stanion
-	Date     : Fri Apr 20 10:46:00 1990
+        Function : Ylist_create
+        Author   : Ted Stanion
+        Date     : Fri Apr 20 10:46:00 1990
 
-	Abstract : Creates a list.  All other routines work on this list.
+        Abstract : Creates a list.  All other routines work on this list.
 
 *****************************************************************************/
 
@@ -133,15 +133,15 @@ YLIST Ylist_create()
 
 /*************************************************************************
 
-	Function : Ylist_create_with_parms
-	Author   : Ted Stanion
-	Date     : Thu Jan 31 11:26:06 1991
+        Function : Ylist_create_with_parms
+        Author   : Ted Stanion
+        Date     : Thu Jan 31 11:26:06 1991
 
-	Abstract : Creates a parameterized list.  Currently the only
-	parameter is a compare function.  This function returns a positive
-	value if the first argument should precede the second in the list,
-	a negative value if the second should precede the first and zero
-	if their order is irrelevant.
+        Abstract : Creates a parameterized list.  Currently the only
+        parameter is a compare function.  This function returns a positive
+        value if the first argument should precede the second in the list,
+        a negative value if the second should precede the first and zero
+        if their order is irrelevant.
 
 **************************************************************************/
 
@@ -156,11 +156,11 @@ YLIST Ylist_create_with_parms(INT (*comp)())
 
 /****************************************************************************
 
-	Function : Ylist_enqueue
-	Author   : Ted Stanion
-	Date     : Fri Apr 20 10:49:11 1990
+        Function : Ylist_enqueue
+        Author   : Ted Stanion
+        Date     : Fri Apr 20 10:49:11 1990
 
-	Abstract : Puts a data item at the end of a list.
+        Abstract : Puts a data item at the end of a list.
 
 *****************************************************************************/
 
@@ -183,11 +183,11 @@ VOID Ylist_enqueue(YLIST list, VOIDPTR data)
 
 /****************************************************************************
 
-	Function : Ylist_push
-	Author   : Ted Stanion
-	Date     : Fri Apr 20 10:54:10 1990
+        Function : Ylist_push
+        Author   : Ted Stanion
+        Date     : Fri Apr 20 10:54:10 1990
 
-	Abstract : Puts a data item at the beginning of a list.
+        Abstract : Puts a data item at the beginning of a list.
 
 *****************************************************************************/
 
@@ -203,19 +203,19 @@ VOID Ylist_push(YLIST list, VOIDPTR data)
     list->first->prev = el;
     el->next = list->first;
     list->first = el;
-  }  /* if (list ... */  
+  }  /* if (list ... */
   list->size++;
 }   /*  Ylist_push  */
 
 
 /*************************************************************************
 
-	Function : Ylist_insert_after
-	Author   : Ted Stanion
-	Date     : Thu Jan 31 11:13:35 1991
+        Function : Ylist_insert_after
+        Author   : Ted Stanion
+        Date     : Thu Jan 31 11:13:35 1991
 
-	Abstract : Insert DATA after ITEM in LIST.  WARNING: No check
-	is made to make sure ITEM really is in LIST.
+        Abstract : Insert DATA after ITEM in LIST.  WARNING: No check
+        is made to make sure ITEM really is in LIST.
 
 **************************************************************************/
 
@@ -243,12 +243,12 @@ VOID Ylist_insert_after(YLIST list, YLIST_EL item, VOIDPTR data)
 
 /*************************************************************************
 
-	Function : Ylist_insert_before
-	Author   : Ted Stanion
-	Date     : Thu Jan 31 11:23:29 1991
+        Function : Ylist_insert_before
+        Author   : Ted Stanion
+        Date     : Thu Jan 31 11:23:29 1991
 
-	Abstract : Insert DATA before ITEM in LIST.  WARNING: No check
-	is made to make sure ITEM really is in LIST.
+        Abstract : Insert DATA before ITEM in LIST.  WARNING: No check
+        is made to make sure ITEM really is in LIST.
 
 **************************************************************************/
 
@@ -276,12 +276,12 @@ VOID Ylist_insert_before(YLIST list, YLIST_EL item, VOIDPTR data)
 
 /*************************************************************************
 
-	Function : Ylist_insert_in_order
-	Author   : Ted Stanion
-	Date     : Thu Jan 31 11:42:10 1991
+        Function : Ylist_insert_in_order
+        Author   : Ted Stanion
+        Date     : Thu Jan 31 11:42:10 1991
 
-	Abstract : Insert DATA into LIST in order using the compare
-	function of LIST.
+        Abstract : Insert DATA into LIST in order using the compare
+        function of LIST.
 
 **************************************************************************/
 
@@ -303,12 +303,12 @@ VOID Ylist_insert_in_order(YLIST list, VOIDPTR data)
 
 /****************************************************************************
 
-	Function : Ylist_dequeue
-	Author   : Ted Stanion
-	Date     : Fri Apr 20 11:03:37 1990
+        Function : Ylist_dequeue
+        Author   : Ted Stanion
+        Date     : Fri Apr 20 11:03:37 1990
 
-	Abstract : Returns the last data item of a list and deletes it
-	from the list.
+        Abstract : Returns the last data item of a list and deletes it
+        from the list.
 
 *****************************************************************************/
 
@@ -339,12 +339,12 @@ VOIDPTR Ylist_dequeue(YLIST list)
 
 /****************************************************************************
 
-	Function : Ylist_pop
-	Author   : Ted Stanion
-	Date     : Fri Apr 20 12:19:52 1990
+        Function : Ylist_pop
+        Author   : Ted Stanion
+        Date     : Fri Apr 20 12:19:52 1990
 
-	Abstract : Returns the first item in a list and deletes it from
-	the list.
+        Abstract : Returns the first item in a list and deletes it from
+        the list.
 
 *****************************************************************************/
 
@@ -374,12 +374,12 @@ VOIDPTR Ylist_pop(YLIST list)
 
 /*************************************************************************
 
-	Function : Ylist_delete
-	Author   : Ted Stanion
-	Date     : Mon Oct 15 07:56:09 1990
+        Function : Ylist_delete
+        Author   : Ted Stanion
+        Date     : Mon Oct 15 07:56:09 1990
 
-	Abstract : Deletes EL from LIST.  Automatically disposes of
-	EL.  Do NOT do this inside of a list_for_all loop!!!
+        Abstract : Deletes EL from LIST.  Automatically disposes of
+        EL.  Do NOT do this inside of a list_for_all loop!!!
 
 **************************************************************************/
 
@@ -395,7 +395,7 @@ VOID Ylist_delete(YLIST list, YLIST_EL el, INT (*user_delete)())
   if( user_delete ){
     (*user_delete)( Ylist_data(el) ) ;
   }
-    
+
   free_list_el(el);
   list->size--;
 }   /* Ylist_delete  */
@@ -403,15 +403,15 @@ VOID Ylist_delete(YLIST list, YLIST_EL el, INT (*user_delete)())
 
 /*************************************************************************
 
-	Function : Ylist_find_and_delete
-	Author   : Ted Stanion
-	Date     : Mon Oct 28 15:18:24 1991
+        Function : Ylist_find_and_delete
+        Author   : Ted Stanion
+        Date     : Mon Oct 28 15:18:24 1991
 
-	Abstract : Searches LIST for element whit data element equal
-	to DATA. If the LIST has a comparison function, it is used for
-	equality checking, otherwise, the pointer must match.  If the
-	element is found, it is deleted from the list and the function
-	returns TRUE. Otherwise, it returns FALSE.
+        Abstract : Searches LIST for element whit data element equal
+        to DATA. If the LIST has a comparison function, it is used for
+        equality checking, otherwise, the pointer must match.  If the
+        element is found, it is deleted from the list and the function
+        returns TRUE. Otherwise, it returns FALSE.
 
 **************************************************************************/
 
@@ -437,13 +437,13 @@ BOOL Ylist_find_and_delete(YLIST list, VOIDPTR data, INT (*user_delete)() )
 
 /*************************************************************************
 
-	Function : Ylist_sort
-	Author   : Ted Stanion
-	Date     : Thu Jan 31 11:55:27 1991
+        Function : Ylist_sort
+        Author   : Ted Stanion
+        Date     : Thu Jan 31 11:55:27 1991
 
-	Abstract : Sorts LIST using its compare function.  Uses simple
-	insertion sort. Should be modified to use a quicksort for large
-	lists.
+        Abstract : Sorts LIST using its compare function.  Uses simple
+        insertion sort. Should be modified to use a quicksort for large
+        lists.
 
 **************************************************************************/
 
@@ -461,11 +461,11 @@ YLIST Ylist_sort(YLIST list)
 
 /*************************************************************************
 
-	Function : insort
-	Author   : Ted Stanion
-	Date     : Mon Oct 28 15:39:39 1991
+        Function : insort
+        Author   : Ted Stanion
+        Date     : Mon Oct 28 15:39:39 1991
 
-	Abstract : Sorts LIST using insertion sort.
+        Abstract : Sorts LIST using insertion sort.
 
 **************************************************************************/
 
@@ -486,11 +486,11 @@ static YLIST insort(YLIST list)
 
 /*************************************************************************
 
-	Function : quicksort
-	Author   : Ted Stanion
-	Date     : Mon Oct 28 15:42:20 1991
+        Function : quicksort
+        Author   : Ted Stanion
+        Date     : Mon Oct 28 15:42:20 1991
 
-	Abstract : Sorts LIST using QUICKSORT algorithm.
+        Abstract : Sorts LIST using QUICKSORT algorithm.
 
 **************************************************************************/
 
@@ -507,9 +507,9 @@ static YLIST quicksort(YLIST list)
     while (!(Ylist_empty(list))) {
       tmp = Ylist_pop(list);
       if (COMP(list, pivot, tmp) > 0) {
-	Ylist_enqueue(after, tmp);
+        Ylist_enqueue(after, tmp);
       } else {
-	Ylist_enqueue(before, tmp);
+        Ylist_enqueue(before, tmp);
       }  /* if (COMP( ... */
     }  /* while (not Ylist_empty( ... */
 
@@ -531,13 +531,13 @@ static YLIST quicksort(YLIST list)
 
 /*************************************************************************
 
-	Function : Ylist_append
-	Author   : Ted Stanion
-	Date     : Mon Mar 18 17:44:23 1991
+        Function : Ylist_append
+        Author   : Ted Stanion
+        Date     : Mon Mar 18 17:44:23 1991
 
-	Abstract : Appends list L2 to the end of list L1.  This is a
-	destructive operation which destroys L2.  (L2 is set to be an
-	empty list.)  L2 must still be freed by the user.
+        Abstract : Appends list L2 to the end of list L1.  This is a
+        destructive operation which destroys L2.  (L2 is set to be an
+        empty list.)  L2 must still be freed by the user.
 
 **************************************************************************/
 
@@ -555,11 +555,11 @@ VOID Ylist_append( YLIST l1, YLIST l2)
 
 /****************************************************************************
 
-	Function : Ylist_clear
-	Author   : Ted Stanion
-	Date     : Fri Apr 20 13:35:10 1990
+        Function : Ylist_clear
+        Author   : Ted Stanion
+        Date     : Fri Apr 20 13:35:10 1990
 
-	Abstract : Deletes all elements of a list.
+        Abstract : Deletes all elements of a list.
 
 *****************************************************************************/
 
@@ -579,11 +579,11 @@ VOID Ylist_clear(YLIST list)
 
 /****************************************************************************
 
-	Function : Ylist_free
-	Author   : Ted Stanion
-	Date     : Fri Apr 20 13:37:50 1990
+        Function : Ylist_free
+        Author   : Ted Stanion
+        Date     : Fri Apr 20 13:37:50 1990
 
-	Abstract : Clears a list then frees it.
+        Abstract : Clears a list then frees it.
 
 *****************************************************************************/
 
@@ -596,12 +596,12 @@ VOID Ylist_free(YLIST list)
 
 /****************************************************************************
 
-	Function : allocate_list
-	Author   : Ted Stanion
-	Date     : Fri Apr 20 13:38:51 1990
+        Function : allocate_list
+        Author   : Ted Stanion
+        Date     : Fri Apr 20 13:38:51 1990
 
-	Abstract : Returns a LIST structure from the free list.  If the
-	free list is empty, then more are allocated from memory.
+        Abstract : Returns a LIST structure from the free list.  If the
+        free list is empty, then more are allocated from memory.
 
 *****************************************************************************/
 
@@ -634,12 +634,12 @@ static YLIST allocate_list()
 
 /****************************************************************************
 
-	Function : allocate_list_el
-	Author   : Ted Stanion
-	Date     : Fri Apr 20 13:43:45 1990
+        Function : allocate_list_el
+        Author   : Ted Stanion
+        Date     : Fri Apr 20 13:43:45 1990
 
-	Abstract : Returns a LIST structure from the free list.  If the
-	free list is empty, then more are allocated from memory.
+        Abstract : Returns a LIST structure from the free list.  If the
+        free list is empty, then more are allocated from memory.
 
 *****************************************************************************/
 
@@ -671,11 +671,11 @@ static YLIST_EL allocate_list_el()
 
 /****************************************************************************
 
-	Function : free_list
-	Author   : Ted Stanion
-	Date     : Fri Apr 20 13:46:23 1990
+        Function : free_list
+        Author   : Ted Stanion
+        Date     : Fri Apr 20 13:46:23 1990
 
-	Abstract : Puts a LIST structure back onto the free list.
+        Abstract : Puts a LIST structure back onto the free list.
 
 *****************************************************************************/
 
@@ -689,11 +689,11 @@ static VOID free_list(YLIST list)
 
 /****************************************************************************
 
-	Function : free_list_el
-	Author   : Ted Stanion
-	Date     : Fri Apr 20 13:49:05 1990
+        Function : free_list_el
+        Author   : Ted Stanion
+        Date     : Fri Apr 20 13:49:05 1990
 
-	Abstract : Puts a LIST_EL structure back onto the free list.
+        Abstract : Puts a LIST_EL structure back onto the free list.
 
 *****************************************************************************/
 
@@ -707,11 +707,11 @@ static VOID free_list_el(YLIST_EL el)
 
 /*************************************************************************
 
-	Function : def_comp
-	Author   : Ted Stanion
-	Date     : Thu Jan 31 11:53:01 1991
+        Function : def_comp
+        Author   : Ted Stanion
+        Date     : Thu Jan 31 11:53:01 1991
 
-	Abstract : Default compare function for lists.
+        Abstract : Default compare function for lists.
 
 **************************************************************************/
 
@@ -723,11 +723,11 @@ static INT def_comp(VOIDPTR d1, VOIDPTR d2)
 
 /****************************************************************************
 
-	Function : list_check_mem
-	Author   : Ted Stanion
-	Date     : Wed May  2 17:11:01 1990
+        Function : list_check_mem
+        Author   : Ted Stanion
+        Date     : Wed May  2 17:11:01 1990
 
-	Abstract : Prints out status of list memory usage.
+        Abstract : Prints out status of list memory usage.
 
 *****************************************************************************/
 
@@ -742,9 +742,9 @@ VOID Ylist_check_mem()
 
 #ifdef TEST
 /********************************************************************/
-/*  								    */
-/*  Local Functions						    */
-/*  								    */
+/*                                                                  */
+/*  Local Functions                                                 */
+/*                                                                  */
 /********************************************************************/
 static VOID Yprint_list( P1(YLIST list) ) ;
 static VOID ph1();
@@ -752,11 +752,11 @@ static VOID ph1();
 
 /****************************************************************************
 
-	Function : main
-	Author   : Ted Stanion
-	Date     : Wed May  2 09:09:16 1990
+        Function : main
+        Author   : Ted Stanion
+        Date     : Wed May  2 09:09:16 1990
 
-	Abstract : Main driver.
+        Abstract : Main driver.
 
 *****************************************************************************/
 
@@ -765,7 +765,7 @@ INT main(int argc, char **argv)
   char c;
   INT data;
   YLIST list;
-  
+
   fprintf( stderr, "List testing program.  Enter ? to start\n" ) ;
   list = Ylist_create();
   while ((c = getchar()) != EOF) {
@@ -815,11 +815,11 @@ INT main(int argc, char **argv)
 
 /****************************************************************************
 
-	Function : print_list
-	Author   : Ted Stanion
-	Date     : Wed May  2 09:53:11 1990
+        Function : print_list
+        Author   : Ted Stanion
+        Date     : Wed May  2 09:53:11 1990
 
-	Abstract : Prints out a list.
+        Abstract : Prints out a list.
 
 *****************************************************************************/
 
