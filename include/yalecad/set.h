@@ -1,9 +1,9 @@
-/* ----------------------------------------------------------------- 
-FILE:	    set.h                                       
+/* -----------------------------------------------------------------
+FILE:       set.h
 DESCRIPTION:Insert file for the set utility routines.  The set
-members of the set are integers in a range [lowerLimitt..upperLimit]. 
-The routines add & subtract members from the set efficiently.  
-Multiple sets may be handled simultaneously.  The complexity of the 
+members of the set are integers in a range [lowerLimitt..upperLimit].
+The routines add & subtract members from the set efficiently.
+Multiple sets may be handled simultaneously.  The complexity of the
 routines are as follows.
     Yset_init      : O(n)
     Yset_free      : O(n)
@@ -13,17 +13,17 @@ routines are as follows.
     Yset_empty     : O(1)
     Yset_size      : O(1)
 The Yset_empty gets its speed by incrementing the value of in_set.  Since
-all tests for membership check a match of this value, all members of set 
-can be deleted at once. 
+all tests for membership check a match of this value, all members of set
+can be deleted at once.
 NOTE: These set routines are best suited for applications where you need
 to enumerate the members of the set and the set is bounded by an integer.
 In other applications, they may not be as suitable.
 CONTENTS:   Typedefs and definitions for set routines.
-DATE:	    Apr 10, 1989 
+DATE:       Apr 10, 1989
 REVISIONS:  Dec  4, 1989 added Yset_size and made Yenumerate a macro.
-	    Apr 18, 1990 - now Yset_init allocate the set.
-	    Apr 19, 1990 - added YcompSet 
-	    Fri Feb 15 15:39:18 EST 1991 - renamed set functions.
+            Apr 18, 1990 - now Yset_init allocate the set.
+            Apr 19, 1990 - added YcompSet
+            Fri Feb 15 15:39:18 EST 1991 - renamed set functions.
 ----------------------------------------------------------------- */
 #ifndef SET_H
 #define SET_H
@@ -55,7 +55,7 @@ typedef struct {
 
 /* set macro for finding size of the set */
 #define Yset_size(x_xz)    (x_xz->cardinality)
-/* 
+/*
 Arguments:
     YSETPTR set ;
 Function:
@@ -64,7 +64,7 @@ Function:
 
 /* set macro for enumeration return the first item in the list of set */
 #define Yset_enumerate(x_xz)  (x_xz->list )
-/* 
+/*
 Arguments:
     YSETPTR set ;
 Function:
@@ -73,7 +73,7 @@ Function:
 */
 
 extern YSETPTR Yset_init( P2(INT lowerLimit, INT upperLimit ) ) ;
-/* 
+/*
 Arguments:
     INT lowerLimit, upperLimit ;
 Function:
@@ -81,8 +81,8 @@ Function:
     returns a pointer to the set data structure.
 */
 
-extern VOID Yset_free( P1(YSETPTR set ) ) ; 
-/* 
+extern VOID Yset_free( P1(YSETPTR set ) ) ;
+/*
 Arguments:
     YSETPTR set ;
 Function:
@@ -91,7 +91,7 @@ Function:
 */
 
 extern BOOL Yset_member( P2(YSETPTR set, INT node ) ) ;
-/* 
+/*
 Arguments:
     YSETPTR set ;
     INT node ;
@@ -101,27 +101,27 @@ Function:
 */
 
 extern BOOL Yset_add( P2(YSETPTR set, INT node ) ) ;
-/* 
+/*
 Arguments:
     YSETPTR set ;
     INT node ;
 Function:
-    add node as member of set.  
+    add node as member of set.
     returns TRUE if this a new member of set FALSE if already a member.
 */
 
 extern VOID Yset_delete( P2(YSETPTR set, INT node ) ) ;
-/* 
+/*
 Arguments:
     YSETPTR set ;
     INT node ;
 Function:
-    removes node from set.  
+    removes node from set.
 */
 
 
-extern VOID Yset_empty( P1(YSETPTR set ) ) ; 
-/* 
+extern VOID Yset_empty( P1(YSETPTR set ) ) ;
+/*
 Arguments:
     YSETPTR set ;
 Function:
@@ -129,7 +129,7 @@ Function:
 */
 
 extern VOID Yset_comp( P1(YSETPTR set ) ) ;
-/* 
+/*
 Arguments:
     YSETPTR set ;
 Function:
